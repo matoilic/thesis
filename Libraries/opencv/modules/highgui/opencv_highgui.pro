@@ -14,7 +14,10 @@ LIBS += \
     -lzlib \
     -loleaut32 \
     -lopencv_core \
-    -lopencv_imgproc
+    -lopencv_imgproc \
+    -llibjpeg \
+    -llibpng \
+    -llibtiff \
 
 HEADERS += \
     include/opencv2/highgui/ios.h \

@@ -77,7 +77,7 @@
 /* #undef HAVE_JASPER */
 
 /* IJG JPEG codec */
-/* #undef HAVE_JPEG */
+#define HAVE_JPEG
 
 /* Define to 1 if you have the `dl' library (-ldl). */
 /* #undef HAVE_LIBDL */
@@ -98,16 +98,16 @@
 /* #undef HAVE_LRINT */
 
 /* PNG codec */
-/* #undef HAVE_PNG */
+#define HAVE_PNG
 
 /* Define to 1 if you have the `png_get_valid' function. */
-/* #undef HAVE_PNG_GET_VALID */
+#define HAVE_PNG_GET_VALID
 
 /* png.h needs to be included */
 /* #undef HAVE_PNG_H */
 
 /* Define to 1 if you have the `png_set_tRNS_to_alpha' function. */
-/* #undef HAVE_PNG_SET_TRNS_TO_ALPHA */
+#define HAVE_PNG_SET_TRNS_TO_ALPHA
 
 /* QuickTime video libraries */
 /* #undef HAVE_QUICKTIME */
@@ -116,7 +116,7 @@
 /* #undef HAVE_AVFOUNDATION */
 
 /* TIFF codec */
-/* #undef HAVE_TIFF */
+#define HAVE_TIFF
 
 /* Unicap video capture library */
 /* #undef HAVE_UNICAP */
@@ -131,7 +131,7 @@
 /* #undef HAVE_OPENNI */
 
 /* LZ77 compression/decompression library (used for PNG) */
-/* #undef HAVE_ZLIB */
+#define HAVE_ZLIB
 
 /* Intel Integrated Performance Primitives */
 /* #undef HAVE_IPP */
