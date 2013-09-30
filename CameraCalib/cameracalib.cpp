@@ -1,3 +1,10 @@
+#ifdef DEBUG
+    #include <string>
+    #include <sstream>
+    #include <sys/stat.h>
+    #include <sys/types.h>
+#endif
+
 #include "CameraCalib.h"
 
 CameraCalib::CameraCalib(cv::Size &bs)
@@ -24,14 +31,27 @@ int CameraCalib::addChessboardPoints(const std::vector<std::string> &filelist)
     cv::Mat image;
     int successes = 0;
 
-    for (int i = 0; i < filelist.size(); i++)
+    for (unsigned int i = 0; i < filelist.size(); i++)
     {
         image = cv::imread(filelist[i],0);
 
-        if (findChessboardPoints(image, imageCorners, objectCorners)) {
-            addPoints(imageCorners, objectCorners);
-            successes++;
-        }
+        #ifdef DEBUG
+            if (findAndDrawChessboardPoints(image, imageCorners, objectCorners)) {
+                addPoints(imageCorners, objectCorners);
+                successes++;
+
+                std::cout << filelist[i] << std::endl;
+                mkdir("calib", 0777);
+                std::stringstream path;
+                path << "calib/" << successes << ".jpg";
+                cv::imwrite(path.str(), image);
+            }
+        #else
+            if (findChessboardPoints(image, imageCorners, objectCorners)) {
+                addPoints(imageCorners, objectCorners);
+                successes++;
+            }
+        #endif
     }
 
     return successes;

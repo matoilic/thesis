@@ -9,6 +9,10 @@ MOC_DIR = $$DESTDIR/moc
 RCC_DIR = $$DESTDIR/qrc
 UI_DIR = $$DESTDIR/ui
 
+debug {
+    QMAKE_CXXFLAGS += -DDEBUG=1
+}
+
 unix:!macx {
     CONFIG += link_pkgconfig
     PKGCONFIG += opencv

@@ -19,7 +19,7 @@ int main()
     getcwd(cwd, sizeof(cwd));
     vector<string> fileList;
 
-    for(int i = 1; i <= 25; i++)
+    for(int i = 1; i <= 30; i++)
     {
         stringstream path;
         string file;
@@ -30,9 +30,6 @@ int main()
 
     cv::Mat exampleImage = cv::imread(fileList.at(0), CV_LOAD_IMAGE_COLOR);
     cv::Size imageSize(exampleImage.cols, exampleImage.rows);
-    cv::namedWindow( "Display window", CV_WINDOW_AUTOSIZE );
-    cv::imshow( "Display window", exampleImage );
-
 
     cout << "starting first calibration..." << endl;
     cout << c1.addChessboardPoints(fileList) << " successful detections" << endl;
@@ -41,7 +38,7 @@ int main()
     cout << endl << endl;
 
     fileList.clear();
-    for(int i = 13; i <= 38; i++)
+    for(int i = 1; i <= 40; i++)
     {
         stringstream path;
         string file;
