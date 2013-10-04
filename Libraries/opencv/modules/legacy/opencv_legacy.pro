@@ -113,11 +113,11 @@ SOURCES += \
     src/blobtrackanalysishist.cpp \
     src/blobtrackanalysis.cpp \
     src/blobtrack.cpp \
-    src/bgfg_gaussmix.cpp \
     src/bgfg_estimation.cpp \
     src/bgfg_common.cpp \
     src/bgfg_codebook.cpp \
     src/bgfg_acmmm2003.cpp \
     src/auxutils.cpp \
-    src/3dtracker.cpp
+    src/3dtracker.cpp \
+    src/bgfg_gaussmix_legacy.cpp
 

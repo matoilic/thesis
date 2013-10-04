@@ -27,9 +27,9 @@ PRECOMPILED_HEADER += \
 SOURCES += \
     src/super_resolution.cpp \
     src/precomp.cpp \
-    src/optical_flow.cpp \
-    src/input_array_utility.cpp \
-    src/frame_source.cpp \
     src/btv_l1_gpu.cpp \
-    src/btv_l1.cpp
+    src/btv_l1.cpp \
+    src/optical_flow_superres.cpp \
+    src/input_array_utility.cpp \
+    src/frame_source_videores.cpp
 

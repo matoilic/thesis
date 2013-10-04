@@ -13,6 +13,10 @@ debug {
     QMAKE_CXXFLAGS += -DDEBUG=1
 }
 
+win32 {
+    DEFINES += WIN32
+}
+
 unix:!macx {
     CONFIG += link_pkgconfig
     PKGCONFIG += opencv

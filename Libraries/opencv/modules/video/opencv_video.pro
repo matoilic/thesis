@@ -23,7 +23,6 @@ PRECOMPILED_HEADER += \
 
 SOURCES += \
     src/video_init.cpp \
-    src/tvl1flow.cpp \
     src/simpleflow.cpp \
     src/precomp.cpp \
     src/optflowgf.cpp \
@@ -33,5 +32,6 @@ SOURCES += \
     src/camshift.cpp \
     src/bgfg_gmg.cpp \
     src/bgfg_gaussmix2.cpp \
-    src/bgfg_gaussmix.cpp
+    src/bgfg_gaussmix_video.cpp \
+    src/tvl1flow_video.cpp
 

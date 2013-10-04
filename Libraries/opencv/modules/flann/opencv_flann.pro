@@ -44,7 +44,7 @@ HEADERS += \
     include/opencv2/flann/autotuned_index.h \
     include/opencv2/flann/any.h \
     include/opencv2/flann/allocator.h \
-    include/opencv2/flann/all_indices.h \
+    include/opencv2/flann/all_indices.h
 
 PRECOMPILED_HEADER += \
     src/precomp.hpp

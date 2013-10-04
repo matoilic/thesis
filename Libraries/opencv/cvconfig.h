@@ -14,7 +14,9 @@
 /* #undef HAVE_ALLOCA_H */
 
 /* Video for Windows support */
+#if defined(WIN32)
 #define HAVE_VFW
+#endif
 
 /* V4L capturing support */
 /* #undef HAVE_CAMV4L */
@@ -59,7 +61,9 @@
 /* #undef HAVE_GTHREAD */
 
 /* Win32 UI */
+#if defined(WIN32)
 #define HAVE_WIN32UI
+#endif
 
 /* GTK+ 2.x toolkit */
 /* #undef HAVE_GTK */
@@ -111,10 +115,16 @@
 
 /* QuickTime video libraries */
 /* #undef HAVE_QUICKTIME */
+#if defined(__APPLE__)
+#define HAVE_QUICKTIME
+#endif
 
 /* AVFoundation video libraries */
 /* #undef HAVE_AVFOUNDATION */
-
+/*#if defined(__APPLE__)
+#define HAVE_AVFOUNDATION
+#endif*/
+    
 /* TIFF codec */
 #define HAVE_TIFF
 
@@ -123,6 +133,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 /* #undef HAVE_UNISTD_H */
+#if !defined(WIN32)
+#define HAVE_UNISTD_H    
+#endif    
 
 /* Xine video library */
 /* #undef HAVE_XINE */
@@ -207,6 +220,7 @@
 
 /* OpenCL Support */
 /* #undef HAVE_OPENCL */
+#define HAVE_OPENCL
 
 /* AMD's OpenCL Fast Fourier Transform Library*/
 /* #undef HAVE_CLAMDFFT */
@@ -215,7 +229,9 @@
 /* #undef HAVE_CLAMDBLAS */
 
 /* DirectShow Video Capture library */
+#if defined(WIN32)
 #define HAVE_DSHOW
+#endif
 
 /* Microsoft Media Foundation Capture library */
 /* #undef HAVE_MSMF */
@@ -231,6 +247,8 @@
 
 /* Qt support */
 /* #undef HAVE_QT */
+#define HAVE_QT
 
 /* Qt OpenGL support */
 /* #undef HAVE_QT_OPENGL */
+#define HAVE_QT_OPENGL

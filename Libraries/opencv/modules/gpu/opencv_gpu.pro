@@ -78,7 +78,6 @@ SOURCES += \
     src/video_reader.cpp \
     src/video_parser.cpp \
     src/video_decoder.cpp \
-    src/tvl1flow.cpp \
     src/thread_wrappers.cpp \
     src/stereocsbp.cpp \
     src/stereobp.cpp \
@@ -88,11 +87,9 @@ SOURCES += \
     src/resize.cpp \
     src/remap.cpp \
     src/pyrlk.cpp \
-    src/pyramids.cpp \
     src/precomp.cpp \
     src/orb.cpp \
     src/optical_flow_farneback.cpp \
-    src/optical_flow.cpp \
     src/optflowbm.cpp \
     src/mssegmentation.cpp \
     src/matrix_reductions.cpp \
@@ -102,7 +99,6 @@ SOURCES += \
     src/hough.cpp \
     src/hog.cpp \
     src/graphcuts.cpp \
-    src/global_motion.cpp \
     src/gftt.cpp \
     src/frame_queue.cpp \
     src/filtering.cpp \
@@ -115,7 +111,6 @@ SOURCES += \
     src/cuvid_video_source.cpp \
     src/cudastream.cpp \
     src/cu_safe_call.cpp \
-    src/color.cpp \
     src/cascadeclassifier.cpp \
     src/calib3d.cpp \
     src/brute_force_matcher.cpp \
@@ -123,5 +118,10 @@ SOURCES += \
     src/bilateral_filter.cpp \
     src/bgfg_mog.cpp \
     src/bgfg_gmg.cpp \
-    src/arithm.cpp
+    src/arithm.cpp \
+    src/pyramids_gpu.cpp \
+    src/color_gpu.cpp \
+    src/optical_flow_gpu.cpp \
+    src/tvl1flow_gpu.cpp \
+    src/global_motion_gpu.cpp
 

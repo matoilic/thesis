@@ -1,30 +1,59 @@
 include (../../opencv.pri)
 
+QT += core gui widgets concurrent testlib opengl
+
 TEMPLATE = lib
 CONFIG += shared dll
 
 DEFINES -= UNICODE
 
+win32 {
+    LIBS += \
+        -lopengl32 \
+        -ladvapi32 \
+        -lole32 \
+        -lcomctl32 \
+        -lvfw32 \
+        -loleaut32 \
+        -lopencl
+}
+
+mac {
+    LIBS += \
+        -framework OpenGL \
+        -framework GLUT \
+        -framework QTKit \
+        -framework Foundation \
+        -framework CoreVideo \
+        -framework CoreMedia \
+        -framework CoreFoundation \
+        #-framework AVFoundation \
+        -framework OpenCL \
+        -framework ImageCaptureCore \
+        -framework ImageIO \
+        -framework CoreServices \
+        -framework AppKit
+}
+
+unix:!macx {
+    LIBS += \
+        -lOpenCL
+}
+
 LIBS += \
-    -lopengl32 \
-    -ladvapi32 \
-    -lole32 \
-    -lcomctl32 \
-    -lvfw32 \
     -lzlib \
-    -loleaut32 \
     -lopencv_core \
     -lopencv_imgproc \
     -llibjpeg \
     -llibpng \
-    -llibtiff \
+    -llibtiff
 
 HEADERS += \
     include/opencv2/highgui/ios.h \
     include/opencv2/highgui/highgui_c.h \
     include/opencv2/highgui/highgui.hpp \
     include/opencv2/highgui/cap_ios.h \
-    #src/window_QT.h \
+    src/window_QT.h \
     src/utils.hpp \
     src/grfmts.hpp \
     src/grfmt_tiff.hpp \
@@ -45,13 +74,28 @@ HEADERS += \
 PRECOMPILED_HEADER += \
     src/precomp.hpp
 
+win32 {
+    SOURCES += \
+        src/window_w32.cpp \
+        src/cap_dshow.cpp \
+        src/cap_vfw.cpp \
+}
+
+macx {
+    OBJECTIVE_SOURCES += \
+        src/cap_qtkit.mm \
+        #src/cap_avfoundation.mm \
+        #src/window_cocoa.mm
+}
+
+unix:!mac {
+    SOURCES += \
+        src/window_gtk.cpp
+}
+
 SOURCES += \
-    src/window_w32.cpp \
-    #src/window_QT.cpp \
-    #src/window_gtk.cpp \
-    #src/window_carbon.cpp \
-    src/window.cpp \
-    src/utils.cpp \
+    src/window_QT.cpp \
+    src/window.cpp \    
     src/precomp.cpp \
     src/loadsave.cpp \
     src/grfmt_tiff.cpp \
@@ -65,12 +109,10 @@ SOURCES += \
     src/grfmt_bmp.cpp \
     src/grfmt_base.cpp \
     #src/cap_xine.cpp \
-    #src/cap_ximea.cpp \
-    src/cap_vfw.cpp \
+    #src/cap_ximea.cpp \    
     #src/cap_v4l.cpp \
     #src/cap_unicap.cpp \
     #src/cap_tyzx.cpp \
-    #src/cap_qt.cpp \
     #src/cap_pvapi.cpp \
     #src/cap_openni.cpp \
     #src/cap_msmf.cpp \
@@ -80,10 +122,10 @@ SOURCES += \
     #src/cap_gstreamer.cpp \
     #src/cap_giganetix.cpp \
     src/cap_ffmpeg.cpp \
-    src/cap_dshow.cpp \
     #src/cap_dc1394_v2.cpp \
     #src/cap_dc1394.cpp \
     src/cap_cmu.cpp \
     #src/cap_android.cpp \
     src/cap.cpp \
-    src/bitstrm.cpp
+    src/bitstrm.cpp \
+    src/utils_highgui.cpp

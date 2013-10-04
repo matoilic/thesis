@@ -23,7 +23,7 @@ int main()
     {
         stringstream path;
         string file;
-        path << cwd << "/../../CameraCalibTest/Files/" << i << ".jpg";
+        path << cwd << "/../../Components/CameraCalibTest/Files/" << i << ".jpg";
         file = path.str();
         fileList.push_back(file);
     }
@@ -42,7 +42,7 @@ int main()
     {
         stringstream path;
         string file;
-        path << cwd << "/../../CameraCalibTest/Files/" << i << ".jpg";
+        path << cwd << "/../../Components/CameraCalibTest/Files/" << i << ".jpg";
         file = path.str();
         fileList.push_back(file);
     }

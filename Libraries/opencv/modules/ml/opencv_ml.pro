@@ -10,7 +10,7 @@ LIBS += \
     -lzlib
 
 HEADERS += \
-    include/opencv2/ml/ml.hpp \
+    include/opencv2/ml/ml.hpp
 
 PRECOMPILED_HEADER += \
     src/precomp.hpp

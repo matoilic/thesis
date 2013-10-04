@@ -12,7 +12,7 @@ LIBS += \
 
 HEADERS += \
     include/opencv2/features2d/features2d.hpp \
-    src/fast_score.hpp \
+    src/fast_score.hpp
 
 PRECOMPILED_HEADER += \
     src/precomp.hpp
@@ -22,7 +22,6 @@ SOURCES += \
     src/precomp.cpp \
     src/orb.cpp \
     src/mser.cpp \
-    src/matchers.cpp \
     src/keypoint.cpp \
     src/freak.cpp \
     src/features2d_init.cpp \
@@ -36,4 +35,5 @@ SOURCES += \
     src/brisk.cpp \
     src/brief.cpp \
     src/blobdetector.cpp \
-    src/bagofwords.cpp
+    src/bagofwords.cpp \
+    src/matchers_features2d.cpp

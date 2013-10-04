@@ -3,7 +3,9 @@ include (../../opencv.pri)
 TEMPLATE = lib
 CONFIG += shared dll
 
+DEFINES += GTEST_CREATE_SHARED_LIBRARY
 DEFINES -= UNICODE
+
 LIBS += \
     -lopencv_core \
     -lopencv_imgproc \

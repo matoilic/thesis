@@ -35,12 +35,12 @@ PRECOMPILED_HEADER += \
 SOURCES += \
     src/stabilizer.cpp \
     src/precomp.cpp \
-    src/optical_flow.cpp \
     src/motion_stabilizing.cpp \
     src/log.cpp \
     src/inpainting.cpp \
-    src/global_motion.cpp \
-    src/frame_source.cpp \
     src/fast_marching.cpp \
-    src/deblurring.cpp
+    src/deblurring.cpp \
+    src/optical_flow_videostab.cpp \
+    src/global_motion_videostab.cpp \
+    src/frame_source_videostab.cpp
 

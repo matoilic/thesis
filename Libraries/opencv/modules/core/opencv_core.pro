@@ -6,8 +6,26 @@ CONFIG += shared dll
 DEFINES -= UNICODE
 
 LIBS += \
-    -lzlib \
-    -lopengl32
+    -lzlib
+
+win32 {
+    LIBS += \
+        -lopengl32
+}
+
+macx {
+    LIBS += \
+        -framework Carbon \
+        -framework OpenGL \
+        -framework GLUT
+}
+
+unix:!macx {
+    LIBS += \
+        -lGL \
+        -lGLU \
+        -lglut
+}
 
 HEADERS += \
     include/opencv2/core/wimage.hpp \
@@ -23,13 +41,12 @@ HEADERS += \
     include/opencv2/core/devmem2d.hpp \
     include/opencv2/core/cuda_devptrs.hpp \
     include/opencv2/core/core_c.h \
-    include/opencv2/core/core.hpp \
+    include/opencv2/core/core.hpp
 
 PRECOMPILED_HEADER += \
     src/precomp.hpp
 
 SOURCES += \
-    src/tables.cpp \
     src/system.cpp \
     src/stat.cpp \
     src/rand.cpp \
@@ -58,3 +75,4 @@ SOURCES += \
     src/alloc.cpp \
     src/algorithm.cpp \
     src/gl_core_3_1.hpp \
+    src/tables_core.cpp

@@ -1,4 +1,4 @@
-include(../globals.pro)
+include(../../globals.pro)
 
 TEMPLATE = app
 CONFIG += console qt

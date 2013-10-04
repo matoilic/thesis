@@ -3,10 +3,18 @@ include (../../opencv.pri)
 TEMPLATE = lib
 CONFIG += staticlib
 
+win32 {
+    SOURCES += \
+        tif_win32.c
+}
+
+macx {
+    DEFINES += AVOID_WIN32_FILEIO
+}
+
 SOURCES += \
     tif_zip.c \
     tif_write.c \
-    tif_win32.c \
     tif_warning.c \
     tif_version.c \
     tif_unix.c \
@@ -62,5 +70,5 @@ HEADERS += \
     tif_fax3.h \
     tif_dir.h \
     tif_config.h.cmakein \
-    tif_config.h \
-    t4.h
+    t4.h \
+    tif_config.h

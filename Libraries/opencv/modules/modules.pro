@@ -22,4 +22,4 @@ SUBDIRS += \
     stitching/opencv_stitching.pro \
     superres/opencv_superres.pro \
     ts/opencv_ts.pro \
-    videostab/opencv_videostab.pro \
+    videostab/opencv_videostab.pro

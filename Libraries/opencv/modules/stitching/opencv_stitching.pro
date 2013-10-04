@@ -40,9 +40,9 @@ SOURCES += \
     src/seam_finders.cpp \
     src/precomp.cpp \
     src/motion_estimators.cpp \
-    src/matchers.cpp \
     src/exposure_compensate.cpp \
     src/camera.cpp \
     src/blenders.cpp \
-    src/autocalib.cpp
+    src/autocalib.cpp \
+    src/matchers_stitching.cpp
 

@@ -2,9 +2,9 @@ include (../../ardoor.pri)
 
 OPENCV_DIR = $$PWD
 
-DEFINES += HAVE_CVCONFIG_H CVAPI_EXPORTS
+DEFINES += HAVE_CVCONFIG_H
 win32 {
-    DEFINES += _VARIADIC_MAX=10
+    DEFINES += _VARIADIC_MAX=10 CVAPI_EXPORTS
 }
 
 MODULES = calib3d contrib core features2d flann gpu highgui imgproc legacy \
@@ -18,8 +18,9 @@ INCLUDEPATH += $$OPENCV_DIR/include
 for (module, MODULES) {
     INCLUDEPATH += \
         $$OPENCV_DIR/modules/$$module/ \
-        $$OPENCV_DIR/modules/$$module/include \
+        $$OPENCV_DIR/modules/$$module/include
 }
+INCLUDEPATH += $$OPENCV_DIR/modules/highgui/src
 
 # 3rdparty library includes
 INCLUDEPATH += $$OPENCV_DIR/3rdparty/libjpeg

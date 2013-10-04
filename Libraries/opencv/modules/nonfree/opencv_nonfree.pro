@@ -23,7 +23,7 @@ HEADERS += \
     include/opencv2/nonfree/ocl.hpp \
     include/opencv2/nonfree/nonfree.hpp \
     include/opencv2/nonfree/gpu.hpp \
-    include/opencv2/nonfree/features2d.hpp \
+    include/opencv2/nonfree/features2d.hpp
 
 PRECOMPILED_HEADER += \
     src/precomp.hpp

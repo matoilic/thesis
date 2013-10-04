@@ -30,7 +30,9 @@
 #define HAVE_IEEEFP 1
 
 /* Define to 1 if you have the <io.h> header file. */
+#if !defined(__APPLE__)
 #define HAVE_IO_H
+#endif
 
 /* Define to 1 if you have the `jbg_newlen' function. */
 /* #undef HAVE_JBG_NEWLEN */
@@ -152,7 +154,9 @@
 #endif
 
 /* define to use win32 IO system */
+#if defined(WIN32)
 #define USE_WIN32_FILEIO
+#endif
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
