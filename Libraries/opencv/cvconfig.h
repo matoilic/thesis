@@ -220,7 +220,9 @@
 
 /* OpenCL Support */
 /* #undef HAVE_OPENCL */
+#if !defined(WIN32)
 #define HAVE_OPENCL
+#endif
 
 /* AMD's OpenCL Fast Fourier Transform Library*/
 /* #undef HAVE_CLAMDFFT */
@@ -247,8 +249,12 @@
 
 /* Qt support */
 /* #undef HAVE_QT */
+#if !defined(WIN32)
 #define HAVE_QT
+#endif
 
 /* Qt OpenGL support */
 /* #undef HAVE_QT_OPENGL */
+#if !defined(WIN32)
 #define HAVE_QT_OPENGL
+#endif

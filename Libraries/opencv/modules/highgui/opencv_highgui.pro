@@ -1,6 +1,8 @@
 include (../../opencv.pri)
 
-QT += core gui widgets concurrent testlib opengl
+!win32 {
+    QT += core gui widgets concurrent testlib opengl
+}
 
 TEMPLATE = lib
 CONFIG += shared dll
@@ -14,8 +16,8 @@ win32 {
         -lole32 \
         -lcomctl32 \
         -lvfw32 \
-        -loleaut32 \
-        -lopencl
+        -loleaut32
+        #-lopencl
 }
 
 mac {
@@ -53,7 +55,7 @@ HEADERS += \
     include/opencv2/highgui/highgui_c.h \
     include/opencv2/highgui/highgui.hpp \
     include/opencv2/highgui/cap_ios.h \
-    src/window_QT.h \
+    #src/window_QT.h \
     src/utils.hpp \
     src/grfmts.hpp \
     src/grfmt_tiff.hpp \
@@ -83,9 +85,13 @@ win32 {
 
 macx {
     OBJECTIVE_SOURCES += \
+        src/window_QT.cpp \
         src/cap_qtkit.mm \
         #src/cap_avfoundation.mm \
         #src/window_cocoa.mm
+
+    HEADERS += \
+        src/window_QT.h \
 }
 
 unix:!mac {
@@ -94,8 +100,7 @@ unix:!mac {
 }
 
 SOURCES += \
-    src/window_QT.cpp \
-    src/window.cpp \    
+    src/window.cpp \
     src/precomp.cpp \
     src/loadsave.cpp \
     src/grfmt_tiff.cpp \

@@ -11,3 +11,11 @@ RCC_DIR = $$DESTDIR/qrc
 UI_DIR = $$DESTDIR/ui
 
 LIBS += -L$$DESTDIR
+
+debug {
+    QMAKE_CXXFLAGS += -DDEBUG=1
+}
+
+win32 {
+    DEFINES += WIN32
+}

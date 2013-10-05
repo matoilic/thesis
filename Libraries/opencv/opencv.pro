@@ -1,4 +1,3 @@
-include(../../globals.pro)
 include(opencv.pri)
 
 TEMPLATE = subdirs
