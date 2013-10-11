@@ -17,10 +17,9 @@ win32 {
         -lcomctl32 \
         -lvfw32 \
         -loleaut32
-        #-lopencl
 }
 
-mac {
+macx {
     LIBS += \
         -framework OpenGL \
         -framework GLUT \
@@ -30,16 +29,10 @@ mac {
         -framework CoreMedia \
         -framework CoreFoundation \
         #-framework AVFoundation \
-        -framework OpenCL \
         -framework ImageCaptureCore \
         -framework ImageIO \
         -framework CoreServices \
         -framework AppKit
-}
-
-unix:!macx {
-    LIBS += \
-        -lOpenCL
 }
 
 LIBS += \
@@ -55,7 +48,6 @@ HEADERS += \
     include/opencv2/highgui/highgui_c.h \
     include/opencv2/highgui/highgui.hpp \
     include/opencv2/highgui/cap_ios.h \
-    #src/window_QT.h \
     src/utils.hpp \
     src/grfmts.hpp \
     src/grfmt_tiff.hpp \
@@ -84,17 +76,19 @@ win32 {
 }
 
 macx {
-    OBJECTIVE_SOURCES += \
+    HEADERS += \
+        src/window_QT.h \
+
+    SOURCES += \
         src/window_QT.cpp \
+
+    OBJECTIVE_SOURCES += \
         src/cap_qtkit.mm \
         #src/cap_avfoundation.mm \
         #src/window_cocoa.mm
-
-    HEADERS += \
-        src/window_QT.h \
 }
 
-unix:!mac {
+unix:!macx {
     SOURCES += \
         src/window_gtk.cpp
 }

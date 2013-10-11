@@ -10,7 +10,14 @@ LIBS += \
     -lopencv_imgproc \
     -lopencv_objdetect \
     -lopencv_features2d \
-    -lopencv_flann
+    -lopencv_flann \
+    -lopencv_video \
+    -lopencv_calib3d
+
+macx {
+    LIBS += \
+        -framework OpenCL \
+}
 
 HEADERS += \
     include/opencv2/ocl/ocl.hpp \
@@ -23,35 +30,35 @@ PRECOMPILED_HEADER += \
     src/precomp.hpp
 
 SOURCES += \
-    src/arithm.cpp \
-    src/tvl1flow.cpp \
-    src/stereobp.cpp \
-    src/stereobm.cpp \
-    src/stereo_csbp.cpp \
-    src/split_merge.cpp \
-    src/pyrup.cpp \
-    src/pyrlk.cpp \
-    src/pyrdown.cpp \
-    src/precomp.cpp \
-    src/mssegmentation.cpp \
-    src/moments.cpp \
-    src/mcwutil.cpp \
-    src/matrix_operations.cpp \
-    src/match_template.cpp \
-    src/interpolate_frames.cpp \
-    src/initialization.cpp \
-    src/imgproc.cpp \
-    src/hog.cpp \
-    src/haar.cpp \
-    src/gfft.cpp \
-    src/gemm.cpp \
-    src/filtering.cpp \
-    src/fft.cpp \
-    src/error.cpp \
-    src/columnsum.cpp \
-    src/color.cpp \
-    src/canny.cpp \
-    src/build_warps.cpp \
-    src/brute_force_matcher.cpp \
-    src/blend.cpp
+    src/arithm_ocl.cpp \
+    src/blend_ocl.cpp \
+    src/brute_force_matcher_ocl.cpp \
+    src/canny_ocl.cpp \
+    src/color_ocl.cpp \
+    src/error_ocl.cpp \
+    src/fft_ocl.cpp \
+    src/filtering_ocl.cpp \
+    src/haar_ocl.cpp \
+    src/hog_ocl.cpp \
+    src/imgproc_ocl.cpp \
+    src/match_template_ocl.cpp \
+    src/matrix_operations_ocl.cpp \
+    src/moments_ocl.cpp \
+    src/mssegmentation_ocl.cpp \
+    src/precomp_ocl.cpp \
+    src/pyrdown_ocl.cpp \
+    src/pyrlk_ocl.cpp \
+    src/pyrup_ocl.cpp \
+    src/split_merge_ocl.cpp \
+    src/stereo_csbp_ocl.cpp \
+    src/stereobm_ocl.cpp \
+    src/stereobp_ocl.cpp \
+    src/tvl1flow_ocl.cpp \
+    src/columnsum_ocl.cpp \
+    src/gemm_ocl.cpp \
+    src/gfft_ocl.cpp \
+    src/initialization_ocl.cpp \
+    src/interpolate_frames_ocl.cpp \
+    src/mcwutil_ocl.cpp \
+    src/build_warps_ocl.cpp
 
