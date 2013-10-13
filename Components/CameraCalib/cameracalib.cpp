@@ -41,10 +41,12 @@ int CameraCalib::addChessboardPoints(const std::vector<std::string> &filelist)
                 successes++;
 
                 std::cout << filelist[i] << std::endl;
-                mkdir("calib", 0777);
-                std::stringstream path;
-                path << "calib/" << successes << ".jpg";
-                cv::imwrite(path.str(), image);
+                #ifndef WIN32
+                    mkdir("calib", 0777);
+                    std::stringstream path;
+                    path << "calib/" << successes << ".jpg";
+                    cv::imwrite(path.str(), image);
+                #endif
             }
         #else
             if (findChessboardPoints(image, imageCorners, objectCorners)) {
@@ -105,7 +107,7 @@ bool CameraCalib::findChessboardPoints(const cv::Mat &image, std::vector<cv::Poi
     {
         for(int j = 0; j < boardSize.width; j++)
         {
-            objectCorners.push_back(cv::Point3f(i * 110, j * 110, 0.0f)); //110 = size of one square on the board
+            objectCorners.push_back(cv::Point3f(i * 1.0, j * 1.0, 0.0f)); //110 = size of one square on the board
         }
     }
 

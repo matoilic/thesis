@@ -11,6 +11,7 @@ RCC_DIR = $$DESTDIR/qrc
 UI_DIR = $$DESTDIR/ui
 
 LIBS += -L$$DESTDIR
+INCLUDEPATH += $$PWD/Common
 
 debug {
     QMAKE_CXXFLAGS += -DDEBUG=1
