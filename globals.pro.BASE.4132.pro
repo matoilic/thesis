@@ -1,17 +1,13 @@
 release: ENVIRONMENT = "release"
 debug:   ENVIRONMENT = "debug"
 
-ARDOOR_DIR = $$PWD
-BUILDPATH = $$ARDOOR_DIR/Build/$$ENVIRONMENT
+BUILDPATH = $$PWD/build/$$ENVIRONMENT
 DESTDIR = $$BUILDPATH
 
 OBJECTS_DIR = $$DESTDIR/obj
 MOC_DIR = $$DESTDIR/moc
 RCC_DIR = $$DESTDIR/qrc
 UI_DIR = $$DESTDIR/ui
-
-LIBS += -L$$DESTDIR
-INCLUDEPATH += $$PWD/Common
 
 debug {
     QMAKE_CXXFLAGS += -DDEBUG=1
@@ -20,3 +16,15 @@ debug {
 win32 {
     DEFINES += WIN32
 }
+
+unix:!macx {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += opencv
+}
+
+macx {
+    QMAKE_LFLAGS += -F/Library/Frameworks
+    LIBS += -framework opencv2
+}
+
+

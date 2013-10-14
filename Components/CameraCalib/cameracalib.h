@@ -7,9 +7,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include "ardoor.h"
 
-class CameraCalib
+class ARD_EXPORT CameraCalib
 {
+private:
     //board size used for calibration operations
     cv::Size boardSize;
     // the points in world coordinates

@@ -1,12 +1,16 @@
-include(../../globals.pro)
+include(../Component.pri)
+include(../../Libraries/opencv/opencv_includepath.pri)
 
-TEMPLATE = lib
-CONFIG += console
-CONFIG -= app_bundle
-CONFIG -= qt
+LIBS += \
+    -lopencv_core \
+    -lopencv_calib3d \
+    -lopencv_imgproc \
+    -lopencv_highgui
 
 SOURCES += \
-    cameracalib.cpp
+    cameracalib.cpp \
+    cameraconfiguration.cpp
 
 HEADERS += \
-    cameracalib.h
+    cameracalib.h \
+    cameraconfiguration.h
