@@ -14,7 +14,9 @@
 /* #undef HAVE_ALLOCA_H */
 
 /* Video for Windows support */
+#if defined(WIN32)
 #define HAVE_VFW
+#endif
 
 /* V4L capturing support */
 /* #undef HAVE_CAMV4L */
@@ -59,7 +61,9 @@
 /* #undef HAVE_GTHREAD */
 
 /* Win32 UI */
+#if defined(WIN32)
 #define HAVE_WIN32UI
+#endif
 
 /* GTK+ 2.x toolkit */
 /* #undef HAVE_GTK */
@@ -77,7 +81,7 @@
 /* #undef HAVE_JASPER */
 
 /* IJG JPEG codec */
-/* #undef HAVE_JPEG */
+#define HAVE_JPEG
 
 /* Define to 1 if you have the `dl' library (-ldl). */
 /* #undef HAVE_LIBDL */
@@ -98,31 +102,40 @@
 /* #undef HAVE_LRINT */
 
 /* PNG codec */
-/* #undef HAVE_PNG */
+#define HAVE_PNG
 
 /* Define to 1 if you have the `png_get_valid' function. */
-/* #undef HAVE_PNG_GET_VALID */
+#define HAVE_PNG_GET_VALID
 
 /* png.h needs to be included */
 /* #undef HAVE_PNG_H */
 
 /* Define to 1 if you have the `png_set_tRNS_to_alpha' function. */
-/* #undef HAVE_PNG_SET_TRNS_TO_ALPHA */
+#define HAVE_PNG_SET_TRNS_TO_ALPHA
 
 /* QuickTime video libraries */
 /* #undef HAVE_QUICKTIME */
+#if defined(__APPLE__)
+#define HAVE_QUICKTIME
+#endif
 
 /* AVFoundation video libraries */
 /* #undef HAVE_AVFOUNDATION */
-
+/*#if defined(__APPLE__)
+#define HAVE_AVFOUNDATION
+#endif*/
+    
 /* TIFF codec */
-/* #undef HAVE_TIFF */
+#define HAVE_TIFF
 
 /* Unicap video capture library */
 /* #undef HAVE_UNICAP */
 
 /* Define to 1 if you have the <unistd.h> header file. */
 /* #undef HAVE_UNISTD_H */
+#if !defined(WIN32)
+#define HAVE_UNISTD_H    
+#endif    
 
 /* Xine video library */
 /* #undef HAVE_XINE */
@@ -131,7 +144,7 @@
 /* #undef HAVE_OPENNI */
 
 /* LZ77 compression/decompression library (used for PNG) */
-/* #undef HAVE_ZLIB */
+#define HAVE_ZLIB
 
 /* Intel Integrated Performance Primitives */
 /* #undef HAVE_IPP */
@@ -207,6 +220,9 @@
 
 /* OpenCL Support */
 /* #undef HAVE_OPENCL */
+#if !defined(WIN32)
+#define HAVE_OPENCL
+#endif
 
 /* AMD's OpenCL Fast Fourier Transform Library*/
 /* #undef HAVE_CLAMDFFT */
@@ -215,7 +231,9 @@
 /* #undef HAVE_CLAMDBLAS */
 
 /* DirectShow Video Capture library */
+#if defined(WIN32)
 #define HAVE_DSHOW
+#endif
 
 /* Microsoft Media Foundation Capture library */
 /* #undef HAVE_MSMF */
@@ -231,6 +249,12 @@
 
 /* Qt support */
 /* #undef HAVE_QT */
+#if !defined(WIN32)
+#define HAVE_QT
+#endif
 
 /* Qt OpenGL support */
 /* #undef HAVE_QT_OPENGL */
+#if !defined(WIN32)
+#define HAVE_QT_OPENGL
+#endif

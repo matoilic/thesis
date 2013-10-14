@@ -23,8 +23,8 @@ unix:!macx {
 }
 
 macx {
-    QMAKE_LFLAGS += -F/Library/Frameworks
-    LIBS += -framework opencv2
+    #QMAKE_LFLAGS += -F/Library/Frameworks
+    #LIBS += -framework opencv2
 }
 
 

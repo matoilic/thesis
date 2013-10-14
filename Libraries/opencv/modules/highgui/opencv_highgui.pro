@@ -44,6 +44,7 @@ LIBS += \
     -llibtiff
 
 HEADERS += \
+    ../../cvconfig.h \
     include/opencv2/highgui/ios.h \
     include/opencv2/highgui/highgui_c.h \
     include/opencv2/highgui/highgui.hpp \
