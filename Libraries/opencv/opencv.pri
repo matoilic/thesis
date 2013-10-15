@@ -18,7 +18,8 @@ INCLUDEPATH += $$OPENCV_DIR/include
 for (module, MODULES) {
     INCLUDEPATH += \
         $$OPENCV_DIR/modules/$$module \
-        $$OPENCV_DIR/modules/$$module/include
+        $$OPENCV_DIR/modules/$$module/include \
+        $$OPENCV_DIR/modules/$$module/src
 }
 #INCLUDEPATH += $$OPENCV_DIR/modules/highgui/src
 

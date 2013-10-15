@@ -15,7 +15,16 @@ LIBS += \
     -lopencv_calib3d \
     -lopencv_imgproc \
     -lopencv_highgui \
-    -lopengl32
+
+win32 {
+    LIBS += -lopengl32
+}
+
+macx {
+    LIBS += -framework OpenGL
+    LIBS += -framework GLUT
+    LIBS += -framework Cocoa
+}
 
 SOURCES += main.cpp \
     rendering.cpp \

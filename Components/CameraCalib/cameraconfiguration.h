@@ -14,7 +14,7 @@ public:
     CameraConfiguration(float fx, float fy, float cx, float cy) { initialize(fx, fy, cx, cy); };
     CameraConfiguration(const CameraConfiguration& other);
 
-    CameraConfiguration& CameraConfiguration::operator=(const CameraConfiguration& rhs);
+    CameraConfiguration& operator=(const CameraConfiguration& rhs);
 
     const cv::Matx33f& getIntrinsics() const;
     const cv::Mat_<float>& getDistorsion() const;
