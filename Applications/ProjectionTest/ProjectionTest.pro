@@ -26,9 +26,10 @@ macx {
     LIBS += -framework Cocoa
 }
 
-SOURCES += main.cpp \
+SOURCES += \
     rendering.cpp \
-    ar.cpp
+    ar.cpp \
+    main.cpp
 
 HEADERS += \
     rendering.hpp \

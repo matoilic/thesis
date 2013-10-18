@@ -5,10 +5,10 @@ ARDOOR_DIR = $$PWD
 BUILDPATH = $$ARDOOR_DIR/Build/$$ENVIRONMENT
 DESTDIR = $$BUILDPATH
 
-OBJECTS_DIR = $$DESTDIR/obj
-MOC_DIR = $$DESTDIR/moc
-RCC_DIR = $$DESTDIR/qrc
-UI_DIR = $$DESTDIR/ui
+OBJECTS_DIR = $$DESTDIR/obj/$$TARGET
+MOC_DIR = $$DESTDIR/moc/$$TARGET
+RCC_DIR = $$DESTDIR/qrc/$$TARGET
+UI_DIR = $$DESTDIR/ui/$$TARGET
 
 LIBS += -L$$DESTDIR
 INCLUDEPATH += $$PWD/Common
@@ -18,7 +18,7 @@ debug {
 }
 
 macx {
-    CONFIG -= app_bundle
+    #CONFIG -= app_bundle
     CONFIG += c++11
     QMAKE_CXXFLAGS += -mmacosx-version-min=10.7
     QMAKE_LFLAGS += -mmacosx-version-min=10.7

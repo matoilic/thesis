@@ -8,5 +8,6 @@ LIBS += \
     -lopencv_core \
     -lopencv_highgui \
 
-SOURCES += main.cpp
+SOURCES += \
+    main.cpp
 
