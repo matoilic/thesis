@@ -32,6 +32,11 @@ void CameraCalib::initObjectCorners()
     }
 }
 
+cv::Size CameraCalib::getBoardSize()
+{
+    return boardSize;
+}
+
 cv::Mat CameraCalib::getDistortionCoeffs()
 {
     return distCoeffs;
