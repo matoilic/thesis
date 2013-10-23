@@ -2,7 +2,15 @@ release: ENVIRONMENT = "release"
 debug:   ENVIRONMENT = "debug"
 
 ARDOOR_DIR = $$PWD
-BUILDPATH = $$ARDOOR_DIR/Build/$$ENVIRONMENT
+
+win32 {
+    BUILDPATH = $$ARDOOR_DIR/Build-Win32/$$ENVIRONMENT
+}
+
+!win32 {
+    BUILDPATH = $$ARDOOR_DIR/Build-Unix/$$ENVIRONMENT
+}
+
 DESTDIR = $$BUILDPATH
 
 OBJECTS_DIR = $$DESTDIR/obj/$$TARGET

@@ -18,6 +18,7 @@ LIBS += \
 
 win32 {
     LIBS += -lopengl32
+    LIBS += -lglut32
 }
 
 macx {

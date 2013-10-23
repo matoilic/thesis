@@ -4,4 +4,5 @@ TEMPLATE  = subdirs
 CONFIG   += ordered
 
 SUBDIRS = \
-    opencv
+    opencv \
+   # freeglut
