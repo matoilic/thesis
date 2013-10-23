@@ -53,8 +53,8 @@ void reshape(int width, int height)
     glEnable(GL_LIGHT0);
 
     // Create light components
-    GLfloat ambientLight[]  = { 0.25f, 0.25f, 0.25f, 1.0f };
-    GLfloat diffuseLight[]  = { 0.1f, 0.1f, 0.1f, 1.0f };
+    GLfloat ambientLight[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
+    GLfloat diffuseLight[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
     GLfloat position[] = { 0.0f, 0.0f, 2.0f, 1.0f };
 
     // Assign created components to GL_LIGHT0

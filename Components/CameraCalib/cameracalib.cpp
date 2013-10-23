@@ -84,17 +84,7 @@ double CameraCalib::calibrate(cv::Size &imageSize)
 
 bool CameraCalib::findAndDrawChessboardPoints(const cv::Mat &image, std::vector<cv::Point2f> &imageCorners, std::vector<cv::Point3f> &objectCorners)
 {
-    cv::Mat greyImage;
-    if(image.type() == CV_8UC4)
-    {
-        cv::cvtColor(image, greyImage, CV_BGR2GRAY);
-    }
-    else
-    {
-        greyImage = image;
-    }
-
-    bool success = findChessboardPoints(greyImage, imageCorners, objectCorners);
+    bool success = findChessboardPoints(image, imageCorners, objectCorners);
 
     cv::drawChessboardCorners(image, boardSize, imageCorners, success);
 
@@ -107,15 +97,26 @@ bool CameraCalib::findChessboardPoints(const cv::Mat &image, std::vector<cv::Poi
     {
         for(int j = 0; j < boardSize.width; j++)
         {
-            objectCorners.push_back(cv::Point3f(i * 1.0, j * 1.0, 0.0f)); //110 = size of one square on the board
+            objectCorners.push_back(cv::Point3f(i, j, 0.0f)); //110 = size of one square on the board
         }
     }
 
-    bool success = cv::findChessboardCorners(image, boardSize, imageCorners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    cv::Mat greyImage, eightBitImage;
+    if(image.type() != CV_8UC1)
+    {
+        image.convertTo(eightBitImage, CV_8U);
+        cv::cvtColor(eightBitImage, greyImage, CV_BGR2GRAY);
+    }
+    else
+    {
+        greyImage = image;
+    }
+
+    bool success = cv::findChessboardCorners(greyImage, boardSize, imageCorners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if(success) {
         cv::cornerSubPix(
-            image,
+            greyImage,
             imageCorners,
             cv::Size(5,5),
             cv::Size(-1,-1),

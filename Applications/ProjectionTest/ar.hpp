@@ -31,8 +31,10 @@ void initializePerspective();
 cv::Matx44f computeMatrix(cv::Mat image);
 void drawScene();
 void drawCameraFrame();
+void drawDetectionResults();
 void drawAugmentedScene();
 void drawCoordinateAxis();
 void drawCubeModel();
+void drawString(GLfloat x, GLfloat y, std::string text, GLfloat scale = 0.1f);
 
 #endif // AR_HPP

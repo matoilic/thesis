@@ -6,13 +6,14 @@ using namespace std;
 
 cv::Size boardSize(9, 6);
 CameraCalib calib(boardSize);
-CameraConfiguration camera(526.58037684199849f, 524.65577209994706f, 318.41744018680112f, 202.96659047014398f);
+CameraConfiguration camera(499.55417f, 518.11182f, 211.2572f, 172.78354f);
 ChessboardPoseEstimator poseEstimator(calib, camera);
 Capture capture;
 
 cv::Mat backgroundImage;
 PoseEstimationResult poseResult;
 cv::Matx44f projectionMatrix;
+cv::Matx44d frustum;
 
 bool isTextureInitialized = false;
 unsigned int textureId;
@@ -40,12 +41,8 @@ void initializeAR()
 
 void processFrame(cv::Mat frame)
 {
-    cv::Mat grayscale;
-
     cv::flip(frame, backgroundImage, 1);
-    cv::cvtColor(backgroundImage, grayscale, CV_BGR2GRAY);
-
-    poseResult = poseEstimator.estimatePose(grayscale);
+    poseResult = poseEstimator.estimatePose(backgroundImage);
 
     resizeWindow(backgroundImage.size().width, backgroundImage.size().height);
     redisplay();
@@ -57,17 +54,89 @@ void initializePerspective()
     //glLoadMatrixf(reinterpret_cast<const GLfloat*>(&projectionMatrixTransposed.val));
 
     if (!backgroundImage.empty()) {
+
         double fovx, fovy, focalLength, aspectRatio;
         cv::Point2d principalPoint;
         cv::calibrationMatrixValues(camera.getIntrinsics(), backgroundImage.size(), 0.0, 0.0, fovx, fovy, focalLength, principalPoint, aspectRatio);
-        gluPerspective(fovy, 1.0/aspectRatio, 0.01, 1000.0);
+        gluPerspective(fovy, 1.0/aspectRatio, 0.0, 1000.0);
+
+/*
+        double w = backgroundImage.cols;
+        double h = backgroundImage.rows;
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        float fy = camera.getFocalLengthY();
+        float f = fy / h;
+        float ratio = w / h;
+        float near = 0.1f;
+        float far = 1000.0f;
+
+        cv::Matx44d proj = cv::Matx44d::zeros();
+        proj(0, 0) = f / ratio;
+        proj(1, 1) = f;
+        proj(3, 3) = (far + near) / (near - far);
+        proj(3, 4) = (2 * near * far) / (near - far);
+        proj(4, 3) = -1.0f;
+
+        cv::Matx44d projT = proj.t();
+        glMultMatrixf(reinterpret_cast<const GLfloat*>(&projT.val));
+*/
+        /*
+        double N = 2.0f;
+        double F = 1000.0f;
+        double L = 0;
+        double R = backgroundImage.cols;
+        double B = 0;
+        double T = backgroundImage.rows;
+
+        cv::Matx44d ortho = cv::Matx44d::zeros();
+        ortho(0, 0) = 2.0/(R-L);
+        ortho(0, 3) = -(R+L)/(R-L);
+        ortho(1, 1) = 2.0/(T-B);
+        ortho(1, 3) = -(T+B)/(T-B);
+        ortho(2, 2) = -2.0/(F-N);
+        ortho(2, 3) = -(F+N)/(F-N);
+        ortho(3, 3) = 1.0;
+
+        cv::Matx44d persp  = cv::Matx44d::zeros();
+        persp(0, 0) = camera.getFocalLengthX();
+        persp(1, 1) = camera.getFocalLengthY();
+        persp(0, 2) = camera.getPrimaryPointX();
+        persp(1, 2) = camera.getPrimaryPointY();
+        persp(2, 2) = -(N+F);
+        persp(2, 3) = -(N*F);
+        persp(3, 2) = 1.0;
+
+        frustum = ortho * persp;
+        cv::Matx44d frustumT = frustum.t();
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glLoadMatrixd(reinterpret_cast<const GLdouble*>(&frustumT.val[0]));
+        */
     }
 }
 
 void drawScene()
 {
     drawCameraFrame();
+    drawDetectionResults();
     drawAugmentedScene();
+}
+
+void drawDetectionResults()
+{
+    float x = poseResult.mvMatrix(0, 3);
+    float y = poseResult.mvMatrix(1, 3);
+    float z = poseResult.mvMatrix(2, 3);
+
+    std::stringstream s;
+    s.precision(2);
+    s << "Translation - x(" << x << ") y(" << y << ") z(" << z << ")";
+
+    drawString(40, 40, s.str());
 }
 
 void drawAugmentedScene()
@@ -75,14 +144,42 @@ void drawAugmentedScene()
     if (poseResult.isObjectPresent)
     {
         // Set the pattern transformation
-        cv::Matx44f transposed = poseResult.mvMatrix.t();
-        glLoadMatrixf(reinterpret_cast<const GLfloat*>(&transposed.val[0]));
+        cv::Matx44d transposed = poseResult.mvMatrix.t();
+        glLoadMatrixd(reinterpret_cast<const GLdouble*>(&transposed.val));
 
         // Render model
         //glRotatef(-90, -1.0, 0.0, 0.0);
-        drawCubeModel();
+        //drawCubeModel();
         drawCoordinateAxis();
     }
+}
+
+void drawString(GLfloat x, GLfloat y, std::string text, GLfloat scale)
+{
+    //begin othogonal projection
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, backgroundImage.cols, 0.0, backgroundImage.rows, 0.0, 1000.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glEnable(GL_COLOR_MATERIAL);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glScalef(scale, scale, 1.0f);
+    glTranslatef(x, y, 0.0f);
+
+    for (int i = 0; i < text.length(); i++) {
+        glutStrokeCharacter(GLUT_STROKE_ROMAN, text.at(i));
+    }
+
+    //end orthogonal projection
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 }
 
 void drawCameraFrame()
@@ -162,6 +259,8 @@ void drawCoordinateAxis()
   static float lineZ[] = {0,0,0,0,0,1};
 
   glLineWidth(2);
+
+  glEnable(GL_COLOR_MATERIAL);
 
   glBegin(GL_LINES);
 
