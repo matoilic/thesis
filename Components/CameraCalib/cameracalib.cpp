@@ -11,6 +11,25 @@ CameraCalib::CameraCalib(cv::Size &bs)
 {
     mustInitUndistort = false;
     boardSize = bs;
+
+    initObjectCorners();
+}
+
+void CameraCalib::initObjectCorners()
+{
+    float size = 1.0f;
+    float xOffsetFactor = -(boardSize.width - 1.0f) / 2.0f;
+    float yOffsetFactor = -(boardSize.height - 1.0f) / 2.0f;
+
+    for(int i = 0; i < boardSize.height; i++)
+    {
+        for(int j = 0; j < boardSize.width; j++)
+        {
+            float x = size * (xOffsetFactor + j);
+            float y = size * (yOffsetFactor + i);
+            objectCorners.push_back(cv::Point3f(x, y, 0.0f));
+        }
+    }
 }
 
 cv::Mat CameraCalib::getDistortionCoeffs()
@@ -93,13 +112,9 @@ bool CameraCalib::findAndDrawChessboardPoints(const cv::Mat &image, std::vector<
 
 bool CameraCalib::findChessboardPoints(const cv::Mat &image, std::vector<cv::Point2f> &imageCorners, std::vector<cv::Point3f> &objectCorners)
 {
-    for(int i = 0; i < boardSize.height; i++)
-    {
-        for(int j = 0; j < boardSize.width; j++)
-        {
-            objectCorners.push_back(cv::Point3f(i, j, 0.0f)); //110 = size of one square on the board
-        }
-    }
+    objectCorners.clear();
+    objectCorners.resize(objectCorners.size());
+    objectCorners.insert(objectCorners.begin(), this->objectCorners.begin(), this->objectCorners.end());
 
     cv::Mat greyImage, eightBitImage;
     if(image.type() != CV_8UC1)

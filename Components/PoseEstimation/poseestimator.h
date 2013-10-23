@@ -8,7 +8,7 @@
 typedef struct
 {
     bool isObjectPresent;
-    cv::Matx44f mvMatrix;
+    cv::Matx44d mvMatrix;
 
 } PoseEstimationResult;
 

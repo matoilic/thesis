@@ -14,6 +14,8 @@ class ARD_EXPORT CameraCalib
 private:
     //board size used for calibration operations
     cv::Size boardSize;
+
+    std::vector<cv::Point3f> objectCorners;
     // the points in world coordinates
     std::vector< std::vector<cv::Point3f> > objectPoints;
     // the point positions in pixels
@@ -31,6 +33,8 @@ public:
      * @param bs the board size used for calibration
      */
     CameraCalib(cv::Size &bs);
+
+    void initObjectCorners();
 
     cv::Mat getIntrinsicsMatrix();
 
