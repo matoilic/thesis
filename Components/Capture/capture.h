@@ -3,7 +3,9 @@
 
 #include <functional>
 #include <thread>
+#include <string>
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/video/video.hpp"
 
 #include "ardoor.h"
 
@@ -22,7 +24,7 @@ private:
 public:
     Capture();
 
-    bool start();
+    bool start(const std::string &inputFile = "");
     void stop();
 
     void setHandler(CaptureHandler handler);

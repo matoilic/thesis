@@ -5,12 +5,12 @@ Capture::Capture()
     isStopped = true;
 }
 
-bool Capture::start()
+bool Capture::start(const std::string &inputFile)
 {
     if (!isStopped)
         return false;
 
-    bool success = capture.open(0);
+    bool success = (!inputFile.empty()) ? capture.open(inputFile) : capture.open(0);
 
     if (success) {
         isStopped = false;
@@ -36,7 +36,7 @@ void Capture::captureLoop()
         if (!success) {
             stop();
         }
-        if (handler) {
+        if (handler && frame.rows > 0 && frame.cols > 0) {
             handler(frame);
         }
     }

@@ -1,8 +1,15 @@
+#include <stdio.h>
+#if (defined WIN32 || defined _WIN32)
+    #include <direct.h>
+#else
+    #include <unistd.h>
+#endif
 #include <iostream>
+#include <iostream>
+#include <sstream>
 #include "ar.hpp"
 
 using namespace std;
-
 
 cv::Size boardSize(9, 6);
 CameraCalib calib(boardSize);
@@ -35,8 +42,15 @@ void printMat(const cv::Matx<T, m, n> &mat)
 
 void initializeAR()
 {
+    char cwd[FILENAME_MAX];
+    getcwd(cwd, sizeof(cwd));
+    std::stringstream inputFilePath;
+    inputFilePath << cwd << "/../../Applications/ProjectionTest/board.avi";
+    std::string inputFile = inputFilePath.str();
+    std::cout << "using " << inputFile << " as video source" << std::endl;
+
     capture.setHandler(processFrame);
-    capture.start();
+    capture.start(inputFile);
 }
 
 void processFrame(cv::Mat frame)

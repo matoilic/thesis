@@ -19,7 +19,12 @@ RCC_DIR = $$DESTDIR/qrc/$$TARGET
 UI_DIR = $$DESTDIR/ui/$$TARGET
 
 LIBS += -L$$DESTDIR
-INCLUDEPATH += $$PWD/Common
+INCLUDEPATH += $$ARDOOR_DIR/Common
+win32 {
+    DEFINES += __STDC_CONSTANT_MACROS
+    DEFINES += snprintf="_snprintf"
+    INCLUDEPATH += $$ARDOOR_DIR/Libraries/msinttypes
+}
 
 debug {
     QMAKE_CXXFLAGS += -DDEBUG=1
@@ -38,7 +43,7 @@ macx {
     QMAKE_CXXFLAGS += -Wno-unused-private-field
     LIBS += -framework IOKit
     LIBS += -stdlib=libc++
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.8
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 }
 
 win32 {
