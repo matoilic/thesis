@@ -1,15 +1,8 @@
-#include <stdio.h>
-#if (defined WIN32 || defined _WIN32)
-    #include <direct.h>
-#else
-    #include <unistd.h>
-#endif
 #include <iostream>
-#include <iostream>
-#include <sstream>
 #include "ar.hpp"
 
 using namespace std;
+
 
 cv::Size boardSize(9, 6);
 CameraCalib calib(boardSize);
@@ -68,68 +61,34 @@ void initializePerspective()
     //glLoadMatrixf(reinterpret_cast<const GLfloat*>(&projectionMatrixTransposed.val));
 
     if (!backgroundImage.empty()) {
-
+        /*
         double fovx, fovy, focalLength, aspectRatio;
         cv::Point2d principalPoint;
         cv::calibrationMatrixValues(camera.getIntrinsics(), backgroundImage.size(), 0.0, 0.0, fovx, fovy, focalLength, principalPoint, aspectRatio);
         gluPerspective(fovy, 1.0/aspectRatio, 0.0, 1000.0);
+        */
 
-/*
-        double w = backgroundImage.cols;
-        double h = backgroundImage.rows;
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        float fy = camera.getFocalLengthY();
-        float f = fy / h;
-        float ratio = w / h;
+        float w = backgroundImage.cols;
+        float h = backgroundImage.rows;
         float near = 0.1f;
         float far = 1000.0f;
 
-        cv::Matx44d proj = cv::Matx44d::zeros();
-        proj(0, 0) = f / ratio;
-        proj(1, 1) = f;
-        proj(3, 3) = (far + near) / (near - far);
-        proj(3, 4) = (2 * near * far) / (near - far);
-        proj(4, 3) = -1.0f;
+        float fx = camera.getFocalLengthX();
+        float fy = camera.getFocalLengthY();
+        float cx = camera.getPrimaryPointX();
+        float cy = camera.getPrimaryPointY();
+        float fovY = 1 / (fy / h * 2);
+        float aspectRatio = w/h * fx/fy;
 
-        cv::Matx44d projT = proj.t();
-        glMultMatrixf(reinterpret_cast<const GLfloat*>(&projT.val));
-*/
-        /*
-        double N = 2.0f;
-        double F = 1000.0f;
-        double L = 0;
-        double R = backgroundImage.cols;
-        double B = 0;
-        double T = backgroundImage.rows;
-
-        cv::Matx44d ortho = cv::Matx44d::zeros();
-        ortho(0, 0) = 2.0/(R-L);
-        ortho(0, 3) = -(R+L)/(R-L);
-        ortho(1, 1) = 2.0/(T-B);
-        ortho(1, 3) = -(T+B)/(T-B);
-        ortho(2, 2) = -2.0/(F-N);
-        ortho(2, 3) = -(F+N)/(F-N);
-        ortho(3, 3) = 1.0;
-
-        cv::Matx44d persp  = cv::Matx44d::zeros();
-        persp(0, 0) = camera.getFocalLengthX();
-        persp(1, 1) = camera.getFocalLengthY();
-        persp(0, 2) = camera.getPrimaryPointX();
-        persp(1, 2) = camera.getPrimaryPointY();
-        persp(2, 2) = -(N+F);
-        persp(2, 3) = -(N*F);
-        persp(3, 2) = 1.0;
-
-        frustum = ortho * persp;
-        cv::Matx44d frustumT = frustum.t();
+        float frustum_height = near * fovY;
+        float frustum_width = frustum_height * aspectRatio;
+        float offset_x = 0;//(w/2 - cx)/w * frustum_width * 2;
+        float offset_y = 0;//(h/2 - cy)/h * frustum_height * 2;
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glLoadMatrixd(reinterpret_cast<const GLdouble*>(&frustumT.val[0]));
-        */
+
+        glFrustum(-frustum_width - offset_x, frustum_width - offset_x, -frustum_height - offset_y, frustum_height - offset_y, near, far);
     }
 }
 
@@ -159,11 +118,11 @@ void drawAugmentedScene()
     {
         // Set the pattern transformation
         cv::Matx44d transposed = poseResult.mvMatrix.t();
-        glLoadMatrixd(reinterpret_cast<const GLdouble*>(&transposed.val));
+        glMultMatrixd(reinterpret_cast<const GLdouble*>(&transposed.val));
 
         // Render model
-        //glRotatef(-90, -1.0, 0.0, 0.0);
-        //drawCubeModel();
+        glRotatef(180, 0.0, 1.0, 0.0);
+        drawCubeModel();
         drawCoordinateAxis();
     }
 }
@@ -268,29 +227,34 @@ void drawCameraFrame()
 
 void drawCoordinateAxis()
 {
-  static float lineX[] = {0,0,0,1,0,0};
-  static float lineY[] = {0,0,0,0,1,0};
-  static float lineZ[] = {0,0,0,0,0,1};
+    float w = boardSize.width;
+    float h = boardSize.height;
+    float w2 = (w+1)/2;
+    float h2 = (h+1)/2;
 
-  glLineWidth(2);
+    static float lineX[] = {-w2,h2,0,w2,h2,0};
+    static float lineY[] = {-w2,h2,0,-w2,-h2,0};
+    static float lineZ[] = {-w2,h2,0,-w2,h2,h2};
 
-  glEnable(GL_COLOR_MATERIAL);
+    glLineWidth(2);
 
-  glBegin(GL_LINES);
+    glEnable(GL_COLOR_MATERIAL);
 
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glVertex3fv(lineX);
-  glVertex3fv(lineX + 3);
+    glBegin(GL_LINES);
 
-  glColor3f(0.0f, 1.0f, 0.0f);
-  glVertex3fv(lineY);
-  glVertex3fv(lineY + 3);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3fv(lineX);
+    glVertex3fv(lineX + 3);
 
-  glColor3f(0.0f, 0.0f, 1.0f);
-  glVertex3fv(lineZ);
-  glVertex3fv(lineZ + 3);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3fv(lineY);
+    glVertex3fv(lineY + 3);
 
-  glEnd();
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3fv(lineZ);
+    glVertex3fv(lineZ + 3);
+
+    glEnd();
 }
 
 
@@ -399,3 +363,4 @@ void drawCubeModel()
 
   glPopAttrib();
 }
+>>>>>>> 447e998369c77bf00b42e56fab85f7d7cc7d61c9

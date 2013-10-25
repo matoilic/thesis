@@ -36,6 +36,8 @@ public:
 
     void initObjectCorners();
 
+    cv::Size getBoardSize();
+
     cv::Mat getIntrinsicsMatrix();
 
     cv::Mat getDistortionCoeffs();
