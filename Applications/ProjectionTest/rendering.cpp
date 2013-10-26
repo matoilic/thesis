@@ -1,7 +1,9 @@
+#include <mutex>
 #include "rendering.hpp"
 
 GLdouble projection[16], inverse[16];
 bool windowInitialized = false;
+std::mutex initMutex;
 
 void initializeGL(int argc, char** argv)
 {
@@ -25,10 +27,12 @@ void initializeGL(int argc, char** argv)
 
 void resizeWindow(int width, int height)
 {
+    initMutex.lock();
     if (!windowInitialized) {
         glutReshapeWindow(width, height);
         windowInitialized = true;
     }
+    initMutex.unlock();
 }
 
 void redisplay()
