@@ -36,8 +36,15 @@ void printMat(const cv::Matx<T, m, n> &mat)
 
 void initializeAR()
 {
+    char cwd[FILENAME_MAX];
+    getcwd(cwd, sizeof(cwd));
+    std::stringstream inputFilePath;
+    inputFilePath << cwd << "/../../Applications/ProjectionTest/board.avi";
+    std::string inputFile = inputFilePath.str();
+    std::cout << "using " << inputFile << " as video source" << std::endl;
+
     capture.setHandler(processFrame);
-    capture.start();
+    capture.start(inputFile);
 }
 
 void processFrame(cv::Mat frame)
@@ -365,3 +372,4 @@ void drawCubeModel()
 
   glPopAttrib();
 }
+>>>>>>> 447e998369c77bf00b42e56fab85f7d7cc7d61c9

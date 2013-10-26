@@ -7,5 +7,6 @@ SUBDIRS = \
 	CameraCalibTest \
         CaptureTest \
 	ProjectionTest \
+        VideoCaptureTest
 
 

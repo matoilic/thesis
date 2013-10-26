@@ -43,16 +43,23 @@
 /* #undef HAVE_DC1394_2 */
 
 /* ffmpeg in Gentoo */
+#if !defined(WIN32)
 #define HAVE_GENTOO_FFMPEG
+#endif
 
 /* FFMpeg video library */
 /* #undef HAVE_FFMPEG */
+/* #define HAVE_FFMPEG */
 
 /* FFMpeg version flag */
+#if !defined(WIN32)
 #define  NEW_FFMPEG
+#endif
 
 /* ffmpeg's libswscale */
+#if !defined(WIN32)
 #define  HAVE_FFMPEG_SWSCALE
+#endif
 
 /* GStreamer multimedia framework */
 /* #undef HAVE_GSTREAMER */

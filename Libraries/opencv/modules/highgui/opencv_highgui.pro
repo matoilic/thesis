@@ -15,8 +15,17 @@ win32 {
         -ladvapi32 \
         -lole32 \
         -lcomctl32 \
-        -lvfw32 \
-        -loleaut32
+        -lvfw32 \        
+        -loleaut32 \
+        #ffmpeg libs
+        -lavcodec \
+        -lavdevice \
+        -lavfilter \
+        -lavformat \
+        -lavutil \
+        -lpostproc \
+        -lswresample \
+        -lswscale
 }
 
 macx {
