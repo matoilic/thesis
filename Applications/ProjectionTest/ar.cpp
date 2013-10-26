@@ -372,4 +372,3 @@ void drawCubeModel()
 
   glPopAttrib();
 }
->>>>>>> 447e998369c77bf00b42e56fab85f7d7cc7d61c9
