@@ -6,7 +6,8 @@ using namespace std;
 
 cv::Size boardSize(9, 6);
 CameraCalib calib(boardSize);
-CameraConfiguration camera(499.55417f, 518.11182f, 211.2572f, 172.78354f);
+cv::Size calibrationSize(1600, 1200);
+CameraConfiguration camera(1726.7347f, 1732.9374f, 736.2678f, 593.4867f, calibrationSize);
 ChessboardPoseEstimator poseEstimator(calib, camera);
 Capture capture;
 
@@ -50,38 +51,34 @@ void processFrame(cv::Mat frame)
 
 void initializePerspective()
 {
-    //cv::Matx44f projectionMatrixTransposed = projectionMatrix.t();
-    //glLoadMatrixf(reinterpret_cast<const GLfloat*>(&projectionMatrixTransposed.val));
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
 
     if (!backgroundImage.empty()) {
-        /*
-        double fovx, fovy, focalLength, aspectRatio;
-        cv::Point2d principalPoint;
-        cv::calibrationMatrixValues(camera.getIntrinsics(), backgroundImage.size(), 0.0, 0.0, fovx, fovy, focalLength, principalPoint, aspectRatio);
-        gluPerspective(fovy, 1.0/aspectRatio, 0.0, 1000.0);
-        */
-
-        float w = backgroundImage.cols;
-        float h = backgroundImage.rows;
         float near = 0.1f;
         float far = 1000.0f;
+        float w = backgroundImage.cols;
+        float h = backgroundImage.rows;
 
-        float fx = camera.getFocalLengthX();
-        float fy = camera.getFocalLengthY();
-        float cx = camera.getPrimaryPointX();
-        float cy = camera.getPrimaryPointY();
-        float fovY = 1 / (fy / h * 2);
-        float aspectRatio = w/h * fx/fy;
+        CameraConfiguration cam = camera.scale(backgroundImage.size());
+        float fx = cam.getFocalLengthX();
+        float fy = cam.getFocalLengthY();
+        float cx = cam.getPrimaryPointX();
+        float cy = cam.getPrimaryPointY();
+        float x0 = cx - w/2;
+        float y0 = cy - h/2;
 
-        float frustum_height = near * fovY;
-        float frustum_width = frustum_height * aspectRatio;
-        float offset_x = 0;//(w/2 - cx)/w * frustum_width * 2;
-        float offset_y = 0;//(h/2 - cy)/h * frustum_height * 2;
+        cv::Matx44f proj = cv::Matx44f::zeros();
+        proj(0, 0) = fx;
+        proj(0, 2) = -x0;
+        proj(1, 1) = fy;
+        proj(1, 2) = -y0;
+        proj(2, 2) = near + far;
+        proj(2, 3) = near * far;
+        proj(3, 2) = -1.0f;
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        glFrustum(-frustum_width - offset_x, frustum_width - offset_x, -frustum_height - offset_y, frustum_height - offset_y, near, far);
+        glOrtho(-w/2, w/2, -h/2, h/2, near, far);
+        glMultMatrixf(proj.t().val);
     }
 }
 
@@ -114,9 +111,8 @@ void drawAugmentedScene()
         glMultMatrixd(reinterpret_cast<const GLdouble*>(&transposed.val));
 
         // Render model
-        glRotatef(180, 0.0, 1.0, 0.0);
-        drawCubeModel();
         drawCoordinateAxis();
+        drawCubeModel();
     }
 }
 
@@ -271,6 +267,19 @@ void drawCubeModel()
   glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
   glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
   glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);
+
+
+  // In the object coordinate system, the up-axis is the y-axis. On the chessboard, the y-axis
+  // is the axis away from the chessboard (to the viewer). We want the object to "stand" on the chessboard
+  // so we rotate the object, so that the both up-axes are aligned.
+  glRotatef(90, 1.0f, 0.0f, 0.0f);
+
+  // We create a 2x2 cube here around the (0, 0) point in the object coordinate system.
+  // Because the chessboard is on the z=0 plane, we have to translate the cube so the lower bounds of the
+  // objekt are on the z=0 plane.
+  glTranslatef(0.0f, 1.0f, 0.0f);
+
+
   glEnable(GL_COLOR_MATERIAL);
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
