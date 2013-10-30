@@ -63,6 +63,9 @@ win32 {
 
     HEADERS += \
         src/win32_platform.h
+
+    LIBS += \
+        -lopengl32
 }
 
 unix:!macx {
