@@ -6,3 +6,4 @@ CONFIG   += ordered
 SUBDIRS = \
     opencv \
    # freeglut
+    glfw

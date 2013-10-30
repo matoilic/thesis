@@ -6,7 +6,6 @@ CONFIG   += ordered
 SUBDIRS = \
 	CameraCalibTest \
         CaptureTest \
-	ProjectionTest \
-        VideoCaptureTest
+        ProjectionTest
 
 

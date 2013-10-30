@@ -31,7 +31,6 @@ debug {
 }
 
 macx {
-    #CONFIG -= app_bundle
     CONFIG += c++11
     QMAKE_CXXFLAGS += -mmacosx-version-min=10.7
     QMAKE_LFLAGS += -mmacosx-version-min=10.7
