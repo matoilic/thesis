@@ -5,6 +5,7 @@ INCLUDEPATH += \
     ../../Components/CameraCalib \
     ../../Components/Capture \
     ../../Components/PoseEstimation \
+    ../../Libraries/glfw/include/ \
 
 
 LIBS += \
@@ -15,15 +16,14 @@ LIBS += \
     -lopencv_calib3d \
     -lopencv_imgproc \
     -lopencv_highgui \
+    -lglfw \
 
 win32 {
     LIBS += -lopengl32
-    LIBS += -lglut32
 }
 
 macx {
     LIBS += -framework OpenGL
-    LIBS += -framework GLUT
     LIBS += -framework Cocoa
 }
 

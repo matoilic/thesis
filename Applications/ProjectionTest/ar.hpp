@@ -17,11 +17,6 @@
 #include "cameraconfiguration.h"
 #include "capture.h"
 #include "chessboardposeestimator.h"
-#if defined(__APPLE__) && defined(__MACH__)
-    #include <GLUT/glut.h>
-#else
-    #include <GL/glut.h>
-#endif
 #include "rendering.hpp"
 
 

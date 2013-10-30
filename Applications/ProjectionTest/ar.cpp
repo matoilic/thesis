@@ -44,16 +44,17 @@ void initializeAR()
     std::cout << "using " << inputFile << " as video source" << std::endl;
 
     capture.setHandler(processFrame);
-    capture.start(inputFile);
+    capture.start(/*inputFile*/);
 }
 
 void processFrame(cv::Mat frame)
 {
-    cv::flip(frame, backgroundImage, 1);
-    poseResult = poseEstimator.estimatePose(backgroundImage);
+    cv::flip(frame, frame, 1);
+    poseResult = poseEstimator.estimatePose(frame);
+
+    frame.copyTo(backgroundImage);
 
     resizeWindow(backgroundImage.size().width, backgroundImage.size().height);
-    redisplay();
 }
 
 void initializePerspective()
@@ -140,9 +141,9 @@ void drawString(GLfloat x, GLfloat y, std::string text, GLfloat scale)
     glScalef(scale, scale, 1.0f);
     glTranslatef(x, y, 0.0f);
 
-    for (int i = 0; i < text.length(); i++) {
-        glutStrokeCharacter(GLUT_STROKE_ROMAN, text.at(i));
-    }
+    //for (int i = 0; i < text.length(); i++) {
+    //    glutStrokeCharacter(GLUT_STROKE_ROMAN, text.at(i));
+    //}
 
     //end orthogonal projection
     glMatrixMode(GL_PROJECTION);

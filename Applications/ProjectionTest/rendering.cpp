@@ -1,56 +1,72 @@
-#include <mutex>
+#include <iostream>
 #include "rendering.hpp"
+#include "ar.hpp"
 
 GLdouble projection[16], inverse[16];
 bool windowInitialized = false;
-std::mutex initMutex;
+GLFWwindow* window;
 
-void initializeGL(int argc, char** argv)
+
+void initializeRendering()
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-    glutInitWindowSize(500, 500);
-    glutInitWindowPosition(50, 50);
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
-    glutCreateWindow("Screen");
-    glutReshapeFunc(reshape);
-    glutDisplayFunc(display);
+    window = glfwCreateWindow(500, 500, "Screen", NULL, NULL);
+    if (!window) {
+        std::cerr << "Failed to open GLFW window" << std::endl;
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
 
-    glutMainLoop();
+    // Set callback functions
+    glfwSetFramebufferSizeCallback(window, reshape);
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    reshape(window, width, height);
+
+    // Initialize OpenGL
+    initializeGL();
+
+    // Main loop
+    while (!glfwWindowShouldClose(window)) {
+        display();
+
+        // Swap buffers
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // Terminate GLFW
+    glfwTerminate();
+
+    exit(EXIT_SUCCESS);
 }
 
 
 void resizeWindow(int width, int height)
 {
-    initMutex.lock();
     if (!windowInitialized) {
-        glutReshapeWindow(width, height);
+        glfwSetWindowSize(window, width, height);
         windowInitialized = true;
     }
-    initMutex.unlock();
 }
 
-void redisplay()
+void initializeGL()
 {
-    glutPostRedisplay();
-}
-
-
-void reshape(int width, int height)
-{
-    glViewport(0, 0, width, height);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    initializePerspective();
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    // Default GL configuration
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
     // Init Lighting
     glEnable(GL_LIGHTING);
@@ -67,6 +83,18 @@ void reshape(int width, int height)
     glLightfv(GL_LIGHT0, GL_POSITION, position);
 }
 
+void reshape(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    initializePerspective();
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -75,6 +103,4 @@ void display()
     glLoadIdentity();
 
     drawScene();
-
-    glutSwapBuffers();
 }

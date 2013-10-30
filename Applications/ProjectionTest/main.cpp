@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     initializeAR();
-    initializeGL(argc, argv);
+    initializeRendering();
     return 0;
 }
 
