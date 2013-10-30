@@ -54,7 +54,7 @@ float CameraConfiguration::getPrimaryPointY()
     return intrinsics(1, 2);
 }
 
-CameraConfiguration& CameraConfiguration::scale(cv::Size imageSize)
+CameraConfiguration* CameraConfiguration::scale(cv::Size imageSize)
 {
     // If the image size of the images used for calibration differs from the one
     // of the captured video frame: scale camera matrix values!
@@ -66,6 +66,6 @@ CameraConfiguration& CameraConfiguration::scale(cv::Size imageSize)
     float cx = getPrimaryPointX() * scaleX;
     float cy = getPrimaryPointY() * scaleY;
 
-    return CameraConfiguration(fx, fy, cx, cy, imageSize);
+    return new CameraConfiguration(fx, fy, cx, cy, imageSize);
 }
 

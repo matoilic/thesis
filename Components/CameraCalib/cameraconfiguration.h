@@ -23,7 +23,7 @@ public:
     float getPrimaryPointX();
     float getPrimaryPointY();
 
-    CameraConfiguration& scale(cv::Size imageSize);
+    CameraConfiguration* scale(cv::Size imageSize);
 
 private:
     cv::Size calibrationSize;

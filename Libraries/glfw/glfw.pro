@@ -19,17 +19,22 @@ SOURCES += \
     src/clipboard.c
 
 macx {
+    CONFIG -= c++11
+    QMAKE_CXXFLAGS -= -stdlib=libc++
+    QMAKE_CXXFLAGS -= -std=c++11
+    QMAKE_CXXFLAGS += -std=c99
+
     SOURCES += \
         src/cocoa_time.c \
         src/cocoa_gamma.c \
 
     OBJECTIVE_SOURCES += \
-        src/nsgl_context.m \
-        src/cocoa_window.m \
-        src/cocoa_monitor.m \
-        src/cocoa_joystick.m \
+        src/cocoa_clipboard.m \
         src/cocoa_init.m \
-        src/cocoa_clipboard.m
+        src/cocoa_monitor.m \
+        src/cocoa_window.m \
+        src/nsgl_context.m \
+        src/cocoa_joystick.m
 
     HEADERS += \
         src/cocoa_platform.h

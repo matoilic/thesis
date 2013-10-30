@@ -67,11 +67,11 @@ void initializePerspective()
         float w = backgroundImage.cols;
         float h = backgroundImage.rows;
 
-        CameraConfiguration cam = camera.scale(backgroundImage.size());
-        float fx = cam.getFocalLengthX();
-        float fy = cam.getFocalLengthY();
-        float cx = cam.getPrimaryPointX();
-        float cy = cam.getPrimaryPointY();
+        CameraConfiguration *cam = camera.scale(backgroundImage.size());
+        float fx = cam->getFocalLengthX();
+        float fy = cam->getFocalLengthY();
+        float cx = cam->getPrimaryPointX();
+        float cy = cam->getPrimaryPointY();
         float x0 = cx - w/2;
         float y0 = cy - h/2;
 
@@ -86,6 +86,8 @@ void initializePerspective()
 
         glOrtho(-w/2, w/2, -h/2, h/2, near, far);
         glMultMatrixf(proj.t().val);
+
+        delete cam;
     }
 }
 

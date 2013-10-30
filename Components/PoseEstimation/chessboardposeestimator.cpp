@@ -11,9 +11,9 @@ PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
 {
     PoseEstimationResult result;
 
-    CameraConfiguration camera = getCamera().scale(image.size());
-    cv::Matx33f M = camera.getIntrinsics();
-    cv::Mat_<float> D = camera.getDistorsion();
+    CameraConfiguration *camera = getCamera().scale(image.size());
+    cv::Matx33f M = camera->getIntrinsics();
+    cv::Mat_<float> D = camera->getDistorsion();
 
     std::vector<cv::Point2f> imageCorners;
     std::vector<cv::Point3f> objectCorners;
@@ -64,5 +64,6 @@ PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
         result.mvMatrix = reverseYZ * Rt;
     }
 
+    delete camera;
     return result;
 }
