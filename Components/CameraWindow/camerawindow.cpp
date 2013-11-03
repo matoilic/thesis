@@ -2,13 +2,9 @@
 #include <GL/glew.h>
 #if defined(__APPLE__)
     #include <OpenGL/gl.h>
-    #include <OpenGL/glext.h>
 #else
-    #include <GL/wglew.h>
     #include <windows.h>
     #include <GL/GL.h>
-    #include <GL/glext.h>
-    #include <GL/wglext.h>
 #endif
 #include <opencv2/highgui/highgui.hpp>
 #include "camerawindow.h"
@@ -107,16 +103,20 @@ void CameraWindow::ensureFramerate()
 
 void CameraWindow::initGL()
 {
-    GLint glew = glewInit();
-    if(!glew) {
-        cerr << "Failed to initialize GLEW" << endl;
-        exit(EXIT_FAILURE);
-    }
-
     if (!glfwInit()) {
         cerr << "Failed to initialize GLFW" << endl;
         exit(EXIT_FAILURE);
     }
+
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RED_BITS, 8);
+    glfwWindowHint(GLFW_GREEN_BITS, 8);
+    glfwWindowHint(GLFW_BLUE_BITS, 8);
+    glfwWindowHint(GLFW_ALPHA_BITS, 8);
+    glfwWindowHint(GLFW_DEPTH_BITS, 32);
+    #ifdef DEBUG
+       //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    #endif
 
     window = glfwCreateWindow(100, 100, "", NULL, NULL);
     if (!window) {
@@ -127,6 +127,14 @@ void CameraWindow::initGL()
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
+    glewExperimental = GL_TRUE;
+    GLint glew = glewInit();
+    if(glew != GLEW_OK) {
+        cerr << "Failed to initialize GLEW" << endl;
+        cerr << glewGetErrorString(glew) << endl;
+        exit(EXIT_FAILURE);
+    }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -206,13 +214,6 @@ void CameraWindow::initShader()
 
 void CameraWindow::initWindow(int width, int height)
 {
-    glfwWindowHint(GLFW_RED_BITS, 8);
-    glfwWindowHint(GLFW_GREEN_BITS, 8);
-    glfwWindowHint(GLFW_BLUE_BITS, 8);
-    glfwWindowHint(GLFW_ALPHA_BITS, 8);
-    glfwWindowHint(GLFW_DEPTH_BITS, 32);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-
     GLfloat fieldOfView = 45.0f;
     GLfloat zNear = 0.1f;
     GLfloat zFar = 200.0f;
@@ -273,7 +274,8 @@ void CameraWindow::startCapturing(const string &inputFile)
     capture.read(currentFrame);
     initGL();
     initWindow(currentFrame.cols, currentFrame.rows);
-    //initShader();
+    glfwShowWindow(window);
+    initShader();
 
     auto threadFunction = std::bind(&CameraWindow::captureLoop, this);
     captureThread = std::thread(threadFunction);

@@ -85,11 +85,11 @@
 #define _GLFW_USE_MENUBAR
 
 // Define this to 1 if using OpenGL as the client library
-#define _GLFW_USE_OPENGL
+/* #define _GLFW_USE_OPENGL */
 // Define this to 1 if using OpenGL ES 1.1 as the client library
 /* #undef _GLFW_USE_GLESV1 */
 // Define this to 1 if using OpenGL ES 2.0 as the client library
-/* #define _GLFW_USE_GLESV2 */
+#define _GLFW_USE_GLESV2
 
 // The GLFW version as used by glfwGetVersionString
 #define _GLFW_VERSION_FULL "3.0.3"
