@@ -6,5 +6,6 @@ CONFIG   += ordered
 SUBDIRS = \
     CameraCalib \
     Capture \
-    PoseEstimation
+    PoseEstimation \
+    CameraWindow
 

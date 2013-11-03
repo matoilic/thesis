@@ -32,16 +32,17 @@ macx {
     LIBS += \
         -framework OpenGL \
         -framework GLUT \
-        -framework QTKit \
+        #-framework QTKit \
         -framework Foundation \
         -framework CoreVideo \
         -framework CoreMedia \
         -framework CoreFoundation \
-        #-framework AVFoundation \
+        -framework AVFoundation \
         -framework ImageCaptureCore \
         -framework ImageIO \
         -framework CoreServices \
-        -framework AppKit
+        -framework AppKit \
+        -framework Cocoa
 }
 
 LIBS += \
@@ -86,15 +87,15 @@ win32 {
 }
 
 macx {
-    HEADERS += \
-        src/window_QT.h \
+    #HEADERS += \
+    #    src/window_QT.h \
 
-    SOURCES += \
-        src/window_QT.cpp \
+    #SOURCES += \
+    #    src/window_QT.cpp \
 
     OBJECTIVE_SOURCES += \
-        src/cap_qtkit.mm \
-        #src/cap_avfoundation.mm \
+        #src/cap_qtkit.mm \
+        src/cap_avfoundation.mm \
         #src/window_cocoa.mm
 }
 
@@ -103,7 +104,7 @@ unix:!macx {
         src/window_gtk.cpp
 }
 
-SOURCES += \
+SOURCES += \    
     src/window.cpp \
     src/precomp.cpp \
     src/loadsave.cpp \

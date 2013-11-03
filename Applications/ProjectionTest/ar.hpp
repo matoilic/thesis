@@ -9,6 +9,9 @@
 #endif
 #include <iostream>
 #include <sstream>
+#if defined(__APPLE__)
+    #include <OpenGL/glext.h>
+#endif
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>

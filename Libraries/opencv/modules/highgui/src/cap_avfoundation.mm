@@ -544,7 +544,7 @@ bool CvCaptureCAM::setProperty(int property_id, double value) {
             }
             return true;
 
-        case CV_CAP_PROP_IOS_DEVICE_FOCUS:
+        /*case CV_CAP_PROP_IOS_DEVICE_FOCUS:
             if ([mCaptureDevice isFocusModeSupported:(int)value]){
                 NSError* error = nil;
                 [mCaptureDevice lockForConfiguration:&error];
@@ -607,7 +607,7 @@ bool CvCaptureCAM::setProperty(int property_id, double value) {
                 return true;
             }else {
                 return false;
-            }
+            }*/
 
         case DISABLE_AUTO_RESTART:
             disableAutoRestart = value;
