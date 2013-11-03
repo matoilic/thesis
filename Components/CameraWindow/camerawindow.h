@@ -3,18 +3,20 @@
 
 #include <vector>
 #include <thread>
+#include <mutex>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <GLFW/glfw3.h>
+#include "ardoor.h"
 
 using namespace std;
 
 typedef function<void(cv::Mat&)> FrameProcessor;
 
-class CameraWindow
+class ARD_EXPORT CameraWindow
 {
     cv::VideoCapture capture;
-    std::thread captureThread;
+    thread captureThread;
     cv::Mat currentFrame;
     int desiredFrameRate;
     double frameDrawTime;
@@ -22,8 +24,8 @@ class CameraWindow
     double frameStartTime;
     bool isStopped;
     bool needRedisplay;
-    std::vector<FrameProcessor> processors;
-    std::mutex frameLock;
+    vector<FrameProcessor> processors;
+    mutex frameLock;
     GLFWwindow* window;
 
     void captureLoop();

@@ -1,8 +1,13 @@
 include(../Component.pri)
 include(../../Libraries/opencv/opencv_includepath.pri)
 
+TEMPLATE = lib
+
+CONFIG += shared dll
+
 INCLUDEPATH += \
     ../../Libraries/glfw/include \
+    ../../Libraries/glfw/deps \
     ../../Libraries/glew/include
 
 LIBS += \
@@ -18,6 +23,9 @@ HEADERS += \
     camerawindow.h
 
 macx {
-    LIBS += \
-        -framework OpenGL
+    LIBS += -framework OpenGL
+}
+
+win32 {
+    LIBS += -lopengl32
 }

@@ -5,10 +5,11 @@
     #include <OpenGl/gl.h>
     #include <OpenGL/glext.h>
 #else
-    #include <gl.h>
-    #include <glext.h>
+    #include <GL/gl.h>
+    #include <GL/glext.h>
 #endif
 #include <thread>
+#include <mutex>
 #include "capture.h"
 
 using namespace std;

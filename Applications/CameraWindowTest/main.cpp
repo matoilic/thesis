@@ -15,7 +15,7 @@ int main()
     char cwd[FILENAME_MAX];
     getcwd(cwd, sizeof(cwd));
     std::stringstream inputFilePath;
-    inputFilePath << cwd << "/../../Applications/ProjectionTest/board.mov";
+    inputFilePath << cwd << "/../../Applications/ProjectionTest/board.avi";
     std::string inputFile = inputFilePath.str();
     std::cout << "using " << inputFile << " as video source" << std::endl;
 

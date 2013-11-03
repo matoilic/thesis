@@ -1,4 +1,15 @@
 #include <iostream>
+#include <GL/glew.h>
+#if defined(__APPLE__)
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glext.h>
+#else
+    #include <GL/wglew.h>
+    #include <windows.h>
+    #include <GL/GL.h>
+    #include <GL/glext.h>
+    #include <GL/wglext.h>
+#endif
 #include <opencv2/highgui/highgui.hpp>
 #include "camerawindow.h"
 
@@ -38,23 +49,43 @@ void CameraWindow::draw(const cv::Mat &frame)
 
     glEnable(GL_TEXTURE_2D);
 
-    glPixelStorei(GL_PACK_ALIGNMENT, 3);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 3);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glBegin(GL_QUADS);
-        glTexCoord2f(1, 1);
-        glVertex2f(-width / 2, height / 2);
-        glTexCoord2f(0, 1);
-        glVertex2f(width / 2, height / 2);
-        glTexCoord2f(0, 0);
-        glVertex2f(width / 2, -height / 2);
-        glTexCoord2f(1, 0);
-        glVertex2f(-width / 2, -height / 2);
-    glEnd();
+    const GLfloat bgTextureVertices[] = { 0, 0, width, 0, 0, height, width, height };
+    const GLfloat bgTextureCoords[]   = { 0, 1, 1, 1, 0, 0, 1, 0 };
 
-    glDeleteTextures(1, &texture);
+    //begin othogonal projection
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, width, 0.0, height, 0.01, 1000.0);
 
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glTranslatef(0.0, 0.0, -1000.0);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Update attribute values.
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glVertexPointer(2, GL_FLOAT, 0, bgTextureVertices);
+    glTexCoordPointer(2, GL_FLOAT, 0, bgTextureCoords);
+
+    glColor4f(1,1,1,1);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisable(GL_TEXTURE_2D);
+
+    //end orthogonal projection
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 
     glFlush();
 }
@@ -76,6 +107,12 @@ void CameraWindow::ensureFramerate()
 
 void CameraWindow::initGL()
 {
+    GLint glew = glewInit();
+    if(!glew) {
+        cerr << "Failed to initialize GLEW" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     if (!glfwInit()) {
         cerr << "Failed to initialize GLFW" << endl;
         exit(EXIT_FAILURE);
@@ -110,6 +147,24 @@ void CameraWindow::initGL()
     glLoadIdentity();
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_NORMALIZE);
+    glShadeModel(GL_SMOOTH);
+
+    GLfloat ambient[]  = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat diffuse[]  = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
 }
 
 void CameraWindow::initShader()
@@ -156,6 +211,7 @@ void CameraWindow::initWindow(int width, int height)
     glfwWindowHint(GLFW_BLUE_BITS, 8);
     glfwWindowHint(GLFW_ALPHA_BITS, 8);
     glfwWindowHint(GLFW_DEPTH_BITS, 32);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
     GLfloat fieldOfView = 45.0f;
     GLfloat zNear = 0.1f;
@@ -175,17 +231,20 @@ void CameraWindow::initWindow(int width, int height)
 GLuint CameraWindow::matToTexture(const cv::Mat &mat)
 {
     GLuint texture;
+    int width = mat.cols, height = mat.rows;
+
     glGenTextures(1, &texture);
 
-    glTexImage2D(GL_TEXTURE_2D,     // Type of texture
-                 0,                 // Pyramid level (for mip-mapping) - 0 is the top level
-                 GL_RGB,            // Internal colour format to convert to
-                 mat.cols,          // Image width  i.e. 640 for Kinect in standard mode
-                 mat.rows,          // Image height i.e. 480 for Kinect in standard mode
-                 0,                 // Border width in pixels (can either be 1 or 0)
-                 GL_BGR, // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
-                 GL_UNSIGNED_BYTE,  // Image data type
-                 mat.ptr());        // The actual image data itself
+    glPixelStorei(GL_PACK_ALIGNMENT, 3);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 3);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    if (mat.channels() == 3)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, mat.data);
+    else if(mat.channels() == 4)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, mat.data);
+    else if (mat.channels() == 1)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, mat.data);
 
     return texture;
 }
@@ -196,8 +255,6 @@ void CameraWindow::startCapturing(const string &inputFile)
         return;
 
     isStopped = false;
-    initGL();
-    initShader();
 
     bool success = (inputFile.empty()) ? capture.open(0) : capture.open(inputFile);
 
@@ -214,7 +271,9 @@ void CameraWindow::startCapturing(const string &inputFile)
 
     //grab first frame for window initializaiton
     capture.read(currentFrame);
+    initGL();
     initWindow(currentFrame.cols, currentFrame.rows);
+    //initShader();
 
     auto threadFunction = std::bind(&CameraWindow::captureLoop, this);
     captureThread = std::thread(threadFunction);

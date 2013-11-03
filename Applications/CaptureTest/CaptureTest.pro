@@ -3,7 +3,9 @@ include(../../Libraries/opencv/opencv_includepath.pri)
 
 INCLUDEPATH += \
     ../../Components/Capture \
-    ../../Libraries/glfw/include
+    ../../Libraries/glfw/include \
+    ../../Libraries/glfw/deps \
+    ../../Libraries/glew/include
 
 LIBS += \
     -lCameraCalib \
@@ -13,8 +15,11 @@ LIBS += \
     -lglfw \
 
 macx {
-    LIBS += \
-        -framework OpenGL
+    LIBS += -framework OpenGL
+}
+
+win32 {
+    LIBS += -lopengl32
 }
 
 SOURCES += \
