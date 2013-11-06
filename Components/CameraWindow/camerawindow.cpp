@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 #include <GL/glew.h>
 #if defined(__APPLE__)
     #include <OpenGL/gl.h>
@@ -10,6 +11,11 @@
 #include "camerawindow.h"
 
 using namespace std;
+
+void onGlfwError(int error, const char* description)
+{
+    fputs(description, stderr);
+}
 
 CameraWindow::CameraWindow(int frameRate)
 {
@@ -23,7 +29,13 @@ void CameraWindow::captureLoop()
     bool success;
 
     while(!glfwWindowShouldClose(window) && !isStopped) {
+        if(needRedisplay)  {
+            this_thread::yield();
+            continue;
+        }
+
         frameLock.lock();
+
         success = capture.read(currentFrame);
         if (success) {
             needRedisplay = true;
@@ -32,6 +44,8 @@ void CameraWindow::captureLoop()
             frameLock.unlock();
             break;
         }
+        cout << "captured" << endl;
+        this_thread::yield();
     }
 }
 
@@ -98,6 +112,8 @@ void CameraWindow::ensureFramerate()
     if (frameDrawTime < allowedFrameTime) {
         sleepTime = (long)((allowedFrameTime - frameDrawTime) * 1000);
         this_thread::sleep_for(chrono::milliseconds(sleepTime));
+    } else {
+        this_thread::yield();
     }
 }
 
@@ -108,14 +124,17 @@ void CameraWindow::initGL()
         exit(EXIT_FAILURE);
     }
 
+    glfwSetErrorCallback(onGlfwError);
+
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RED_BITS, 8);
     glfwWindowHint(GLFW_GREEN_BITS, 8);
     glfwWindowHint(GLFW_BLUE_BITS, 8);
     glfwWindowHint(GLFW_ALPHA_BITS, 8);
     glfwWindowHint(GLFW_DEPTH_BITS, 32);
+    glfwWindowHint(GLFW_SAMPLES, 4);
     #ifdef DEBUG
-       //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+       glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     #endif
 
     window = glfwCreateWindow(100, 100, "", NULL, NULL);
@@ -149,7 +168,6 @@ void CameraWindow::initGL()
     glEnable(GL_DEPTH_TEST);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glEnable(GL_CULL_FACE);
-    glfwSwapInterval(1);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -272,31 +290,29 @@ void CameraWindow::startCapturing(const string &inputFile)
 
     //grab first frame for window initializaiton
     capture.read(currentFrame);
+    needRedisplay = true;
     initGL();
     initWindow(currentFrame.cols, currentFrame.rows);
-    glfwShowWindow(window);
     initShader();
 
     auto threadFunction = std::bind(&CameraWindow::captureLoop, this);
-    captureThread = std::thread(threadFunction);
+    //captureThread = std::thread(threadFunction);
 
-    while (!glfwWindowShouldClose(window) && !isStopped) {
+    while (!glfwWindowShouldClose(window) && !isStopped) {        
         frameStartTime = glfwGetTime();
+        glfwPollEvents();
 
         if(needRedisplay) {
             frameLock.lock();
-
             draw(currentFrame);
             glfwSwapBuffers(window);
-            glfwPollEvents();
             needRedisplay = false;
-
             frameLock.unlock();
         } else {
             glfwWaitEvents();
         }
 
-        //ensureFramerate();
+        ensureFramerate();
     }
 
     stopCapturing();
