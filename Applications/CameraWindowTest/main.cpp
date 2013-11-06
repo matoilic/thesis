@@ -24,6 +24,6 @@ int main()
     std::string inputFile = inputFilePath.str();
     std::cout << "using " << inputFile << " as video source" << std::endl;
 
-    window.startCapturing(inputFile);
+    window.startCapturing(/*inputFile*/);
 }
 

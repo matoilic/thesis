@@ -8,6 +8,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <GLFW/glfw3.h>
 #include "ardoor.h"
+#define GET_GL_ERROR CameraWindow::getGlError(__FILE__, __LINE__, false)
 
 using namespace std;
 
@@ -37,6 +38,7 @@ class ARD_EXPORT CameraWindow
     GLuint matToTexture(const cv::Mat &mat);
 public:
     CameraWindow(int frameRate);
+    static void getGlError(char* file, int line, bool quit);
     void startCapturing(const string &inputFile = "");
     void stopCapturing();
 };

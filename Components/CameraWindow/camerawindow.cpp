@@ -44,7 +44,7 @@ void CameraWindow::captureLoop()
             frameLock.unlock();
             break;
         }
-        cout << "captured" << endl;
+
         this_thread::yield();
     }
 }
@@ -84,7 +84,7 @@ void CameraWindow::draw(const cv::Mat &frame)
     glVertexPointer(2, GL_FLOAT, 0, bgTextureVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, bgTextureCoords);
 
-    glColor4f(1,1,1,1);
+    glColor4f(1, 1, 1, 1);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -96,8 +96,6 @@ void CameraWindow::draw(const cv::Mat &frame)
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
-
-    glFlush();
 }
 
 void CameraWindow::ensureFramerate()
@@ -253,9 +251,6 @@ GLuint CameraWindow::matToTexture(const cv::Mat &mat)
     int width = mat.cols, height = mat.rows;
 
     glGenTextures(1, &texture);
-
-    glPixelStorei(GL_PACK_ALIGNMENT, 3);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 3);
     glBindTexture(GL_TEXTURE_2D, texture);
 
     if (mat.channels() == 3)
@@ -293,19 +288,20 @@ void CameraWindow::startCapturing(const string &inputFile)
     needRedisplay = true;
     initGL();
     initWindow(currentFrame.cols, currentFrame.rows);
-    initShader();
+    //initShader();
 
     auto threadFunction = std::bind(&CameraWindow::captureLoop, this);
-    //captureThread = std::thread(threadFunction);
+    captureThread = std::thread(threadFunction);
 
     while (!glfwWindowShouldClose(window) && !isStopped) {        
         frameStartTime = glfwGetTime();
-        glfwPollEvents();
 
         if(needRedisplay) {
             frameLock.lock();
             draw(currentFrame);
+            GET_GL_ERROR;
             glfwSwapBuffers(window);
+            glfwPollEvents();
             needRedisplay = false;
             frameLock.unlock();
         } else {
@@ -321,8 +317,50 @@ void CameraWindow::startCapturing(const string &inputFile)
 void CameraWindow::stopCapturing()
 {
     isStopped = true;
-    captureThread.join();
+    //captureThread.join();
     capture.release();
     glfwDestroyWindow(window);
     glfwTerminate();
+}
+
+void CameraWindow::getGlError(char* file, int line, bool quit)
+{
+   #if defined(DEBUG) || defined(_DEBUG)
+   GLenum err;
+   if ((err = glGetError()) != GL_NO_ERROR)
+   {  string errStr;
+         switch(err)
+      {  case GL_INVALID_ENUM:
+            errStr = "GL_INVALID_ENUM"; break;
+         case GL_INVALID_VALUE:
+            errStr = "GL_INVALID_VALUE"; break;
+         case GL_INVALID_OPERATION:
+            errStr = "GL_INVALID_OPERATION"; break;
+         case GL_INVALID_FRAMEBUFFER_OPERATION:
+            errStr = "GL_INVALID_FRAMEBUFFER_OPERATION"; break;
+         case GL_OUT_OF_MEMORY:
+            errStr = "GL_OUT_OF_MEMORY"; break;
+         default: errStr = "Unknown error";
+      }
+
+      #ifdef SL_OS_ANDROID
+      __android_log_print(ANDROID_LOG_INFO, "SLProject",
+                          "OpenGL Error in %s, line %d: %s\n",
+                          file, line, errStr.c_str());
+      #else
+      fprintf(stderr,
+              "OpenGL Error in %s, line %d: %s\n",
+              file, line, errStr.c_str());
+      #endif
+
+      if (quit)
+      {
+         #ifdef SL_MEMLEAKDETECT       // set in SL.h for debug config only
+         // turn off leak checks on forced exit
+         //new_autocheck_flag = false;
+         #endif
+         exit(1);
+      }
+   }
+   #endif
 }
