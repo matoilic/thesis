@@ -5,7 +5,9 @@ INCLUDEPATH += \
     ../../Components/CameraCalib \
     ../../Components/Capture \
     ../../Components/PoseEstimation \
-    ../../Libraries/glfw/include/ \
+    ../../Libraries/glfw/include \
+    ../../Libraries/glfw/deps \
+    ../../Libraries/glew/include
 
 
 LIBS += \
@@ -17,6 +19,7 @@ LIBS += \
     -lopencv_imgproc \
     -lopencv_highgui \
     -lglfw \
+    -lglew
 
 win32 {
     LIBS += -lopengl32
@@ -30,9 +33,10 @@ macx {
 SOURCES += \
     rendering.cpp \
     ar.cpp \
-    main.cpp
+    main.cpp \
+    glUtils.cpp
 
 HEADERS += \
     rendering.hpp \
-    ar.hpp
-
+    ar.hpp \
+    glUtils.hpp

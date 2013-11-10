@@ -1,4 +1,5 @@
 #include <iostream>
+#include "glUtils.hpp"
 #include "rendering.hpp"
 #include "ar.hpp"
 
@@ -28,6 +29,16 @@ void initializeRendering()
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
+
+    glewExperimental = GL_TRUE;
+    GLint glew = glewInit();
+    if(glew != GLEW_OK) {
+        cerr << "Failed to initialize GLEW" << endl;
+        cerr << glewGetErrorString(glew) << endl;
+        exit(EXIT_FAILURE);
+    }
+
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -60,47 +71,35 @@ void resizeWindow(int width, int height)
     }
 }
 
-void initializeGL()
-{
-    // Default GL configuration
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    // Init Lighting
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    // Create light components
-    GLfloat ambientLight[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-    GLfloat diffuseLight[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-    GLfloat position[] = { 0.0f, 0.0f, 2.0f, 1.0f };
-
-    // Assign created components to GL_LIGHT0
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-    glLightfv(GL_LIGHT0, GL_POSITION, position);
-}
-
 void reshape(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
     initializePerspective();
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 }
 
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
     drawScene();
+}
+
+cv::Matx44d ortho(double left, double right, double bottom, double top, double near, double far)
+{
+    cv::Matx44d ortho = cv::Matx44d::eye();
+    ortho(0, 0) = 2/(right-left);
+    ortho(0, 3) = -(right+left)/(right-left);
+    ortho(1, 1) = 2/(top-bottom);
+    ortho(1, 3) = -(top+bottom)/(top-bottom);
+    ortho(2, 2) = -2/(far-near);
+    ortho(2, 3) = -(far+near)/(far-near);
+    return ortho;
+}
+
+cv::Matx44d translate(double x, double y, double z)
+{
+    cv::Matx44d translate = cv::Matx44d::eye();
+    translate(0, 3) = x;
+    translate(1, 3) = y;
+    translate(2, 3) = z;
+    return translate;
 }

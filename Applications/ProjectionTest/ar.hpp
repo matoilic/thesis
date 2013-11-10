@@ -1,6 +1,8 @@
 #ifndef AR_HPP
 #define AR_HPP
 
+#include "glUtils.hpp"
+
 #include <stdio.h>
 #if (defined WIN32 || defined _WIN32)
     #include <direct.h>
@@ -22,6 +24,7 @@
 #include "chessboardposeestimator.h"
 #include "rendering.hpp"
 
+#define SHADER_PATH "../Data/Shader"
 
 void initializeAR();
 void processFrame(cv::Mat frame);
