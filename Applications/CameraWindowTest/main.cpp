@@ -6,6 +6,12 @@
 #endif
 #include "camerawindow.h"
 
+#if defined(__APPLE__)
+#define VIDEO_FORMAT "mov"
+#else
+#define VIDEO_FORMAT "avi"
+#endif
+
 using namespace std;
 
 int main()
@@ -15,12 +21,7 @@ int main()
     char cwd[FILENAME_MAX];
     getcwd(cwd, sizeof(cwd));
     std::stringstream inputFilePath;
-    inputFilePath << cwd << "/../../Applications/ProjectionTest/board.";
-    if(__APPLE__) {
-        inputFilePath << "mov";
-    } else {
-        inputFilePath << "avi";
-    }
+    inputFilePath << cwd << "/../../Applications/ProjectionTest/board." << VIDEO_FORMAT;
     std::string inputFile = inputFilePath.str();
     std::cout << "using " << inputFile << " as video source" << std::endl;
 
