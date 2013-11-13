@@ -28,8 +28,8 @@ GLfloat vboSquareVertices;
 GLuint vboSquareIndices;
 GLfloat vboTexCoords;
 
-cv::Matx44d modelViewMatrix = cv::Matx44d::eye();
-cv::Matx44d projectionMatrix = cv::Matx44d::eye();
+cv::Matx44f modelViewMatrix = cv::Matx44f::eye();
+cv::Matx44f projectionMatrix = cv::Matx44f::eye();
 
 
 template<typename T, int m, int n>
@@ -129,7 +129,7 @@ void initializePerspective()
 {
     std::cout << "initializePerspective()" << std::flush << std::endl;
 
-    projectionMatrix = cv::Matx44d::eye();
+    projectionMatrix = cv::Matx44f::eye();
 
     if (!backgroundImage.empty()) {
         float near = 0.1f;
@@ -145,7 +145,7 @@ void initializePerspective()
         float x0 = cx - w/2;
         float y0 = cy - h/2;
 
-        cv::Matx44d proj = cv::Matx44d::zeros();
+        cv::Matx44f proj = cv::Matx44f::zeros();
         proj(0, 0) = fx;
         proj(0, 2) = -x0;
         proj(1, 1) = fy;
@@ -155,7 +155,7 @@ void initializePerspective()
         proj(3, 2) = -1.0f;
 
         projectionMatrix = ortho(-w/2, w/2, -h/2, h/2, near, far);
-        projectionMatrix = projectionMatrix * proj;
+        projectionMatrix = proj * projectionMatrix;
 
         delete cam;
     }
@@ -163,7 +163,7 @@ void initializePerspective()
 
 void drawScene()
 {
-    modelViewMatrix = cv::Matx44d::eye();
+    modelViewMatrix = cv::Matx44f::eye();
 
     drawCameraFrame();
     drawDetectionResults();

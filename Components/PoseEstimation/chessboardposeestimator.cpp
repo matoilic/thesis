@@ -21,25 +21,25 @@ PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
     result.isObjectPresent = calibration.findAndDrawChessboardPoints(image, imageCorners, objectCorners);
     if (result.isObjectPresent)
     {
-        cv::Vec<double, 3> R;
-        cv::Vec<double, 3> T;
+        cv::Vec<float, 3> R;
+        cv::Vec<float, 3> T;
 
         cv::Mat rvec, tvec;
         cv::solvePnP(cv::Mat(objectCorners), cv::Mat(imageCorners), M, D, rvec, tvec); // Calculate the Rotation and Translation vector
 
-        rvec.convertTo(R, CV_64FC1);
-        tvec.convertTo(T, CV_64FC1);
+        rvec.convertTo(R, CV_32FC1);
+        tvec.convertTo(T, CV_32FC1);
 
         std::cout.precision(2);
         std::cout << "rvec = [" << R(0) << ", " << R(1) << ", " << R(2) << "]   ";
         std::cout << "tvec = [" << T(0) << ", " << T(1) << ", " << T(2) << "]   ";
         std::cout << std::endl;
 
-        cv::Matx33d rotMat;
+        cv::Matx33f rotMat;
         cv::Rodrigues(R, rotMat);
 
         // Build combined rotation and translation matrix
-        cv::Matx44d Rt = cv::Matx44d::eye();
+        cv::Matx44f Rt = cv::Matx44f::eye();
 
         Rt(0, 0) = rotMat(0, 0);
         Rt(0, 1) = rotMat(0, 1);
@@ -57,7 +57,7 @@ PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
         Rt(2, 3) = T(2);
 
         // OpenGL has Y and Z axes reversed
-        cv::Matx44d reverseYZ = cv::Matx44d::eye();
+        cv::Matx44f reverseYZ = cv::Matx44f::eye();
         reverseYZ(1, 1) = -1.0;
         reverseYZ(2, 2) = -1.0;
 

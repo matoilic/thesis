@@ -3,7 +3,6 @@
 #include "rendering.hpp"
 #include "ar.hpp"
 
-GLdouble projection[16], inverse[16];
 bool windowInitialized = false;
 GLFWwindow* window;
 
@@ -85,7 +84,7 @@ void display()
     drawScene();
 }
 
-cv::Matx44f ortho(double left, double right, double bottom, double top, double near, double far)
+cv::Matx44f ortho(float left, float right, float bottom, float top, float near, float far)
 {
     cv::Matx44f ortho = cv::Matx44f::eye();
     ortho(0, 0) = 2/(right-left);
@@ -97,7 +96,7 @@ cv::Matx44f ortho(double left, double right, double bottom, double top, double n
     return ortho;
 }
 
-cv::Matx44f translate(double x, double y, double z)
+cv::Matx44f translate(float x, float y, float z)
 {
     cv::Matx44f translate = cv::Matx44f::eye();
     translate(0, 3) = x;

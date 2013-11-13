@@ -14,7 +14,7 @@ void reshape(GLFWwindow* window, int width, int height);
 void display();
 void drawAxes();
 
-cv::Matx44f ortho(double left, double right, double bottom, double top, double near, double far);
-cv::Matx44f translate(double x, double y, double z);
+cv::Matx44f ortho(float left, float right, float bottom, float top, float near, float far);
+cv::Matx44f translate(float x, float y, float z);
 
 #endif // RENDERING_HPP
