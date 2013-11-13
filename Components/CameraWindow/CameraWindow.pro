@@ -17,10 +17,14 @@ LIBS += \
     -lglew
 
 SOURCES += \
-    camerawindow.cpp
+    camerawindow.cpp \
+    glUtils.cpp \
+    matgen.cpp
 
 HEADERS += \
-    camerawindow.h
+    camerawindow.h \
+    glUtils.hpp \
+    matgen.h
 
 macx {
     LIBS += -framework OpenGL

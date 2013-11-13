@@ -32,12 +32,12 @@ macx {
     LIBS += \
         -framework OpenGL \
         -framework GLUT \
-        #-framework QTKit \
+        -framework QTKit \
         -framework Foundation \
         -framework CoreVideo \
         -framework CoreMedia \
         -framework CoreFoundation \
-        -framework AVFoundation \
+        #-framework AVFoundation \
         -framework ImageCaptureCore \
         -framework ImageIO \
         -framework CoreServices \
@@ -94,8 +94,8 @@ macx {
     #    src/window_QT.cpp \
 
     OBJECTIVE_SOURCES += \
-        #src/cap_qtkit.mm \
-        src/cap_avfoundation.mm \
+        src/cap_qtkit.mm \
+        #src/cap_avfoundation.mm \
         #src/window_cocoa.mm
 }
 

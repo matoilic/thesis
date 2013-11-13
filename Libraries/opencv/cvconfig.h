@@ -122,15 +122,15 @@
 
 /* QuickTime video libraries */
 /* #undef HAVE_QUICKTIME */
-/*#if defined(__APPLE__)
+#if defined(__APPLE__)
 #define HAVE_QUICKTIME
-#endif*/
+#endif
 
 /* AVFoundation video libraries */
 /* #undef HAVE_AVFOUNDATION */
-#if defined(__APPLE__)
+/*#if defined(__APPLE__)
 #define HAVE_AVFOUNDATION
-#endif
+#endif*/
     
 /* TIFF codec */
 #define HAVE_TIFF

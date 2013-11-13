@@ -16,7 +16,7 @@ typedef function<void(cv::Mat&)> FrameProcessor;
 
 class ARD_EXPORT CameraWindow
 {
-    cv::VideoCapture capture;
+    cv::VideoCapture* capture;
     thread captureThread;
     cv::Mat currentFrame;
     int desiredFrameRate;
@@ -28,14 +28,32 @@ class ARD_EXPORT CameraWindow
     vector<FrameProcessor> processors;
     mutex frameLock;
     GLFWwindow* window;
+    GLuint shaderVertexId;
+    GLuint shaderFragmentId;
+    GLuint shaderProgramId;
 
+    GLuint backgroundVboVertices;
+    GLuint backgroundVboIndices;
+    GLuint backgroundVboTexture;
+    GLuint backgroundNumIndices;
+    GLuint backroundTextureId;
+
+    //variable locations and identifiers within the current program
+    GLint a_position;
+    GLint a_normal;
+    GLint a_texCoord;
+    GLint u_mvMatrix;
+    GLint u_mvpMatrix;
+    GLint u_nMatrix;
+    GLint u_texture0;
+
+    void buildPlane();
     void captureLoop();
     void draw(const cv::Mat &frame);
     void ensureFramerate();
     void initGL();
-    void initShader();
     void initWindow(int width, int height);
-    GLuint matToTexture(const cv::Mat &mat);
+    void matToTexture(const cv::Mat &mat);
 public:
     CameraWindow(int frameRate);
     static void getGlError(char* file, int line, bool quit);
