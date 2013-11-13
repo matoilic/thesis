@@ -15,6 +15,8 @@ void initializeRendering()
         exit(EXIT_FAILURE);
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
     window = glfwCreateWindow(500, 500, "Screen", NULL, NULL);
@@ -83,9 +85,9 @@ void display()
     drawScene();
 }
 
-cv::Matx44d ortho(double left, double right, double bottom, double top, double near, double far)
+cv::Matx44f ortho(double left, double right, double bottom, double top, double near, double far)
 {
-    cv::Matx44d ortho = cv::Matx44d::eye();
+    cv::Matx44f ortho = cv::Matx44f::eye();
     ortho(0, 0) = 2/(right-left);
     ortho(0, 3) = -(right+left)/(right-left);
     ortho(1, 1) = 2/(top-bottom);
@@ -95,9 +97,9 @@ cv::Matx44d ortho(double left, double right, double bottom, double top, double n
     return ortho;
 }
 
-cv::Matx44d translate(double x, double y, double z)
+cv::Matx44f translate(double x, double y, double z)
 {
-    cv::Matx44d translate = cv::Matx44d::eye();
+    cv::Matx44f translate = cv::Matx44f::eye();
     translate(0, 3) = x;
     translate(1, 3) = y;
     translate(2, 3) = z;

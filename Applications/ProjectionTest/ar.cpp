@@ -69,20 +69,20 @@ void buildSquare()
 {
     std::cout << "buildSquare()" << std::flush << std::endl;
 
-   GLfloat v[] = {0, 1,
-                  0, 0,
+   GLfloat v[] = {-1, -1,
+                  1, -1,
                   1, 1,
-                  1, 0};
+                  -1, 1};
 
    GLfloat t[] = {0, 1,
-                  0, 0,
                   1, 1,
-                  1, 0};
+                  1, 0,
+                  0, 0};
 
-   GLuint i[] = {0, 1, 2, 3};
+   GLuint i[] = {0, 1, 2, 0, 2, 3};
 
    vboSquareVertices = glUtils::buildVBO(v, 4, 2, sizeof(GLfloat), GL_ARRAY_BUFFER, GL_STATIC_DRAW);
-   vboSquareIndices = glUtils::buildVBO(i, 4, 1, sizeof(GLuint), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
+   vboSquareIndices = glUtils::buildVBO(i, 6, 1, sizeof(GLuint), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
    vboTexCoords = glUtils::buildVBO(t, 4, 2, sizeof(GLfloat), GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 }
 
@@ -224,22 +224,27 @@ void drawAugmentedScene()
 //    glPopMatrix();
 //}
 
-GLuint matToTexture(const cv::Mat &mat)
+void matToTexture(GLuint &textureId, const cv::Mat &mat)
 {
-    GLuint texture;
     int width = mat.cols, height = mat.rows;
 
-    glGenTextures(1, &texture); GET_GL_ERROR;
-    glBindTexture(GL_TEXTURE_2D, texture); GET_GL_ERROR;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
 
-    if (mat.channels() == 3) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, mat.data); GET_GL_ERROR;
-    } else if(mat.channels() == 4) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, mat.data); GET_GL_ERROR;
-    } else if (mat.channels() == 1) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, mat.data); GET_GL_ERROR;
-    }
-    return texture;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 3);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 3);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    // Upload new texture data:
+    if (mat.channels() == 3)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, mat.data);
+    else if(mat.channels() == 4)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, mat.data);
+    else if (mat.channels() == 1)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, mat.data);
 }
 
 void drawCameraFrame()
@@ -247,29 +252,31 @@ void drawCameraFrame()
     if (backgroundImage.empty())
         return;
 
-    GLuint textureId = matToTexture(backgroundImage); GET_GL_ERROR;
+    matToTexture(textureId, backgroundImage);
 
     // Begin othogonal projection
-    cv::Matx44d orthoProj = ortho(0, 1, 0, 1, -1, 1);
+    cv::Matx44f orthoProj = ortho(-1, 1, -1, 1, -1, 1000);
+    cv::Matx44f translation = translate(0, 0, -1000);
+    cv::Matx44f mvp = orthoProj * translation;
 
     // Activate the shader programm
     glUseProgram(programTexture); GET_GL_ERROR;
+//glsldevil
 
     // Get the variable locations (identifiers) within the program
     GLint positionLoc = glGetAttribLocation(programTexture, "a_position"); GET_GL_ERROR;
     GLint texCoordLoc = glGetAttribLocation(programTexture, "a_texCoord"); GET_GL_ERROR;
-    GLint mvpMatrixLoc = glGetAttribLocation(programTexture, "u_mvpMatrix"); GET_GL_ERROR;
-    GLint texture0Loc = glGetAttribLocation(programTexture, "u_texture0"); GET_GL_ERROR;
+    GLint mvpMatrixLoc = glGetUniformLocation(programTexture, "u_mvpMatrix"); GET_GL_ERROR;
+    GLint texture0Loc = glGetUniformLocation(programTexture, "u_texture0"); GET_GL_ERROR;
 
     // Pass the matrix uniform variables
-    cv::Matx44d orthoProjTransposed = orthoProj.t();
-    glUniformMatrix4dv(mvpMatrixLoc, 1, GL_FALSE, (GLdouble*) orthoProjTransposed.val); GET_GL_ERROR;
+    cv::Matx44f mvpT = mvp.t();
+    glUniformMatrix4fv(mvpMatrixLoc, 1, GL_FALSE, (GLfloat*) mvpT.val); GET_GL_ERROR;
 
     // Pass the active texture unit
     glActiveTexture(GL_TEXTURE0); GET_GL_ERROR;
     glBindTexture(GL_TEXTURE_2D, textureId); GET_GL_ERROR;
     glUniform1i(texture0Loc, 0); GET_GL_ERROR;
-
 
     glEnableVertexAttribArray(positionLoc); GET_GL_ERROR;
     glEnableVertexAttribArray(texCoordLoc); GET_GL_ERROR;
@@ -282,7 +289,7 @@ void drawCameraFrame()
 
     // Draw cube with triangles by indexes
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboSquareIndices); GET_GL_ERROR;
-    glDrawElements(GL_TRIANGLE_STRIP, 2, GL_UNSIGNED_INT, 0); GET_GL_ERROR;
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); GET_GL_ERROR;
 
     // Deactivate buffers
     glBindBuffer(GL_ARRAY_BUFFER, 0); GET_GL_ERROR;
