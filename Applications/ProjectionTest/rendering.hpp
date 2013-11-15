@@ -16,5 +16,6 @@ void drawAxes();
 
 cv::Matx44f ortho(float left, float right, float bottom, float top, float near, float far);
 cv::Matx44f translate(float x, float y, float z);
+cv::Matx44f rotate(float angle, float x, float y, float z);
 
 #endif // RENDERING_HPP

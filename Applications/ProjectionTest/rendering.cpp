@@ -3,6 +3,9 @@
 #include "rendering.hpp"
 #include "ar.hpp"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 bool windowInitialized = false;
 GLFWwindow* window;
 
@@ -103,4 +106,32 @@ cv::Matx44f translate(float x, float y, float z)
     translate(1, 3) = y;
     translate(2, 3) = z;
     return translate;
+}
+
+cv::Matx44f rotate(float angle, float axisx, float axisy, float axisz)
+{
+    cv::Matx44f rotate = cv::Matx44f::eye();
+
+    float l = axisx*axisx + axisy*axisy + axisz*axisz;  // length squared
+    float x = axisx, y = axisy, z = axisz;
+    x = axisx, y = axisy, z = axisz;
+    if ((l > float(1.0001) || l < float(0.9999)) && l != 0) {
+        l = float(1.0) / sqrt(l);
+        x *= l; y *= l; z *= l;
+    }
+
+    float xy = x*y, yz = y*z, xz = x*z, xx = x*x, yy = y*y, zz = z*z;
+    float ca = cosf(angle / 180.0f * M_PI), sa = sinf(angle / 180.0f * M_PI);
+
+    rotate(0, 0) = xx * (1-ca) + ca;
+    rotate(0, 1) = xy * (1-ca) - z*sa;
+    rotate(0, 2) = xz * (1-ca) + y*sa;
+    rotate(1, 0) = xy * (1-ca) + z*sa;
+    rotate(1, 1) = yy * (1-ca) + ca;
+    rotate(1, 2) = yz * (1-ca) - x*sa;
+    rotate(2, 0) = xz * (1-ca) - y*sa;
+    rotate(2, 1) = yz * (1-ca) + x*sa;
+    rotate(2, 2) = zz * (1-ca) + ca;
+
+    return rotate;
 }

@@ -9,9 +9,11 @@ ChessboardPoseEstimator::ChessboardPoseEstimator(CameraCalib& calibration, Camer
 
 PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
 {
+    std::cout << "estimatePose()" << std::endl << std::flush;
+
     PoseEstimationResult result;
 
-    CameraConfiguration *camera = getCamera().scale(image.size());
+    CameraConfiguration *camera = getCamera().scale(image.cols, image.rows);
     cv::Matx33f M = camera->getIntrinsics();
     cv::Mat_<float> D = camera->getDistorsion();
 

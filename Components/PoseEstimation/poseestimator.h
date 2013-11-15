@@ -5,7 +5,7 @@
 #include "ardoor.h"
 #include "cameraconfiguration.h"
 
-typedef struct
+typedef ARD_EXPORT struct
 {
     bool isObjectPresent;
     cv::Matx44f mvMatrix;

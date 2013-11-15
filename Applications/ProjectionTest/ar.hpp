@@ -26,16 +26,106 @@
 
 #define SHADER_PATH "../Data/Shader"
 
+typedef struct {
+    // program reference
+    GLuint program;
+
+    // attribute locations
+    GLint position;
+    GLint texCoord;
+
+    // uniform locations
+    GLint mvpMatrix;
+    GLint texture0;
+} TextureOnlyProgram;
+
+
+typedef struct {
+    // program reference
+    GLuint program;
+
+    // attribute locations
+    GLint position;
+
+    // uniform locations
+    GLint mvpMatrix;
+    GLint color;
+} SimpleColorProgram;
+
+
+typedef struct {
+    // program reference
+    GLuint program;
+
+    // attribute locations
+    GLint position;
+    GLint normal;
+
+    // uniform locations
+    GLint mvMatrix;
+    GLint mvpMatrix;
+    GLint nMatrix;
+
+    GLint globalAmbi;
+    GLint lightPosVS;
+    GLint lightDirVS;
+    GLint lightAmbi;
+    GLint lightDiff;
+    GLint lightSpec;
+    GLint lightSpotCut;
+    GLint lightSpotCos;
+    GLint lightSpotExp;
+    GLint lightAtt;
+    GLint matAmbi;
+    GLint matDiff;
+    GLint matSpec;
+    GLint matEmis;
+    GLint matShine;
+} AdsProgram;
+
+typedef struct {
+    GLuint vboVertices;
+    GLuint vboIndices;
+    GLfloat color[4];
+} Line;
+
+typedef struct {
+    GLuint vboVertices;
+    GLuint vboIndices;
+    GLfloat color[4];
+} Rectangle;
+
+typedef struct {
+    GLuint vboVertices;
+    GLuint vboIndices;
+    GLuint textureId;
+} TexturedRectangle;
+
+typedef struct {
+    Rectangle walls[6];
+} Cube;
+
+
 void initializeAR();
 void processFrame(cv::Mat frame);
+
+void initializeGL();
 void initializePerspective();
-cv::Matx44f computeMatrix(cv::Mat image);
+
+void buildTexturedRectangle();
+void buildCoordinateAxes();
+void buildCube();
+
 void drawScene();
 void drawCameraFrame();
-void drawDetectionResults();
 void drawAugmentedScene();
 void drawCoordinateAxis();
 void drawCubeModel();
-void drawString(GLfloat x, GLfloat y, std::string text, GLfloat scale = 0.1f);
+
+void drawLine(const Line &line);
+void drawRectangle(const Rectangle &rectangle);
+void drawTexturedRectangle(const TexturedRectangle &texturedRectangle);
+void drawCube(const Cube &cube);
+
 
 #endif // AR_HPP
