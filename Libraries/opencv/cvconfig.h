@@ -258,9 +258,9 @@
 
 /* Qt support */
 /* #undef HAVE_QT */
-/*#if !defined(WIN32)
+#if !defined(WIN32)
 #define HAVE_QT
-#endif*/
+#endif
 
 /* Qt OpenGL support */
 /* #undef HAVE_QT_OPENGL */

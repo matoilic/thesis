@@ -87,11 +87,11 @@ win32 {
 }
 
 macx {
-    #HEADERS += \
-    #    src/window_QT.h \
+    HEADERS += \
+        src/window_QT.h \
 
-    #SOURCES += \
-    #    src/window_QT.cpp \
+    SOURCES += \
+        src/window_QT.cpp \
 
     OBJECTIVE_SOURCES += \
         src/cap_qtkit.mm \
