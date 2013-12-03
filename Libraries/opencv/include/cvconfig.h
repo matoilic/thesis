@@ -122,15 +122,15 @@
 
 /* QuickTime video libraries */
 /* #undef HAVE_QUICKTIME */
-/*#if defined(__APPLE__)
+#if defined(__APPLE__)
 #define HAVE_QUICKTIME
-#endif*/
+#endif
 
 /* AVFoundation video libraries */
 /* #undef HAVE_AVFOUNDATION */
-#if defined(__APPLE__)
+/*#if defined(__APPLE__)
 #define HAVE_AVFOUNDATION
-#endif
+#endif*/
     
 /* TIFF codec */
 #define HAVE_TIFF
@@ -258,9 +258,9 @@
 
 /* Qt support */
 /* #undef HAVE_QT */
-/*#if !defined(WIN32)
+#if !defined(WIN32)
 #define HAVE_QT
-#endif*/
+#endif
 
 /* Qt OpenGL support */
 /* #undef HAVE_QT_OPENGL */

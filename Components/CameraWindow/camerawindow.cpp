@@ -33,21 +33,22 @@ CameraWindow::CameraWindow(int frameRate)
 
 void CameraWindow::buildPlane()
 {
+   backgroundNumIndices = 6;
+
    float vertices[] = {-1, -1,
                         1, -1,
                         1,  1,
                        -1,  1};
-   backgroundVboVertices = glUtils::buildVBO(vertices, 6, 8, sizeof(GLfloat), GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+   backgroundVboVertices = glUtils::buildVBO(vertices, 4, 2, sizeof(GLfloat), GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+
+   GLuint indices[] = {0, 1, 2, 0, 2, 3};
+   backgroundVboIndices = glUtils::buildVBO(indices, backgroundNumIndices, 1, sizeof(GLuint), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
 
    GLfloat texture[] = {0, 1,
                         1, 1,
                         1, 0,
                         0, 0};
    backgroundVboTexture = glUtils::buildVBO(texture, 4, 2, sizeof(GLfloat), GL_ARRAY_BUFFER, GL_STATIC_DRAW);
-
-   backgroundNumIndices = 6;
-   GLuint indices[] = {0, 1, 2,  0, 2, 3};
-   backgroundVboIndices = glUtils::buildVBO(indices, backgroundNumIndices, 1, sizeof(GLuint), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
 
    GET_GL_ERROR;
 }
@@ -105,7 +106,7 @@ void CameraWindow::draw(const cv::Mat &frame)
     glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
     GET_GL_ERROR;
 
-    // Draw cube with triangles by indexes
+    // Draw plane with triangles by indexes
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, backgroundVboIndices);
     glDrawElements(GL_TRIANGLES, backgroundNumIndices, GL_UNSIGNED_INT, 0);
     GET_GL_ERROR;
@@ -117,8 +118,6 @@ void CameraWindow::draw(const cv::Mat &frame)
     // Disable the vertex arrays
     glDisableVertexAttribArray(a_position);
     glDisableVertexAttribArray(a_texCoord);
-
-    glfwSwapBuffers(window);
 
     GET_GL_ERROR;
 }
@@ -161,10 +160,6 @@ void CameraWindow::initGL()
     int viewportWidth = capture->get(CV_CAP_PROP_FRAME_WIDTH);
     int viewportHeight = capture->get(CV_CAP_PROP_FRAME_HEIGHT);
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_DEPTH_BITS, 16);
-    glfwWindowHint(GLFW_SAMPLES, 4);
     window = glfwCreateWindow(
                 viewportWidth,
                 viewportHeight,
@@ -198,11 +193,8 @@ void CameraWindow::initGL()
     glUseProgram(shaderProgramId);
 
     a_position = glGetAttribLocation (shaderProgramId, "a_position");
-    a_normal = glGetAttribLocation (shaderProgramId, "a_normal");
     a_texCoord = glGetAttribLocation (shaderProgramId, "a_texCoord");
-    u_mvMatrix = glGetUniformLocation(shaderProgramId, "u_mvMatrix");
     u_mvpMatrix = glGetUniformLocation(shaderProgramId, "u_mvpMatrix");
-    u_nMatrix = glGetUniformLocation(shaderProgramId, "u_nMatrix");
     u_texture0 = glGetUniformLocation(shaderProgramId, "u_texture0");
 
     glGenTextures(1, &backroundTextureId);
@@ -214,23 +206,6 @@ void CameraWindow::initGL()
     GET_GL_ERROR;
 }
 
-void CameraWindow::initWindow(int width, int height)
-{
-    GLfloat fieldOfView = 45.0f;
-    GLfloat zNear = 0.1f;
-    GLfloat zFar = 200.0f;
-
-    // equivilant to calling:
-    // gluPerspective(fieldOfView / 2.0f, width / height , near, far);
-    // avoids requiring glu.h
-    GLfloat aspectRatio = (width > height) ? float(width) / float(height) : float(width) / float(height);
-    GLfloat fH = tan(float(fieldOfView / 360.0f * 3.14159f)) * zNear;
-    GLfloat fW = fH * aspectRatio;
-    glFrustum(-fW, fW, -fH, fH, zNear, zFar);
-
-    glfwSetWindowSize(window, width, height);
-}
-
 void CameraWindow::matToTexture(const cv::Mat &mat)
 {
     int width = mat.cols, height = mat.rows;
@@ -240,12 +215,13 @@ void CameraWindow::matToTexture(const cv::Mat &mat)
     glBindTexture(GL_TEXTURE_2D, backroundTextureId);
 
     // Upload new texture data:
-    if (mat.channels() == 3)
+    if (mat.channels() == 3) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, mat.data);
-    else if(mat.channels() == 4)
+    } else if(mat.channels() == 4) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, mat.data);
-    else if (mat.channels() == 1)
+    } else if (mat.channels() == 1) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, mat.data);
+    }
 }
 
 void CameraWindow::startCapturing(const string &inputFile)
@@ -253,7 +229,8 @@ void CameraWindow::startCapturing(const string &inputFile)
     isStopped = false;
 
     capture = new cv::VideoCapture();
-    if(!capture->open(CV_CAP_ANY)) {
+    bool success = (inputFile.size() > 0) ? capture->open(inputFile) : capture->open(CV_CAP_ANY);
+    if(!success) {
         delete capture;
         cerr << "failed to capture from video source" << endl;
     }
@@ -261,18 +238,17 @@ void CameraWindow::startCapturing(const string &inputFile)
     initGL();
     buildPlane();
 
-    glfwSetWindowSize(window, capture->get(CV_CAP_PROP_FRAME_WIDTH), capture->get(CV_CAP_PROP_FRAME_HEIGHT));
-
     auto threadFunction = std::bind(&CameraWindow::captureLoop, this);
     captureThread = std::thread(threadFunction);
 
     while(!glfwWindowShouldClose(window)) {
         if(needRedisplay) {
+            glfwPollEvents();
             frameLock.lock();
             draw(currentFrame);
-            glfwPollEvents();
             needRedisplay = false;
             frameLock.unlock();
+            glfwSwapBuffers(window);
         }
 
         this_thread::yield();
@@ -301,44 +277,4 @@ void CameraWindow::stopCapturing()
 
    capture->release();
    delete capture;
-}
-
-void CameraWindow::getGlError(char* file, int line, bool quit)
-{
-   #if defined(DEBUG)
-   GLenum err;
-
-   if ((err = glGetError()) != GL_NO_ERROR)
-   {
-       string errStr;
-       switch(err)
-       {
-           case GL_INVALID_ENUM:
-               errStr = "GL_INVALID_ENUM"; break;
-
-           case GL_INVALID_VALUE:
-               errStr = "GL_INVALID_VALUE"; break;
-
-           case GL_INVALID_OPERATION:
-               errStr = "GL_INVALID_OPERATION"; break;
-
-           case GL_INVALID_FRAMEBUFFER_OPERATION:
-               errStr = "GL_INVALID_FRAMEBUFFER_OPERATION"; break;
-
-           case GL_OUT_OF_MEMORY:
-               errStr = "GL_OUT_OF_MEMORY"; break;
-
-           default:
-               errStr = "Unknown error";
-      }
-
-      fprintf(stderr,
-              "OpenGL Error in %s, line %d: %s\n",
-              file, line, errStr.c_str());
-
-      if (quit) {
-         exit(EXIT_FAILURE);
-      }
-   }
-   #endif
 }
