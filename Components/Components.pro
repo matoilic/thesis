@@ -7,5 +7,6 @@ SUBDIRS = \
     CameraCalib \
     Capture \
     PoseEstimation \
-    CameraWindow
+    CameraWindow \
+	LineDetection
 

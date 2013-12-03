@@ -37,6 +37,7 @@ LIBS += -L$$DESTDIR
 INCLUDEPATH += $$ARDOOR_DIR/Common
 win32 {
     DEFINES += __STDC_CONSTANT_MACROS
+    DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += snprintf="_snprintf"
     INCLUDEPATH += $$ARDOOR_DIR/Libraries/msinttypes
 }

@@ -7,4 +7,4 @@ SUBDIRS = \
     opencv \
    # freeglut
     glfw \
-    glew
+    glew \
