@@ -8,7 +8,6 @@ SUBDIRS = \
         CaptureTest \
         ProjectionTest \
         CameraWindowTest \
+        DoorDetectionTest \
         DoorDetection \
         LswmsTest
-
-
