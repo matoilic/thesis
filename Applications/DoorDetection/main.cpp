@@ -7,33 +7,58 @@
 
 using namespace std;
 
-int main()
+void enhanceEdges(cv::Mat &image, int kernelsize, float gain)
 {
-    string file = "/Users/matoilic/Desktop/doors/Front-Door.jpg";
-    cv::Mat src = cv::imread(file), gray, canny, hough;
-    vector<cv::Vec2f> lines;
+    cv::Mat blurredImage(image.cols, image.rows, image.type());
 
-    cv::cvtColor(src, gray, CV_RGB2GRAY);
-    src.copyTo(hough);
+    cv::Point anchor(-1,-1);
+    cv::Size ksize(kernelsize, kernelsize);
 
-    cv::Canny(gray, canny, 80, 200, 3);
-    cv::HoughLines(canny, lines, 1, CV_PI / 180, 100);
+    cv::medianBlur(image, image, kernelsize);
+    cv::boxFilter(image, blurredImage, -1, ksize, anchor, true, cv::BORDER_REFLECT);
 
-    for(size_t i = 0; i < lines.size(); i++) {
-        float rho = lines[i][0], theta = lines[i][1];
-        cv::Point pt1, pt2;
-        double a = cos(theta), b = sin(theta);
-        double x0 = a*rho, y0 = b*rho;
-        pt1.x = cvRound(x0 + 1000*(-b));
-        pt1.y = cvRound(y0 + 1000*(a));
-        pt2.x = cvRound(x0 - 1000*(-b));
-        pt2.y = cvRound(y0 - 1000*(a));
-        cv::line(hough, pt1, pt2, cv::Scalar(255, 0, 0));
+    cv::Mat edgeImage = image - blurredImage;
+
+    image = image + gain * edgeImage;
+}
+
+void findSegments(const string file)
+{
+    cv::Mat src = cv::imread(file), hough;
+    if(src.rows > 800) {
+        cv::resize(src, src, cv::Size(src.cols * 800 / src.rows, 800));
     }
 
-    cv::imshow("Original", src);
-    cv::imshow("Canny", canny);
-    cv::imshow("Hough", hough);
+    vector<cv::Vec4i> lines;
+    int minLength = sqrt(src.cols * src.cols + src.rows * src.rows) * 0.05;
+    cv::cvtColor(src, hough, CV_RGB2GRAY);
+    enhanceEdges(hough, 5, 3);
+
+    cv::Canny(hough, hough, 80, 200, 3);
+    cv::HoughLinesP(hough, lines, 1, CV_PI / 180, 100, minLength, minLength);
+
+    for(size_t i = 0; i < lines.size(); i++) {
+        cv::line(src, cv::Point(lines[i][0], lines[i][1]), cv::Point(lines[i][2], lines[i][3]), CV_RGB(255, 0, 0));
+    }
+
+    cv::imshow(file, src);
+}
+
+int main()
+{
+    findSegments("../../Data/Images/Doors/Black_door.jpg");
+    findSegments("../../Data/Images/Doors/back door 5.jpg");
+    findSegments("../../Data/Images/Doors/Front-Door.jpg");
+    findSegments("../../Data/Images/Doors/4.jpg");
+    findSegments("../../Data/Images/Doors/3.jpg");
+    findSegments("../../Data/Images/Doors/Standard-Office-Door-Size.jpg");
+    findSegments("../../Data/Images/Doors/c1000xContemporary timber front door Kloeber Funkyfront.jpg");
+    findSegments("../../Data/Images/Doors/door-designs-1.jpg");
+    findSegments("../../Data/Images/Doors/entry-door-x.jpg");
+    findSegments("../../Data/Images/Doors/front-door1.jpg");
+    findSegments("../../Data/Images/Doors/front-entry-doors-960x1280-feng-shui-front-door-interior-ae-i.com.jpg");
+    findSegments("../../Data/Images/Doors/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
+    findSegments("../../Data/Images/Doors/open_door1.jpg");
 
     cv::waitKey();
 

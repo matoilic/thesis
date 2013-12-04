@@ -7,8 +7,8 @@ SUBDIRS = \
 	CameraCalibTest \
         CaptureTest \
         ProjectionTest \
-    CameraWindowTest \
-    DoorDetection \
-    LswmsTest
+        CameraWindowTest \
+        DoorDetection \
+        LswmsTest
 
 

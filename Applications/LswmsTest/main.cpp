@@ -7,8 +7,10 @@
     #include <time.h>
 #endif
 
+#include <libgen.h>
 #include <cmath>
 #include <iostream>
+//#include <qdir.h>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -26,6 +28,21 @@ using namespace std;
     struct timeval ts;
 #endif
 double t;
+
+void enhanceEdges(cv::Mat &image, int kernelsize, float gain)
+{
+    cv::Mat blurredImage(image.cols, image.rows, image.type());
+
+    cv::Point anchor(-1,-1);
+    cv::Size ksize(kernelsize, kernelsize);
+
+    cv::medianBlur(image, image, kernelsize);
+    cv::boxFilter(image, blurredImage, -1, ksize, anchor, true, cv::BORDER_REFLECT);
+
+    cv::Mat edgeImage = image - blurredImage;
+
+    image = image + gain * edgeImage;
+}
 
 void categorizeSegments(const vector<LSEG> &segments, vector<LSEG> &horizontal, vector<LSEG> &vertical)
 {
@@ -71,9 +88,11 @@ void applyLswms(LSWMS &lswms, cv::Mat img, vector<LSEG> &segments, vector<double
 void findSegments(string file)
 {
     cv::Mat src = cv::imread(file), gray, result;
-    vector<cv::Mat> channels;
-    cv::resize(src, src, cv::Size(src.cols / 3, src.rows / 3));
-    //cv::cvtColor(src, gray, CV_RGB2GRAY);
+    if(src.rows > 800) {
+        cv::resize(src, src, cv::Size(src.cols * 800 / src.rows, 800));
+    }
+
+    vector<cv::Mat> channels;    
     src.copyTo(result);
     cv::Size size(src.cols, src.rows);
     vector<LSEG> segments;
@@ -86,6 +105,8 @@ void findSegments(string file)
     t1 = (ts.tv_sec * 1000 + (ts.tv_usec / 1000));
 
     cv::cvtColor(src, gray, CV_RGB2GRAY);
+    cv::equalizeHist(gray, gray);
+    enhanceEdges(gray, 5, 10);
     applyLswms(lswms, gray, segments, errors);
 
     for(int i = 0; i < channels.size(); i++) {
@@ -108,7 +129,10 @@ void findSegments(string file)
     drawSegments(result, horizontal, CV_RGB(255, 0, 0));
     drawSegments(result, vertical, CV_RGB(0, 0, 255));
 
-    cv::imshow(file, result);
+    const char* path = file.c_str();
+    string filename(basename(const_cast<char*>(path)));
+    //QDir::mkpath("Data");
+    cv::imwrite("Data/" + filename, result);
 }
 
 /** Main function*/
@@ -120,6 +144,13 @@ int main(int argc, char** argv)
     findSegments("../../Data/Images/Doors/4.jpg");
     findSegments("../../Data/Images/Doors/3.jpg");
     findSegments("../../Data/Images/Doors/Standard-Office-Door-Size.jpg");
+    findSegments("../../Data/Images/Doors/c1000xContemporary timber front door Kloeber Funkyfront.jpg");
+    findSegments("../../Data/Images/Doors/door-designs-1.jpg");
+    findSegments("../../Data/Images/Doors/entry-door-x.jpg");
+    findSegments("../../Data/Images/Doors/front-door1.jpg");
+    findSegments("../../Data/Images/Doors/front-entry-doors-960x1280-feng-shui-front-door-interior-ae-i.com.jpg");
+    findSegments("../../Data/Images/Doors/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
+    findSegments("../../Data/Images/Doors/open_door1.jpg");
 
     cv::waitKey();
 }

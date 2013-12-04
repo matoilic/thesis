@@ -1,9 +1,10 @@
 include(../Application.pri)
 include(../../Libraries/opencv/opencv_includepath.pri)
 
+QT += core
 
 SOURCES += main.cpp \
-    LSWMS.cpp
+           LSWMS.cpp
 
 LIBS += \
     -lopencv_core \
