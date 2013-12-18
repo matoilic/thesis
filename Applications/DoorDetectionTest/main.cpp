@@ -10,8 +10,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <LSDLineDetector.hpp>
-#include <PointQuadTree.hpp>
+#include <Ardoor/LineDetection/LSDLineDetector.hpp>
+#include <Ardoor/LineDetection/PointQuadTree.hpp>
 #include <algorithm>
 #include <cmath>
 

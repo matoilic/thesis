@@ -1,4 +1,4 @@
-include (../../ardoor.pri)
+include (../../QMake/Ardoor.pri)
 
 OPENCV_DIR = $$PWD
 

@@ -1,13 +1,11 @@
-include(../Application.pri)
-include(../../Libraries/opencv/opencv_includepath.pri)
+include (../../QMake/Application.pri)
 
 INCLUDEPATH += \
-    ../../Components/CameraWindow \
     ../../Libraries/glfw/include
 
 
 LIBS += \
-    -lCameraWindow \
+    -lArdoor \
     -lopencv_core \
     -lopencv_highgui \
     -lglfw

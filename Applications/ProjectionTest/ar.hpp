@@ -18,10 +18,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
-#include "CameraCalib.h"
-#include "cameraconfiguration.h"
-#include "capture.h"
-#include "chessboardposeestimator.h"
+#include <Ardoor/CameraCalib/CameraCalib.hpp>
+#include <Ardoor/CameraCalib/CameraConfiguration.hpp>
+#include <Ardoor/Capture/Capture.hpp>
+#include <Ardoor/PoseEstimation/ChessboardPoseEstimator.hpp>
 #include "rendering.hpp"
 
 #define SHADER_PATH "../Data/Shader"
@@ -107,7 +107,7 @@ typedef struct {
 
 
 void initializeAR();
-void processFrame(cv::Mat frame);
+void processFrame(cv::Mat &frame);
 
 void initializeGL();
 void initializePerspective();

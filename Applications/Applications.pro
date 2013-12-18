@@ -1,4 +1,4 @@
-include(../ardoor.pri)
+include (../QMake/Ardoor.pri)
 
 TEMPLATE  = subdirs
 CONFIG   += ordered
@@ -10,4 +10,4 @@ SUBDIRS = \
         CameraWindowTest \
         DoorDetectionTest \
         DoorDetection \
-        LswmsTest
+        #LswmsTest

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <mutex>
 #include "glUtils.hpp"
 #include "ar.hpp"
 
@@ -61,16 +62,18 @@ void initializeAR()
 }
 
 
-void processFrame(cv::Mat frame)
+void processFrame(cv::Mat &frame)
 {
     std::cout << "processFrame()" << std::endl << std::flush;
 
-    cv::flip(frame, backgroundImage, 1);
+    cv::Mat temp;
+    cv::flip(frame, temp, 1);
 
     std::cout << "before estimatePose()" << std::endl << std::flush;
-    poseResult = poseEstimator.estimatePose(backgroundImage);
+    poseResult = poseEstimator.estimatePose(temp);
 
-    resizeWindow(backgroundImage.size().width, backgroundImage.size().height);
+    backgroundImage = frame;
+    resizeWindow(frame.cols, frame.rows);
 }
 
 
@@ -157,11 +160,11 @@ void initializePerspective()
         float w = backgroundImage.cols;
         float h = backgroundImage.rows;
 
-        CameraConfiguration *cam = camera.scale(backgroundImage.cols, backgroundImage.rows);
-        float fx = cam->getFocalLengthX();
-        float fy = cam->getFocalLengthY();
-        float cx = cam->getPrimaryPointX();
-        float cy = cam->getPrimaryPointY();
+        CameraConfiguration cam = camera.scale(backgroundImage.cols, backgroundImage.rows);
+        float fx = cam.getFocalLengthX();
+        float fy = cam.getFocalLengthY();
+        float cx = cam.getPrimaryPointX();
+        float cy = cam.getPrimaryPointY();
         float x0 = cx - w/2;
         float y0 = cy - h/2;
 
@@ -176,8 +179,6 @@ void initializePerspective()
 
         projectionMatrix = ortho(-w/2, w/2, -h/2, h/2, near, far);
         projectionMatrix = projectionMatrix * proj;
-
-        delete cam;
     }
 }
 
@@ -197,6 +198,8 @@ void buildTexturedRectangle()
 
    backgroundRectangle.vboVertices = glUtils::buildVBO(v, 4, 8, sizeof(GLfloat), GL_ARRAY_BUFFER, GL_STATIC_DRAW);
    backgroundRectangle.vboIndices = glUtils::buildVBO(i, 6, 1, sizeof(GLuint), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
+
+   glGenTextures(1, &backgroundRectangle.textureId);
 }
 
 void buildCoordinateAxes()
@@ -311,11 +314,9 @@ void matToTexture(GLuint &textureId, const cv::Mat &mat)
 {
     int width = mat.cols, height = mat.rows;
 
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, textureId);
 
     // Upload new texture data:
     if (mat.channels() == 3)

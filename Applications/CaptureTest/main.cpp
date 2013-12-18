@@ -10,7 +10,7 @@
 #endif
 #include <thread>
 #include <mutex>
-#include "capture.h"
+#include <Ardoor/Capture/Capture.hpp>
 
 using namespace std;
 

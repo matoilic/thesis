@@ -1,12 +1,9 @@
-include(../Application.pri)
-include(../../Libraries/opencv/opencv_includepath.pri)
-
-INCLUDEPATH += ../../Components/CameraCalib
+include (../../QMake/Application.pri)
 
 LIBS += \
-    -lCameraCalib \
+    -lArdoor \
     -lopencv_core \
-    -lopencv_highgui \
+    -lopencv_highgui
 
 SOURCES += \
     main.cpp

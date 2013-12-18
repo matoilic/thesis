@@ -4,7 +4,7 @@
 #else
     #include <unistd.h>
 #endif
-#include "camerawindow.h"
+#include <Ardoor/CameraWindow/CameraWindow.hpp>
 
 #if defined(__APPLE__)
 #define VIDEO_FORMAT "mov"
