@@ -8,7 +8,7 @@
 #include <sstream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "cameracalib.h"
+#include <Ardoor/CameraCalib/CameraCalib.hpp>
 
 using namespace std;
 

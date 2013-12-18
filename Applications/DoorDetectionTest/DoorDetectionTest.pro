@@ -1,15 +1,13 @@
-include(../Application.pri)
-include(../../Libraries/opencv/opencv_includepath.pri)
-
+include (../../QMake/Application.pri)
 
 INCLUDEPATH += \
     ../../Components/LineDetection \
 
 LIBS += \
-    -lLineDetection \
+    -lArdoor \
     -lopencv_core \
     -lopencv_highgui \
-    -lopencv_imgproc \
+    -lopencv_imgproc
 
 SOURCES += \
     main.cpp

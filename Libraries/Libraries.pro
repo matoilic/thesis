@@ -1,4 +1,4 @@
-include(../ardoor.pri)
+include(../QMake/Ardoor.pri)
 
 TEMPLATE  = subdirs
 CONFIG   += ordered
@@ -8,3 +8,4 @@ SUBDIRS = \
    # freeglut
     glfw \
     glew \
+    nvwa

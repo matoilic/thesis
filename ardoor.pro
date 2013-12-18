@@ -1,11 +1,11 @@
-include(ardoor.pri)
+include(QMake/Ardoor.pri)
 
 TEMPLATE  = subdirs
 CONFIG   += ordered warn_off
 
 SUBDIRS = \
 	Libraries \
-	Components \
+	Source \
 	Applications
 
 cache()

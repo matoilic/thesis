@@ -1,19 +1,13 @@
-include(../Application.pri)
-include(../../Libraries/opencv/opencv_includepath.pri)
+include (../../QMake/Application.pri)
 
 INCLUDEPATH += \
-    ../../Components/CameraCalib \
-    ../../Components/Capture \
-    ../../Components/PoseEstimation \
     ../../Libraries/glfw/include \
     ../../Libraries/glfw/deps \
     ../../Libraries/glew/include
 
 
 LIBS += \
-    -lCameraCalib \
-    -lCapture \
-    -lPoseEstimation \
+    -lArdoor \
     -lopencv_core \
     -lopencv_calib3d \
     -lopencv_imgproc \

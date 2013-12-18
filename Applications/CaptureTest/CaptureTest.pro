@@ -1,18 +1,15 @@
-include(../Application.pri)
-include(../../Libraries/opencv/opencv_includepath.pri)
+include (../../QMake/Application.pri)
 
 INCLUDEPATH += \
-    ../../Components/Capture \
     ../../Libraries/glfw/include \
     ../../Libraries/glfw/deps \
     ../../Libraries/glew/include
 
 LIBS += \
-    -lCameraCalib \
-    -lCapture \
+    -lArdoor \
     -lopencv_core \
     -lopencv_highgui \
-    -lglfw \
+    -lglfw
 
 macx {
     LIBS += -framework OpenGL

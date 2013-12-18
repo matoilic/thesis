@@ -1,5 +1,4 @@
-include(../Application.pri)
-include(../../Libraries/opencv/opencv_includepath.pri)
+include (../../QMake/Application.pri)
 
 QT += core
 

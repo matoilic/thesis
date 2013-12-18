@@ -1,4 +1,4 @@
-include (../../ardoor.pri)
+include (../../QMake/ardoor.pri)
 
 TEMPLATE = lib
 CONFIG += shared dll
