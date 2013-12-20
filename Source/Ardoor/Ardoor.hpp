@@ -7,7 +7,7 @@
 #  define ARD_EXPORT
 #endif
 
-#ifdef DEBUG
+#if (defined DEBUG && defined NVWA)
 #include <debug_new.h>
 #endif
 

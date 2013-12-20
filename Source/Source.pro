@@ -1,4 +1,7 @@
 include (../QMake/Library.pri)
+include (../QMake/Nvwa.pri)
+include (../QMake/Opencv.pri)
+
 
 TARGET = Ardoor
 
