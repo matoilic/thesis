@@ -18,14 +18,14 @@ win32 {
         -lvfw32 \        
         -loleaut32 \
         #ffmpeg libs
-        -lavcodec \
-        -lavdevice \
-        -lavfilter \
-        -lavformat \
-        -lavutil \
-        -lpostproc \
-        -lswresample \
-        -lswscale
+        #-lavcodec \
+        #-lavdevice \
+        #-lavfilter \
+        #-lavformat \
+        #-lavutil \
+        #-lpostproc \
+        #-lswresample \
+        #-lswscale
 }
 
 macx {

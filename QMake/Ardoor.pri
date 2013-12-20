@@ -51,13 +51,3 @@ debug {
 INCLUDEPATH += \
     $$ARDOOR_DIR/Source
 
-
-
-# NVWA Memory Manager
-isEmpty(NVWA_SKIP) {
-    INCLUDEPATH += $$ARDOOR_DIR/Libraries/nvwa
-    LIBS += -lnvwa
-}
-
-
-include(../Libraries/opencv/opencv_includepath.pri)

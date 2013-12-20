@@ -1,5 +1,3 @@
-NVWA_SKIP = 1
-
 include (../../QMake/Ardoor.pri)
 
 TEMPLATE = lib

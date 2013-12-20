@@ -1,4 +1,5 @@
 include(Ardoor.pri)
+include(Opencv.pri)
 
 TEMPLATE = app
 
