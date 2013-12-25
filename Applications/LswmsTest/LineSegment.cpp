@@ -29,87 +29,75 @@ double LineSegment::distancePointToPoint(double x0, double y0, double x1, double
 
 SegmentDistance LineSegment::distanceTo(const LineSegment &s2) const
 {
-    //scale all coordinates to a value between 0 and 1
-    int maxX = std::max(std::max(std::max(start.x, end.x), s2.start.x), s2.end.x);
-    int maxY = std::max(std::max(std::max(start.y, end.y), s2.start.y), s2.end.y);
-    double scale = std::max(maxX, maxY);
+    float ux = dX();
+    float uy = dY();
+    float vx = s2.dX();
+    float vy = s2.dY();
+    float wx = start.x - s2.start.x;
+    float wy = start.y - s2.start.y;
 
-    double x0 = start.x / scale;
-    double y0 = start.y / scale;
-    double x1 = end.x / scale;
-    double y1 = end.y / scale;
+    float a = ux * ux + uy * uy;
+    float b = ux * vx + uy * vy;
+    float c = vx * vx + vy * vy;
+    float d = ux * wx + uy * wy;
+    float e = vx * wx + vy * wy;
 
-    double x2 = s2.start.x / scale;
-    double y2 = s2.start.y / scale;
-    double x3 = s2.end.x / scale;
-    double y3 = s2.end.y / scale;
+    float D = a * c - b * b; // always >= 0
+    float sc, sN, sD = D; // sc = sN / sD, default sD = D >= 0
+    float tc, tN, tD = D; // tc = tN / tD, default tD = D >= 0
 
-    double t = (y3 - y2) * (x1 - x0) - (x3 - x2) * (y1 - y0);
-    double a = (x3 - x2) * (y0 - y2) - (y3 - y2) * (x0 - x2);
-    double b;
-    double xa, ya, xb, yb; //coords of the points that build the shortest distance
-
-    //neither parallel nor collinear
-    if(t != 0) {
-        a /= t;
-        b = ((x1 - x0) * (y0 - y2) - (y1 - y0) * (x0 - x2)) / t;
-
-        t = std::min(std::max(0.0, a), 1.0);
-        xa = x0 + t * (x1 - x0);
-        ya = y0 + t * (y1 - y0);
-
-        t = std::min(std::max(0.0, distancePointToLine(xa, ya, x2, y2, x3, y3)), 1.0);
-        xa = x2 + t * (x3 - x2);
-        ya = y2 + t * (y3 - y2);
-
-        t = std::min(std::max(0.0, b), 1.0);
-        xb = x2 + t * (x3 - x2);
-        yb = y2 + t * (y3 - y2);
-
-        t = std::min(std::max(0.0, distancePointToLine(xb, yb, x0, y0, x1, y1)), 1.0);
-        xb = x0 + t * (x1-x0);
-        yb = y0 + t * (y1-y0);
-
-        return SegmentDistance(LinePoint(xa * scale, ya * scale), LinePoint(xb * scale, yb * scale));
-    }
-
-    //parallel
-    if(a != 0) {
-        a = distancePointToLine(x0, y0, x2, y2, x3, y3);
-
-        if(a <= 1 && a >= 0) {
-            t = a;
-            xa = x2 + t * (x3 - x2);
-            ya = y2 + t * (y3 - y2);
-            xb = x0;
-            yb = y0;
-        } else {
-            t = std::min(std::max(0.0, a), 1.0);
-            xa = x2 + t * (x3 - x2);
-            ya = y2 + t * (y3 - y2);
-            t = std::min(std::max(0.0, distancePointToLine(xa, ya, x0, y0, x1, y1)), 1.0);
-            xb = x0 + t * (x1 - x0);
-            yb = y0 + t * (y1 - y0);
+    // compute the line parameters of the two closest points
+    if (D < F_ZERO) { // the lines are almost parallel
+        sN = 0.0f; // force using point P0 on segment S1
+        sD = 1.0f; // to prevent possible division by 0.0 later
+        tN = e;
+        tD = c;
+    } else { // get the closest points on the infinite lines
+        sN = (b * e - c * d);
+        tN = (a * e - b * d);
+        if (sN < 0.0) {        // sc < 0 => the s=0 edge is visible
+            sN = 0.0;
+            tN = e;
+            tD = c;
+        } else if (sN > sD) {  // sc > 1  => the s=1 edge is visible
+            sN = sD;
+            tN = e + b;
+            tD = c;
         }
-
-        SegmentDistance dist = SegmentDistance(LinePoint(xa * scale, ya * scale), LinePoint(xb * scale, yb * scale));
-        dist.areParallel = true;
-
-        return dist;
     }
 
-    double endA = end.distanceFromOrigin(), endB = s2.end.distanceFromOrigin();
-    if(endA > endB) {
-        SegmentDistance dist = SegmentDistance(LinePoint(s2.end.x, s2.end.y), LinePoint(start.x, start.y));
-        dist.areCollinear = true;
-
-        return dist;
-    } else {
-        SegmentDistance dist = SegmentDistance(LinePoint(end.x, end.y), LinePoint(s2.start.x, s2.start.y));
-        dist.areCollinear = true;
-
-        return dist;
+    if (tN < 0.0) { // tc < 0 => the t=0 edge is visible
+        tN = 0.0;
+        // recompute sc for this edge
+        if (-d < 0.0) {
+            sN = 0.0;
+        } else if (-d > a) {
+            sN = sD;
+        } else {
+            sN = -d;
+            sD = a;
+        }
+    } else if (tN > tD) { // tc > 1  => the t=1 edge is visible
+        tN = tD;
+        // recompute sc for this edge
+        if ((-d + b) < 0.0) {
+            sN = 0;
+        } else if ((-d + b) > a) {
+            sN = sD;
+        } else {
+            sN = (-d +  b);
+            sD = a;
+        }
     }
+
+    // finally do the division to get sc and tc
+    sc = (abs(sN) < F_ZERO ? 0.0 : sN / sD);
+    tc = (abs(tN) < F_ZERO ? 0.0 : tN / tD);
+
+    LinePoint p0(std::round(tc * vx), std::round(tc * vy));
+    LinePoint p1(std::round(wx + sc * ux), std::round(wy + sc * uy));
+
+    return SegmentDistance(p0, p1);
 }
 
 double LineSegment::gradient() const

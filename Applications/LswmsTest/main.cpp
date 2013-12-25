@@ -70,10 +70,6 @@ void joinSegments(vector<LSEG> &segments, const cv::Mat &img, bool horizontal)
 {
     bool foundMatching;
     double maxDistance = sqrt(img.rows * img.rows + img.cols * img.cols) * 0.10;
-    int step = 0;
-    cv::Mat result;
-    drawSegments(img, result, segments, CV_RGB(0, 0, 255));
-    cv::imshow(to_string(step), result);
 
     do {
         foundMatching = false;
@@ -106,9 +102,6 @@ void joinSegments(vector<LSEG> &segments, const cv::Mat &img, bool horizontal)
                 }
             }
         }
-
-        drawSegments(img, result, segments, CV_RGB(0, 0, 255));
-        cv::imshow(to_string(++step), result);
     } while(foundMatching);
 }
 
@@ -156,7 +149,7 @@ void findSegments(string file)
     cout << "found " << segments.size() << endl;
     vector<LSEG> horizontal, vertical;
     categorizeSegments(segments, horizontal, vertical);
-    //joinSegments(horizontal, src, true);
+    joinSegments(horizontal, src, true);
     joinSegments(vertical, src, false);
 
     gettimeofday(&ts,0);
@@ -164,7 +157,7 @@ void findSegments(string file)
     t = (double)t2-(double)t1;
     std::cout << file << " Total runtime: " << t << "ms" << std::endl;
 
-    //drawSegments(result, horizontal, CV_RGB(255, 0, 0));
+    drawSegments(result, result, horizontal, CV_RGB(255, 0, 0));
     drawSegments(result, result, vertical, CV_RGB(0, 0, 255));
 
     const char* path = file.c_str();
@@ -179,10 +172,10 @@ int main(int argc, char** argv)
     LineSegment l1(LinePoint(0, 0), LinePoint(0, 7));
     LineSegment l2(LinePoint(5, 5), LinePoint(5, 10));
     cout << l1.distanceTo(l2).length << endl;
-    //findSegments("../../Data/Images/Doors/Black_door.jpg");
-    //findSegments("../../Data/Images/Doors/back door 5.jpg");
-    //findSegments("../../Data/Images/Doors/Front-Door.jpg");
-    //findSegments("../../Data/Images/Doors/4.jpg");
+    findSegments("../../Data/Images/Doors/Black_door.jpg");
+    findSegments("../../Data/Images/Doors/back door 5.jpg");
+    findSegments("../../Data/Images/Doors/Front-Door.jpg");
+    findSegments("../../Data/Images/Doors/4.jpg");
     findSegments("../../Data/Images/Doors/3.jpg");
     //findSegments("../../Data/Images/Doors/Standard-Office-Door-Size.jpg");
     //findSegments("../../Data/Images/Doors/c1000xContemporary timber front door Kloeber Funkyfront.jpg");
