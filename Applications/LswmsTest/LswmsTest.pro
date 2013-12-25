@@ -4,7 +4,9 @@ include(../../Libraries/opencv/opencv_includepath.pri)
 QT += core
 
 SOURCES += main.cpp \
-           LSWMS.cpp
+           LSWMS.cpp \
+    LineSegment.cpp \
+    LinePoint.cpp
 
 LIBS += \
     -lopencv_core \
@@ -13,4 +15,7 @@ LIBS += \
     -lopencv_legacy \
 
 HEADERS += \
-    LSWMS.h
+    LSWMS.h \
+    LineSegment.h \
+    LinePoint.h \
+    SegmentDistance.h

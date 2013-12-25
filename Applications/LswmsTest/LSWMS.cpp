@@ -95,7 +95,7 @@ LSWMS::LSWMS(const cv::Size imSize, const int R, const int numMaxLSegs, bool ver
     __margin = (float)(ANGLE_MARGIN*CV_PI/180);
 }
 
-int LSWMS::run(const cv::Mat &img, std::vector<LSEG> &lSegs, std::vector<double> &errors)
+int LSWMS::run(const cv::Mat &img, std::vector<LineSegment> &lSegs)
 {
     // **********************************************
     // This function analyses the input image and finds
@@ -111,7 +111,6 @@ int LSWMS::run(const cv::Mat &img, std::vector<LSEG> &lSegs, std::vector<double>
 
     // Clear line segment container
     lSegs.clear();
-    errors.clear();
 
     // Input image to __img
     if(img.channels() == 3)
@@ -143,7 +142,7 @@ int LSWMS::run(const cv::Mat &img, std::vector<LSEG> &lSegs, std::vector<double>
     setPaddingToZero(__G, NN);
 
     // Line segment finder
-    int retLS = findLineSegments(__G, __Gx, __Gy, __A, __M, lSegs, errors);
+    int retLS = findLineSegments(__G, __Gx, __Gy, __A, __M, lSegs);
     return retLS;
 
 
@@ -213,7 +212,7 @@ int LSWMS::computeGradientMaps(const cv::Mat &img, cv::Mat &G, cv::Mat &Gx, cv::
     else
         return RET_ERROR;
 }
-int LSWMS::findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &Gy, cv::Mat &A, cv::Mat &M, std::vector<LSEG> &lSegs, std::vector<double> &errors)
+int LSWMS::findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &Gy, cv::Mat &A, cv::Mat &M, std::vector<LineSegment> &lSegs)
 {
     // **********************************************
     // This function finds line segments using the
@@ -273,20 +272,19 @@ int LSWMS::findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &
             float error = 0;
             if(__verbose) { printf("-------------------------------\n"); }
             if(__verbose) { printf("Try dpOrig=(%d,%d,%.2f,%.2f)...\n", dpOrig.pt.x, dpOrig.pt.y, dpOrig.vx, dpOrig.vy); }
-            int retLS = lineSegmentGeneration(dpOrig, __lSeg, error);
+            int retLS = lineSegmentGeneration(dpOrig, __lSeg);
 
             if( (retLS == RET_OK) && error < MAX_ERROR )
             {
-                if(__verbose) { printf("lSeg generated=(%d,%d)->(%d,%d)...\n", __lSeg[0].x, __lSeg[0].y, __lSeg[1].x, __lSeg[1].y); }
+                if(__verbose) { printf("lSeg generated=(%d,%d)->(%d,%d)...\n", __lSeg.start.x, __lSeg.start.y, __lSeg.end.x, __lSeg.end.y); }
                 if(__verbose) { printf("-------------------------------\n"); }
 
-                int deltaX = __lSeg[1].x - __lSeg[0].x;
-                int deltaY = __lSeg[1].y - __lSeg[0].y;
+                int deltaX = __lSeg.dX();
+                int deltaY = __lSeg.dY();
                 int segLength = sqrt(deltaX * deltaX + deltaY * deltaY);
 
                 if(segLength > __minSegmentLength) {
                     lSegs.push_back(__lSeg);
-                    errors.push_back((double)error);
                 }
 
                 if(__numMaxLSegs != 0 && lSegs.size() >= (unsigned int)__numMaxLSegs)
@@ -304,7 +302,7 @@ int LSWMS::findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &
 
     return RET_OK;
 }
-int LSWMS::lineSegmentGeneration(const DIR_POINT &dpOrig, LSEG &lSeg, float &error)
+int LSWMS::lineSegmentGeneration(const DIR_POINT &dpOrig, LSEG &lSeg)
 {
     // **********************************************
     // Starts at dpOrig and generates lSeg
@@ -359,12 +357,12 @@ int LSWMS::lineSegmentGeneration(const DIR_POINT &dpOrig, LSEG &lSeg, float &err
     if(d1<d2)
     {
         pt1 = pt2;
-        error = retG2;
+        lSeg.error = retG2;
         if(__verbose) { printf("Longest dir is 2\n"); }
     }
     else
     {
-        error = retG1;
+        lSeg.error = retG1;
         if(__verbose) { printf("Longest dir is 1\n"); }
     }
 
@@ -380,7 +378,7 @@ int LSWMS::lineSegmentGeneration(const DIR_POINT &dpOrig, LSEG &lSeg, float &err
 
         DIR_POINT dpAux(dpCentr.pt, -(-dirY), -dirX);	// DIR_POINT must be filled ALWAYS with gradient vectors
         float retG = grow(dpAux, pt2, 1);
-        error = retG;
+        lSeg.error = retG;
     }
     else
     {
@@ -398,9 +396,8 @@ int LSWMS::lineSegmentGeneration(const DIR_POINT &dpOrig, LSEG &lSeg, float &err
 
     // Output line segment
     if(__verbose) { printf("LSeg = (%d,%d)-(%d,%d)\n", pt2.x, pt2.y, pt1.x, pt1.y); }
-    lSeg.clear();
-    lSeg.push_back(cv::Point(pt2.x - 2*__R, pt2.y - 2*__R));
-    lSeg.push_back(cv::Point(pt1.x - 2*__R, pt1.y - 2*__R));
+    lSeg.start = cv::Point(pt2.x - 2*__R, pt2.y - 2*__R);
+    lSeg.end = cv::Point(pt1.x - 2*__R, pt1.y - 2*__R);
 
     // Update visited positions matrix
     updateMask(pt1,pt2);
@@ -1044,9 +1041,9 @@ void LSWMS::setPaddingToZero(cv::Mat &img, int NN)
 void LSWMS::drawLSegs(cv::Mat &img, std::vector<LSEG> &lSegs, cv::Scalar color, int thickness)
 {
     for(unsigned int i=0; i<lSegs.size(); i++)
-        cv::line(img, lSegs[i][0], lSegs[i][1], color, thickness);
+        cv::line(img, lSegs[i].start, lSegs[i].end, color, thickness);
 }
-void LSWMS::drawLSegs(cv::Mat &img, std::vector<LSEG> &lSegs, std::vector<double> &errors, int thickness)
+void LSWMS::drawLSegs(cv::Mat &img, std::vector<LSEG> &lSegs, int thickness)
 {
     std::vector<cv::Scalar> colors;
     colors.push_back(CV_RGB(255,0,0));
@@ -1056,13 +1053,13 @@ void LSWMS::drawLSegs(cv::Mat &img, std::vector<LSEG> &lSegs, std::vector<double
 
     for(unsigned int i=0; i<lSegs.size(); i++)
     {
-        if(errors[i] < 0.087)  // 5º
-            cv::line(img, lSegs[i][0], lSegs[i][1], colors[0], 3);
-        else if(errors[i] < 0.174) // 10º
-            cv::line(img, lSegs[i][0], lSegs[i][1], colors[1], 2);
-        else if(errors[i] < 0.26) // 15º
-            cv::line(img, lSegs[i][0], lSegs[i][1], colors[2], 1);
+        if(lSegs[i].error < 0.087)  // 5º
+            cv::line(img, lSegs[i].start, lSegs[i].end, colors[0], 3);
+        else if(lSegs[i].error < 0.174) // 10º
+            cv::line(img, lSegs[i].start, lSegs[i].end, colors[1], 2);
+        else if(lSegs[i].error < 0.26) // 15º
+            cv::line(img, lSegs[i].start, lSegs[i].end, colors[2], 1);
         else
-            cv::line(img, lSegs[i][0], lSegs[i][1], colors[3], 1);
+            cv::line(img, lSegs[i].start, lSegs[i].end, colors[3], 1);
     }
 }

@@ -8,10 +8,11 @@ enum {RET_OK, RET_ERROR};
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include "float.h"
+#include "LineSegment.h"
 
 #define PI_2 CV_PI/2
 
-typedef std::vector<cv::Point> LSEG;
+typedef LineSegment LSEG;
 typedef struct _DIR_POINT
 {
     cv::Point pt;
@@ -47,7 +48,7 @@ private:
     int __R, __N;
 
     // Line Segments
-    LSEG __lSeg;
+    LineSegment __lSeg;
     int __numMaxLSegs;
     int __minSegmentLength;
 
@@ -77,8 +78,8 @@ private:
     int computeGradientMaps(const cv::Mat &img, cv::Mat &G, cv::Mat &Gx, cv::Mat &Gy);
 
     // General functions
-    int findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &Gy, cv::Mat &A, cv::Mat &M, std::vector<LSEG> &lSegs, std::vector<double> &errors);
-    int lineSegmentGeneration(const DIR_POINT &dpOrig, LSEG &lSeg, float &error);
+    int findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &Gy, cv::Mat &A, cv::Mat &M, std::vector<LineSegment> &lSegs);
+    int lineSegmentGeneration(const DIR_POINT &dpOrig, LineSegment &lSeg);
 
     // Growing and Mean-Shift
     float grow(const DIR_POINT &dpOrig, cv::Point &ptDst, int dir);
@@ -86,9 +87,9 @@ private:
 
 public:
     LSWMS(const cv::Size imSize, const int R, const int numMaxLSegs=0, bool verbose=false);
-    int run(const cv::Mat &img, std::vector<LSEG> &lSegs, std::vector<double> &errors);
-    void drawLSegs(cv::Mat &img, std::vector<LSEG> &lSegs, cv::Scalar color=CV_RGB(255,0,0), int thickness=1);
-    void drawLSegs(cv::Mat &img, std::vector<LSEG> &lSegs, std::vector<double> &errors, int thickness=1);
+    int run(const cv::Mat &img, std::vector<LineSegment> &lSegs);
+    void drawLSegs(cv::Mat &img, std::vector<LineSegment> &lSegs, cv::Scalar color=CV_RGB(255,0,0), int thickness=1);
+    void drawLSegs(cv::Mat &img, std::vector<LineSegment> &lSegs, int thickness=1);
 
 };
 

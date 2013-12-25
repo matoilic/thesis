@@ -212,6 +212,10 @@ void CameraWindow::matToTexture(const cv::Mat &mat)
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //use fast 4-byte alignment (default anyway) if possible
+    glPixelStorei(GL_UNPACK_ALIGNMENT, (mat.step & 3) ? 1 : 4);
+    //set length of one complete row in data (doesn't need to equal image.cols)
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, mat.step / mat.elemSize());
     glBindTexture(GL_TEXTURE_2D, backroundTextureId);
 
     // Upload new texture data:
