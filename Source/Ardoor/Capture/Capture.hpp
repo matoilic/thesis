@@ -1,32 +1,37 @@
 #ifndef CAPTURE_H
 #define CAPTURE_H
 
-#include <functional>
-#include <thread>
 #include <string>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/video/video.hpp>
+#include <QThread>
+#include <QMutex>
 #include <Ardoor/Ardoor.hpp>
+#include <Ardoor/Capture/ImageHandler.hpp>
 
-typedef std::function<void(cv::Mat&)> CaptureHandler;
-
-class ARD_EXPORT Capture
+class ARD_EXPORT Capture : private QObject
 {
 private:
-    cv::VideoCapture capture;
-    CaptureHandler handler;
-    std::thread captureThread;
-    bool isStopped;
+    Q_OBJECT
 
+    cv::VideoCapture capture;
+    ImageHandler *handler;
+    QThread captureThread;
+    bool stopped;
+    QMutex mutex;
+
+private slots:
     void captureLoop();
 
 public:
     Capture();
+    ~Capture();
 
     bool start(const std::string &inputFile = "");
     void stop();
+    bool isStopped();
 
-    void setHandler(CaptureHandler handler);
+    void setHandler(ImageHandler *handler);
 };
 
 #endif // CAPTURE_H

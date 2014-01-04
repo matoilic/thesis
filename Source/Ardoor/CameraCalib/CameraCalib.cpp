@@ -180,6 +180,12 @@ cv::Mat CameraCalib::remap(const cv::Mat &image)
     return undistorted;
 }
 
+void CameraCalib::reset()
+{
+    imagePoints.clear();
+    objectPoints.clear();
+}
+
 void CameraCalib::printMat(const cv::Mat &mat, std::string name)
 {
     int r, c;

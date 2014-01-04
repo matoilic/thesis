@@ -1,7 +1,7 @@
 release: ENVIRONMENT = "release"
 debug:   ENVIRONMENT = "debug"
 
-ARDOOR_DIR = $$PWD/../
+ARDOOR_DIR = $$PWD/..
 
 win32 {
     BUILDPATH = $$ARDOOR_DIR/Build-Win32/$$ENVIRONMENT
@@ -39,7 +39,7 @@ win32 {
     DEFINES += __STDC_CONSTANT_MACROS
     DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += snprintf="_snprintf"
-	DEFINES += WIN32
+    DEFINES += WIN32
     INCLUDEPATH += $$ARDOOR_DIR/Libraries/msinttypes
 }
 
@@ -50,4 +50,11 @@ debug {
 
 INCLUDEPATH += \
     $$ARDOOR_DIR/Source
+
+
+android {
+    DEFINES += __ANDROID__
+    DEFINES += GLEW_NO_GLU
+    DEFINES += GLFW_INCLUDE_ES2
+}
 

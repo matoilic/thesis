@@ -21,6 +21,25 @@ cv::Mat currentFrame;
 bool needRedisplay = false;
 std::mutex redisplayLock;
 
+
+class MyFrameProcessor : public ImageHandler
+{
+public:
+    virtual void operator() (cv::Mat &frame)
+    {
+        if (frame.empty() || glfwWindowShouldClose(window))
+            return;
+
+        cv::imshow("test", frame);
+        cv::waitKey(0);
+
+        redisplayLock.lock();
+        frame.copyTo(currentFrame);
+        needRedisplay = true;
+        redisplayLock.unlock();
+    }
+};
+
 void initializeGL()
 {
     // Default GL configuration
@@ -52,17 +71,6 @@ void initializeGL()
     glPixelStorei(GL_PACK_ALIGNMENT, 3);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 3);
     glBindTexture(GL_TEXTURE_2D, textureId);
-}
-
-void processFrame(cv::Mat& frame)
-{
-    if (frame.empty() || glfwWindowShouldClose(window))
-        return;
-
-    redisplayLock.lock();
-    frame.copyTo(currentFrame);
-    needRedisplay = true;
-    redisplayLock.unlock();
 }
 
 void display()
@@ -146,8 +154,9 @@ int main()
     glfwSetWindowTitle(window, "Capture Test");
     initializeGL();
 
+    MyFrameProcessor processor;
     Capture capture;
-    capture.setHandler(processFrame);
+    capture.setHandler(&processor);
     capture.start();
 
     // Main loop

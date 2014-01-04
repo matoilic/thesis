@@ -25,7 +25,7 @@ function<void()> functions[] = {
 CameraConfiguration cameraOrig(1726.7347f, 1732.9374f, 736.2678f, 593.4867f, 1600, 1200);
 CameraConfiguration camera = cameraOrig.scale(IMAGE_WIDTH, IMAGE_HEIGHT);
 cv::Matx33f cameraMatrix = camera.getIntrinsics();
-cv::Mat_<float> distortionMatrix = camera.getDistorsion();
+std::vector<float> distortionMatrix = camera.getDistorsion();
 
 vector<cv::Point2f> imagePoints;
 vector<cv::Point3f> objectPoints;

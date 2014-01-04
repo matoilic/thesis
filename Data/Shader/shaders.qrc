@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/ardoor/shaders">
+        <file>SimpleColor.frag</file>
+        <file>SimpleColor.vert</file>
+        <file>TextureOnly.frag</file>
+        <file>TextureOnly.vert</file>
+    </qresource>
+</RCC>

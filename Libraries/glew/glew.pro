@@ -6,7 +6,7 @@ CONFIG += shared dll
 INCLUDEPATH += $$PWD/include
 
 SOURCES += \
-    src/glewinfo.c \
+    #src/glewinfo.c \
     src/glew.c
 
 macx {

@@ -3,27 +3,20 @@
 
 #include <opencv2/core/core.hpp>
 #include <Ardoor/Ardoor.hpp>
-#include <Ardoor/CameraCalib/CameraConfiguration.hpp>
-
-typedef ARD_EXPORT struct
-{
-    bool isObjectPresent;
-    cv::Matx44f mvMatrix;
-
-} PoseEstimationResult;
+#include <Ardoor/Context/ArdoorContext.hpp>
+#include <Ardoor/PoseEstimation/Types.hpp>
 
 
 class ARD_EXPORT PoseEstimator
 {
 private:
-    CameraConfiguration camera;
+    ArdoorContext *ardoorContext;
 
 public:
-    PoseEstimator(CameraConfiguration camera);
+    PoseEstimator(ArdoorContext *ardoorContext);
+    virtual ~PoseEstimator() {}
 
-    CameraConfiguration getCamera();
-    void setCamera(CameraConfiguration camera);
-
+    ArdoorContext* getArdoorContext();
     virtual PoseEstimationResult estimatePose(cv::Mat& image) = 0;
 };
 

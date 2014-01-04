@@ -1,5 +1,7 @@
 # NVWA Memory Manager
 
-INCLUDEPATH += $$ARDOOR_DIR/Libraries/nvwa
-LIBS += -lnvwa
-DEFINES += NVWA
+!android {
+    INCLUDEPATH += $$ARDOOR_DIR/Libraries/nvwa
+    LIBS += -lnvwa
+    DEFINES += NVWA
+}

@@ -238,7 +238,7 @@ void glUtils::getGLError(char* file,
       // Build error string as a concatenation of file, line & error
       string newErr(file);
       newErr += ": line:";
-      newErr += std::to_string(line);
+      newErr += line;
       newErr += ": ";
       newErr += errStr;
 
