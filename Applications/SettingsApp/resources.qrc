@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/ardoor/views">
+        <file>main.qml</file>
+    </qresource>
+</RCC>

@@ -83,6 +83,8 @@ public:
      */
     cv::Mat remap(const cv::Mat &image);
 
+    void reset();
+
     private:
         void printMat(const cv::Mat &mat, std::string name);
 };

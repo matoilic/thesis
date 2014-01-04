@@ -1,16 +1,12 @@
 #include <Ardoor/PoseEstimation/PoseEstimator.hpp>
 
-PoseEstimator::PoseEstimator(CameraConfiguration camera)
+
+PoseEstimator::PoseEstimator(ArdoorContext *ardoorContext)
 {
-    setCamera(camera);
+    this->ardoorContext = ardoorContext;
 }
 
-CameraConfiguration PoseEstimator::getCamera()
+ArdoorContext* PoseEstimator::getArdoorContext()
 {
-    return camera;
-}
-
-void PoseEstimator::setCamera(CameraConfiguration camera)
-{
-    this->camera = camera;
+    return ardoorContext;
 }

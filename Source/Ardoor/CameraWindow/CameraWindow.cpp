@@ -1,13 +1,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <GL/glew.h>
-#if defined(__APPLE__)
-    #include <OpenGL/gl.h>
-#else
-    #include <windows.h>
-    #include <GL/GL.h>
-#endif
 #if (defined WIN32 || defined _WIN32)
+    #include <windows.h>
     #include <direct.h>
 #else
     #include <unistd.h>

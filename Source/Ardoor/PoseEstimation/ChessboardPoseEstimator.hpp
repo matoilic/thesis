@@ -3,18 +3,19 @@
 
 #include <opencv2/core/core.hpp>
 #include <Ardoor/Ardoor.hpp>
-#include <Ardoor/CameraCalib/CameraCalib.hpp>
 #include <Ardoor/PoseEstimation/PoseEstimator.hpp>
-
+#include <Ardoor/CameraCalib/CameraCalib.hpp>
 
 class ARD_EXPORT ChessboardPoseEstimator : public PoseEstimator
 {
-private:
-    CameraCalib& calibration;
-
 public:
-    ChessboardPoseEstimator(CameraCalib& calibration, CameraConfiguration camera);
+    ChessboardPoseEstimator(ArdoorContext *ardoorContext);
+    ~ChessboardPoseEstimator();
+
     virtual PoseEstimationResult estimatePose(cv::Mat& image);
+
+private:
+    CameraCalib *calibration;
 };
 
 #endif // CHESSBOARDPOSEESTIMATOR_H

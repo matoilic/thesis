@@ -1,9 +1,20 @@
 #ifndef ARDOOR_H
 #define ARDOOR_H
 
-#if (defined WIN32 || defined _WIN32)
-#  define ARD_EXPORT __declspec(dllexport)
+#include <QtCore/qglobal.h>
+#include <Ardoor/Rendering/GLUtils.hpp>
+
+using namespace std;
+
+
+#if defined(ARDOOR_LIBRARY)
+#  define ARD_EXPORT Q_DECL_EXPORT
 #else
+#  define ARD_EXPORT Q_DECL_IMPORT
+#endif
+
+#if !defined(ARDOOR_DLL)
+#  undef ARD_EXPORT
 #  define ARD_EXPORT
 #endif
 
@@ -11,4 +22,7 @@
 #include <debug_new.h>
 #endif
 
+
 #endif
+
+

@@ -1,26 +1,35 @@
-#include <Ardoor/PoseEstimation/ChessboardPoseEstimator.hpp>
+#include <iostream>
 #include <opencv2/calib3d/calib3d.hpp>
+#include <Ardoor/PoseEstimation/ChessboardPoseEstimator.hpp>
 
-ChessboardPoseEstimator::ChessboardPoseEstimator(CameraCalib& calibration, CameraConfiguration camera)
-    : PoseEstimator(camera)
-    , calibration(calibration)
+
+ChessboardPoseEstimator::ChessboardPoseEstimator(ArdoorContext *ardoorContext)
+    : PoseEstimator(ardoorContext)
 {
+    cv::Size size = ardoorContext->getChessboardSize();
+    calibration = new CameraCalib(size);
+}
+
+ChessboardPoseEstimator::~ChessboardPoseEstimator()
+{
+    delete calibration;
 }
 
 PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
 {
-    std::cout << "estimatePose()" << std::endl << std::flush;
-
     PoseEstimationResult result;
+    result.width = calibration->getBoardSize().width;
+    result.height = calibration->getBoardSize().height;
 
-    CameraConfiguration camera = getCamera().scale(image.cols, image.rows);
+    CameraConfiguration camera = getArdoorContext()->getCameraConfiguration(image.cols, image.rows);
     cv::Matx33f M = camera.getIntrinsics();
-    cv::Mat_<float> D = camera.getDistorsion();
+    std::vector<float> D = camera.getDistorsion();
 
     std::vector<cv::Point2f> imageCorners;
     std::vector<cv::Point3f> objectCorners;
 
-    result.isObjectPresent = calibration.findAndDrawChessboardPoints(image, imageCorners, objectCorners);
+    result.isObjectPresent = calibration->findChessboardPoints(image, imageCorners, objectCorners);
+    //result.isObjectPresent = calibration->findAndDrawChessboardPoints(image, imageCorners, objectCorners);
     if (result.isObjectPresent)
     {
         cv::Vec<float, 3> R;
@@ -31,11 +40,6 @@ PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
 
         rvec.convertTo(R, CV_32FC1);
         tvec.convertTo(T, CV_32FC1);
-
-        std::cout.precision(2);
-        std::cout << "rvec = [" << R(0) << ", " << R(1) << ", " << R(2) << "]   ";
-        std::cout << "tvec = [" << T(0) << ", " << T(1) << ", " << T(2) << "]   ";
-        std::cout << std::endl;
 
         cv::Matx33f rotMat;
         cv::Rodrigues(R, rotMat);
@@ -63,7 +67,14 @@ PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
         reverseYZ(1, 1) = -1.0;
         reverseYZ(2, 2) = -1.0;
 
-        result.mvMatrix = reverseYZ * Rt;
+        cv::Matx44f mvMatrix = reverseYZ * Rt;
+
+        // Convert cv::Mat to QMatrix4x4
+        for (int i = 0; i < mvMatrix.rows; i++) {
+            for (int j = 0; j < mvMatrix.cols; j++) {
+                result.mvMatrix(i, j) = mvMatrix(i, j);
+            }
+        }
     }
 
     return result;
