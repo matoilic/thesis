@@ -12,7 +12,7 @@ SUBDIRS = \
     CaptureTest \
     #CameraWindowTest \
     #GlfwTest \
-    LswmsTest \
+    DoorDetectorTest \
     #DoorProjectionTest \
     SolvePnpTest \
     VideoCaptureTest
