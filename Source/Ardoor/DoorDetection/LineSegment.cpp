@@ -4,29 +4,6 @@
 
 #include "LineSegment.hpp"
 
-double LineSegment::distancePointToLine(double x0, double y0, double x1, double y1, double x2, double y2) const
-{
-    double dx = x2 - x1, dy = y2 - y1;
-    double t = ((x0 - x1) * dx + (y0 - y1) * dy) / (dx * dx + dy * dy);
-
-    //point on line segment with the shortest distance to this point
-    double lx = x1 + t * dx;
-    double ly = y1 + t * dy;
-
-    dx = lx - x0;
-    dy = ly - y0;
-
-    return sqrt(dx * dx + dy * dy);
-}
-
-double LineSegment::distancePointToPoint(double x0, double y0, double x1, double y1) const
-{
-    double dx = x1 - x0;
-    double dy = y1 - y0;
-
-    return std::sqrt(dx * dx + dy * dy);
-}
-
 SegmentDistance LineSegment::distanceTo(const LineSegment &s2) const
 {
     float ux = dX();

@@ -14,8 +14,6 @@ class LinePoint; //because of a circular reference
 
 class LineSegment
 {
-    double distancePointToLine(double x0, double y0, double x1, double y1, double x2, double y2) const;
-    double distancePointToPoint(double x0, double y0, double x1, double y1) const;
 public:
     LinePoint start;
     LinePoint end;

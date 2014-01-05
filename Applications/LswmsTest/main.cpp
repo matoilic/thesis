@@ -15,12 +15,20 @@ void findCorners(const string &input)
 
     vector<cv::Point> corners;
     DoorDetector detector(cv::Size(img.cols, img.rows));
-    detector.findDoorCorners(gray, corners);
-    detector.drawSegments(img, img, detector.horizontalSegments, CV_RGB(255, 0, 0));
-    detector.drawSegments(img, img, detector.verticalSegments, CV_RGB(0, 255, 0));
+    if(detector.findDoorCorners(gray, corners)) {
+        detector.drawSegments(img, img, detector.horizontalSegments, CV_RGB(255, 0, 0));
+        detector.drawSegments(img, img, detector.verticalSegments, CV_RGB(0, 255, 0));
 
-    for(cv::Point &p: corners) {
-        cv::circle(img, p, 5, CV_RGB(0, 255, 0), -5);
+        for(_DoorCandidate &c: detector.candidates) {
+            cv::line(img, c.top.start, c.top.end, CV_RGB(255, 0, 255), 1);
+            cv::line(img, c.right.start, c.right.end, CV_RGB(255, 0, 255), 1);
+            cv::line(img, c.bottom.start, c.bottom.end, CV_RGB(255, 0, 255), 1);
+            cv::line(img, c.left.start, c.left.end, CV_RGB(255, 0, 255), 1);
+        }
+
+        for(cv::Point &p: corners) {
+            cv::circle(img, p, 5, CV_RGB(255, 0, 255), -5);
+        }
     }
 
     cv::imshow(input, img);
@@ -41,6 +49,8 @@ int main(int argc, char** argv)
     findCorners("../../Data/Images/Doors/front-entry-doors-960x1280-feng-shui-front-door-interior-ae-i.com.jpg");
     findCorners("../../Data/Images/Doors/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
     findCorners("../../Data/Images/Doors/open_door1.jpg");
+    findCorners("../../Data/Images/Doors/Christmas front-door-mollica.jpg");
+    findCorners("../../Data/Images/Doors/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
 
-    cv::waitKey();
+    while(cv::waitKey() != 'q');
 }
