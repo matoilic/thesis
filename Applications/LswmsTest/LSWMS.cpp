@@ -25,7 +25,7 @@ static void setTo14Quads(DIR_POINT &dp)
     }
 }
 
-LSWMS::LSWMS(const cv::Size imSize, const int R, const int numMaxLSegs, bool verbose)
+LSWMS::LSWMS(const cv::Size imSize, const int R, const double minSegLength, const int numMaxLSegs, bool verbose)
 {
     // **********************************************
     // Constructor of class LSWMS (Slice Sampling Weighted
@@ -49,7 +49,7 @@ LSWMS::LSWMS(const cv::Size imSize, const int R, const int numMaxLSegs, bool ver
 
     __R = R;
     __numMaxLSegs = numMaxLSegs;
-    __minSegmentLength = sqrt(imSize.width * imSize.width + imSize.height * imSize.height) * 0.05;
+    __minSegmentLength = (imSize.width * imSize.width + imSize.height * imSize.height) * minSegLength * minSegLength;
 
     __N = 2*__R + 1;
 
@@ -281,7 +281,7 @@ int LSWMS::findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &
 
                 int deltaX = __lSeg.dX();
                 int deltaY = __lSeg.dY();
-                int segLength = sqrt(deltaX * deltaX + deltaY * deltaY);
+                int segLength = deltaX * deltaX + deltaY * deltaY;
 
                 if(segLength > __minSegmentLength) {
                     lSegs.push_back(__lSeg);

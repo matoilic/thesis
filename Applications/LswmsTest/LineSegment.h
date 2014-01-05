@@ -19,12 +19,12 @@ public:
     LinePoint start;
     LinePoint end;
     float error;
-    bool isJoined = false;
 
     LineSegment() { }
     LineSegment(LinePoint s, LinePoint e) : start(s), end(e) { }
 
     SegmentDistance distanceTo(const LineSegment &s2) const;
+    LinePoint intersectionPointWith(const LineSegment &s2) const;
     int dX() const;
     int dY() const;
     double gradient() const;
@@ -32,11 +32,6 @@ public:
     bool isVertical() const;
     void joinWith(const LineSegment second);
     double length() const;
-
-    bool operator<(const LineSegment &s2) const
-    {
-        return gradient() < s2.gradient();
-    }
 };
 
 class GradientComparator

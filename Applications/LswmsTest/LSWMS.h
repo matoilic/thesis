@@ -86,7 +86,7 @@ private:
     int weightedMeanShift(const DIR_POINT &dpOrig, DIR_POINT &dpDst, const cv::Mat &M=cv::Mat());
 
 public:
-    LSWMS(const cv::Size imSize, const int R, const int numMaxLSegs=0, bool verbose=false);
+    LSWMS(const cv::Size imSize, const int R, const double minSegLength, const int numMaxLSegs=0, bool verbose=false);
     int run(const cv::Mat &img, std::vector<LineSegment> &lSegs);
     void drawLSegs(cv::Mat &img, std::vector<LineSegment> &lSegs, cv::Scalar color=CV_RGB(255,0,0), int thickness=1);
     void drawLSegs(cv::Mat &img, std::vector<LineSegment> &lSegs, int thickness=1);

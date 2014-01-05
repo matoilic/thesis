@@ -18,6 +18,7 @@
 
 #include "LSWMS.h"
 #include "SegmentDistance.h"
+#include "DoorDetector.h"
 
 using namespace std;
 
@@ -32,17 +33,21 @@ double t;
 
 void enhanceEdges(cv::Mat &image, int kernelsize, float gain)
 {
-    cv::Mat blurredImage(image.cols, image.rows, image.type());
-
-    cv::Point anchor(-1,-1);
+    //cv::Mat blurredImage(image.cols, image.rows, image.type());
+    //cv::equalizeHist(image, image);
+    cv::Ptr<cv::CLAHE> c = cv::createCLAHE();
+    c->setClipLimit(5);
+    c->setTilesGridSize(cv::Size(8, 8));
+    c->apply(image, image);
+    return;
+    /*cv::Point anchor(-1,-1);
     cv::Size ksize(kernelsize, kernelsize);
-
     cv::medianBlur(image, image, kernelsize);
     cv::boxFilter(image, blurredImage, -1, ksize, anchor, true, cv::BORDER_REFLECT);
 
     cv::Mat edgeImage = image - blurredImage;
 
-    image = image + gain * edgeImage;
+    image = image + gain * edgeImage;*/
 }
 
 void categorizeSegments(vector<LSEG> &segments, vector<LSEG> &horizontal, vector<LSEG> &vertical)
@@ -73,7 +78,7 @@ void joinSegments(vector<LSEG> &segments, const cv::Mat &img, bool horizontal)
 
     do {
         foundMatching = false;
-        sort(segments.begin(), segments.end());
+        //sort(segments.begin(), segments.end());
 
         for(vector<LSEG>::iterator left = segments.begin(); left < segments.end(); left++) {
             double leftGradient = left->gradient();
@@ -121,32 +126,23 @@ void findSegments(string file)
         cv::resize(src, src, cv::Size(src.cols * 800 / src.rows, 800));
     }
 
-    vector<cv::Mat> channels;    
     src.copyTo(result);
     cv::Size size(src.cols, src.rows);
     vector<LSEG> segments;
-
-    cv::split(src, channels);
 
     LSWMS lswms(size, 3, 10000);
     gettimeofday(&ts,0);
     t1 = (ts.tv_sec * 1000 + (ts.tv_usec / 1000));
 
     cv::cvtColor(src, gray, CV_RGB2GRAY);
-    cv::equalizeHist(gray, gray);
     enhanceEdges(gray, 5, 10);
     applyLswms(lswms, gray, segments);
-
-    for(int i = 0; i < channels.size(); i++) {
-        applyLswms(lswms, channels[i], segments);
-    }
 
     gettimeofday(&ts,0);
     t2 = (ts.tv_sec * 1000 + (ts.tv_usec / 1000));
     t = (double)t2-(double)t1;
     std::cout << file << " LSWMS runtime: " << t << "ms" << std::endl;
 
-    cout << "found " << segments.size() << endl;
     vector<LSEG> horizontal, vertical;
     categorizeSegments(segments, horizontal, vertical);
     joinSegments(horizontal, src, true);
@@ -169,22 +165,29 @@ void findSegments(string file)
 /** Main function*/
 int main(int argc, char** argv)
 {
-    LineSegment l1(LinePoint(0, 0), LinePoint(0, 7));
-    LineSegment l2(LinePoint(5, 5), LinePoint(5, 10));
-    cout << l1.distanceTo(l2).length << endl;
-    findSegments("../../Data/Images/Doors/Black_door.jpg");
+    /*findSegments("../../Data/Images/Doors/Black_door.jpg");
     findSegments("../../Data/Images/Doors/back door 5.jpg");
     findSegments("../../Data/Images/Doors/Front-Door.jpg");
     findSegments("../../Data/Images/Doors/4.jpg");
     findSegments("../../Data/Images/Doors/3.jpg");
-    //findSegments("../../Data/Images/Doors/Standard-Office-Door-Size.jpg");
-    //findSegments("../../Data/Images/Doors/c1000xContemporary timber front door Kloeber Funkyfront.jpg");
-    //findSegments("../../Data/Images/Doors/door-designs-1.jpg");
-    //findSegments("../../Data/Images/Doors/entry-door-x.jpg");
-    //findSegments("../../Data/Images/Doors/front-door1.jpg");
-    //findSegments("../../Data/Images/Doors/front-entry-doors-960x1280-feng-shui-front-door-interior-ae-i.com.jpg");
-    //findSegments("../../Data/Images/Doors/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
-    //findSegments("../../Data/Images/Doors/open_door1.jpg");
+    findSegments("../../Data/Images/Doors/Standard-Office-Door-Size.jpg");
+    findSegments("../../Data/Images/Doors/c1000xContemporary timber front door Kloeber Funkyfront.jpg");
+    findSegments("../../Data/Images/Doors/door-designs-1.jpg");
+    findSegments("../../Data/Images/Doors/entry-door-x.jpg");
+    findSegments("../../Data/Images/Doors/front-door1.jpg");
+    findSegments("../../Data/Images/Doors/front-entry-doors-960x1280-feng-shui-front-door-interior-ae-i.com.jpg");
+    findSegments("../../Data/Images/Doors/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
+    findSegments("../../Data/Images/Doors/open_door1.jpg");*/
+
+    cv::Mat img = cv::imread("../../Data/Images/Doors/Black_door.jpg");
+    cv::cvtColor(img, img, CV_RGB2GRAY);
+    if(img.rows > 800) {
+        cv::resize(img, img, cv::Size(img.cols * 800 / img.rows, 800));
+    }
+
+    vector<cv::Point> corners;
+    DoorDetector detector(cv::Size(img.cols, img.rows));
+    detector.findDoorCorners(img, corners);
 
     cv::waitKey();
 }

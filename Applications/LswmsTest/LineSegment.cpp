@@ -100,6 +100,23 @@ SegmentDistance LineSegment::distanceTo(const LineSegment &s2) const
     return SegmentDistance(p0, p1);
 }
 
+LinePoint LineSegment::intersectionPointWith(const LineSegment &s2) const
+{
+    float ux = dX();
+    float uy = dY();
+    float vx = s2.dX();
+    float vy = s2.dY();
+    float wx = start.x - s2.start.x;
+    float wy = start.y - s2.start.y;
+    float D = ux * vy - vx * uy;
+
+    float sI = (vx * wy - wx * vy) / D;
+
+    LinePoint intersection(start.x + sI * ux, start.y + sI * uy);
+
+    return intersection;
+}
+
 double LineSegment::gradient() const
 {
     if(dX() == 0) return PI_HALF;
@@ -126,11 +143,6 @@ bool LineSegment::isVertical() const
 {
     return (gradient() >= PI_HALF - MAX_GRADIENT);
 }
-
-/*bool LineSegment::isJoinableWith(const LineSegment &second)
-{
-    return (std::abs(second.gradient() - gradient()) <= MAX_GRADIENT_DIFFERENCE);
-}*/
 
 double LineSegment::length() const
 {
