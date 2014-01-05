@@ -41,7 +41,12 @@ HEADERS += \
     Ardoor/Capture/FrameProcessor.hpp \
     Ardoor/Capture/ImageHandler.hpp \
     Ardoor/Rendering/ArRenderingContext.hpp \
-    Ardoor/Rendering/GLUtils.hpp
+    Ardoor/Rendering/GLUtils.hpp \
+    Ardoor/DoorDetection/DoorDetector.hpp \
+    Ardoor/DoorDetection/LinePoint.hpp \
+    Ardoor/DoorDetection/LineSegment.hpp \
+    Ardoor/DoorDetection/LSWMS.hpp \
+    Ardoor/DoorDetection/SegmentDistance.hpp
 
 SOURCES += \
     Ardoor/PoseEstimation/PoseEstimator.cpp \
@@ -62,7 +67,11 @@ SOURCES += \
     Ardoor/Rendering/OpenGLWindow.cpp \
     Ardoor/Capture/FrameProcessor.cpp \
     Ardoor/Rendering/ArRenderingContext.cpp \
-    Ardoor/Rendering/GLUtils.cpp
+    Ardoor/Rendering/GLUtils.cpp \
+    Ardoor/DoorDetection/LSWMS.cpp \
+    Ardoor/DoorDetection/LineSegment.cpp \
+    Ardoor/DoorDetection/LinePoint.cpp \
+    Ardoor/DoorDetection/DoorDetector.cpp
 
 RESOURCES += \
     ../Data/Shader/shaders.qrc

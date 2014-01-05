@@ -1,6 +1,6 @@
-#include "DoorDetector.h"
-#include "opencv2/highgui/highgui.hpp"
-#include "SegmentDistance.h"
+#include <opencv2/highgui/highgui.hpp>
+#include "DoorDetector.hpp"
+#include "SegmentDistance.hpp"
 
 DoorDetector::DoorDetector(cv::Size inputSize)
 {
@@ -139,7 +139,7 @@ bool DoorDetector::isBottomDoorSegment(LineSegment &left, LineSegment &right, Li
     );
 }
 
-void DoorDetector::findDoor(vector<LineSegment> &vertical, vector<LineSegment> &horizontal, vector<cv::Point> &corners)
+void DoorDetector::findDoor(vector<LineSegment> &horizontal, vector<LineSegment> &vertical, vector<cv::Point> &corners)
 {
     int lineGrowth = diagonalLength * LINE_GROWTH;
     growSegments(horizontal, lineGrowth);
@@ -205,9 +205,8 @@ bool DoorDetector::findDoorCorners(const cv::Mat &grayImg, vector<cv::Point> &co
     assert(grayImg.type() == CV_8UC1);
 
     cv::Mat copy(grayImg);
-    vector<LineSegment> horizontal, vertical;
-    findSegments(copy, horizontal, vertical);
-    findDoor(vertical, horizontal, corners);
+    findSegments(copy, horizontalSegments, verticalSegments);
+    findDoor(horizontalSegments, verticalSegments, corners);
 
     return corners.size() == 4;
 }
