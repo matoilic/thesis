@@ -55,8 +55,6 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
     };
 
     do {
-        begin:
-
         foundMatching = false;
         sort(segments.begin(), segments.end(), comparator);
 
@@ -87,9 +85,6 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
                         }
                     }
                 }
-
-                if (foundMatching)
-                    goto begin;
             }
         }
     } while(foundMatching);
