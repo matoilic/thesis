@@ -2,4 +2,7 @@
 
 SegmentDistance::SegmentDistance()
 {
+    areCollinear = false;
+    areParallel = false;
+    areIntersecting = false;
 }

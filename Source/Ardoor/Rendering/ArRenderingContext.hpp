@@ -19,7 +19,7 @@ public:
     virtual void initialize();
     void resize(int width, int height);
     void display();
-    void update(const cv::Mat &image, const PoseEstimationResult &result);
+    void update(const cv::Mat &image, const std::vector<PoseEstimationResult> &results);
 
 protected:
     void initializePerspective(int width, int height);
@@ -27,6 +27,7 @@ protected:
     virtual void drawAugmentedScene() {}
 
     PoseEstimationResult poseResult;
+    std::vector<PoseEstimationResult> poseResults;
 
     QMatrix4x4 projectionMatrix;
     QMatrix4x4 modelViewMatrix;

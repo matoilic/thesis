@@ -46,7 +46,10 @@ HEADERS += \
     Ardoor/DoorDetection/LinePoint.hpp \
     Ardoor/DoorDetection/LineSegment.hpp \
     Ardoor/DoorDetection/LSWMS.hpp \
-    Ardoor/DoorDetection/SegmentDistance.hpp
+    Ardoor/DoorDetection/SegmentDistance.hpp \
+    Ardoor/PoseEstimation/DoorPoseEstimator.hpp \
+    Ardoor/Rendering/DoorRenderingContext.hpp \
+    Ardoor/Projection/ProjectionUtil.hpp
 
 SOURCES += \
     Ardoor/PoseEstimation/PoseEstimator.cpp \
@@ -71,7 +74,10 @@ SOURCES += \
     Ardoor/DoorDetection/LSWMS.cpp \
     Ardoor/DoorDetection/LineSegment.cpp \
     Ardoor/DoorDetection/LinePoint.cpp \
-    Ardoor/DoorDetection/DoorDetector.cpp
+    Ardoor/DoorDetection/DoorDetector.cpp \
+    Ardoor/PoseEstimation/DoorPoseEstimator.cpp \
+    Ardoor/Rendering/DoorRenderingContext.cpp \
+    Ardoor/Projection/ProjectionUtil.cpp
 
 RESOURCES += \
     ../Data/Shader/shaders.qrc

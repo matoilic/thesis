@@ -17,7 +17,7 @@ public:
     virtual ~PoseEstimator() {}
 
     ArdoorContext* getArdoorContext();
-    virtual PoseEstimationResult estimatePose(cv::Mat& image) = 0;
+    virtual std::vector<PoseEstimationResult> estimatePose(cv::Mat& image) = 0;
 };
 
 #endif // POSEESTIMATOR_H
