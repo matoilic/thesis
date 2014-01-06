@@ -44,8 +44,7 @@ void CalibrationProcessor::operator() (cv::Mat &frame)
 
     drawStatus(frame);
 
-    PoseEstimationResult emptyResult;
-    emptyResult.isObjectPresent = false;
+    std::vector<PoseEstimationResult> emptyResult;
     renderingContext->update(frame, emptyResult);
 
     if (numOfDetections >= CALIB_NUM_IMAGES) {

@@ -51,6 +51,10 @@ int main(int argc, char** argv)
     findCorners("../../Data/Images/Doors/open_door1.jpg");
     findCorners("../../Data/Images/Doors/Christmas front-door-mollica.jpg");
     findCorners("../../Data/Images/Doors/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
+    findCorners("../../Data/Images/Doors/6.jpg");
+    findCorners("../../Data/Images/Doors/7.jpg");
+    findCorners("../../Data/Images/Doors/IMG_20140106_145915.jpg");
+
 
     while(cv::waitKey() != 'q');
 }

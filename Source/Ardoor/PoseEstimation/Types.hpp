@@ -7,10 +7,9 @@
 
 typedef ARD_EXPORT struct
 {
-    bool isObjectPresent;
     QMatrix4x4 mvMatrix;
-    int width;
-    int height;
+    float width;
+    float height;
 
 } PoseEstimationResult;
 

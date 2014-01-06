@@ -31,6 +31,9 @@ public:
     bool isVertical() const;
     void joinWith(const LineSegment second);
     double length() const;
+
+private:
+    static double round(double number);
 };
 
 class GradientComparator

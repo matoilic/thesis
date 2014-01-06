@@ -15,9 +15,9 @@ public:
 
     double length;
 
-    bool areCollinear = false;
-    bool areParallel = false;
-    bool areIntersecting = false;
+    bool areCollinear;
+    bool areParallel;
+    bool areIntersecting;
 
     SegmentDistance(LinePoint s, LinePoint e) : start(s), end(e) {
         dx = std::abs(end.x - start.x);

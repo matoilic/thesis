@@ -71,8 +71,8 @@ SegmentDistance LineSegment::distanceTo(const LineSegment &s2) const
     sc = (abs(sN) < F_ZERO ? 0.0 : sN / sD);
     tc = (abs(tN) < F_ZERO ? 0.0 : tN / tD);
 
-    LinePoint p0(std::round(tc * vx), std::round(tc * vy));
-    LinePoint p1(std::round(wx + sc * ux), std::round(wy + sc * uy));
+    LinePoint p0(round(tc * vx), round(tc * vy));
+    LinePoint p1(round(wx + sc * ux), round(wy + sc * uy));
 
     return SegmentDistance(p0, p1);
 }
@@ -147,13 +147,18 @@ void LineSegment::joinWith(const LineSegment second)
     }
 
     if(isHorizontal()) {
-        newStart.y = std::round(thisWeight * start.y + secondWeight * second.start.y);
-        newEnd.y = std::round(thisWeight * end.y + secondWeight * second.end.y);
+        newStart.y = round(thisWeight * start.y + secondWeight * second.start.y);
+        newEnd.y = round(thisWeight * end.y + secondWeight * second.end.y);
     } else {
-        newStart.x = std::round(thisWeight * start.x + secondWeight * second.start.x);
-        newEnd.x = std::round(thisWeight * end.x + secondWeight * second.end.x);
+        newStart.x = round(thisWeight * start.x + secondWeight * second.start.x);
+        newEnd.x = round(thisWeight * end.x + secondWeight * second.end.x);
     }
 
     start = newStart;
     end = newEnd;
+}
+
+double LineSegment::round(double number)
+{
+    return std::floor(number + 0.5);
 }

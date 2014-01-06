@@ -28,6 +28,7 @@ public:
     ~Capture();
 
     bool start(const std::string &inputFile = "");
+    bool startImageFile(std::string imageFile);
     void stop();
     bool isStopped();
 

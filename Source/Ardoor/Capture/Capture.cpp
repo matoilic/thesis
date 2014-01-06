@@ -32,6 +32,17 @@ bool Capture::start(const std::string &inputFile)
     return success;
 }
 
+bool Capture::startImageFile(string imageFile)
+{
+    cv::Mat frame = cv::imread(imageFile);
+
+    if (handler && frame.rows > 0 && frame.cols > 0) {
+        (*handler)(frame);
+    }
+
+    return true;
+}
+
 bool Capture::isStopped()
 {
     mutex.lock();

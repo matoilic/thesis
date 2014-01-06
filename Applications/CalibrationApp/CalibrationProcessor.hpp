@@ -11,7 +11,7 @@
 #include <Ardoor/CameraCalib/CameraCalib.hpp>
 #include <Ardoor/Rendering/ArRenderingContext.hpp>
 
-#define CALIB_NUM_IMAGES 2
+#define CALIB_NUM_IMAGES 30
 
 class CalibrationProcessor : public QObject, public ImageHandler
 {
