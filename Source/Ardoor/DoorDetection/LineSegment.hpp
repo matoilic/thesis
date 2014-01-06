@@ -17,10 +17,11 @@ class LineSegment
 public:
     LinePoint start;
     LinePoint end;
+    bool deleted;
     float error;
 
     LineSegment() { }
-    LineSegment(LinePoint s, LinePoint e) : start(s), end(e) { }
+    LineSegment(LinePoint s, LinePoint e) : start(s), end(e), deleted(false) { }
 
     SegmentDistance distanceTo(const LineSegment &s2) const;
     LinePoint intersectionPointWith(const LineSegment &s2) const;

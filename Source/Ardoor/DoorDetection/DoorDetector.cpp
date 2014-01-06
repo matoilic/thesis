@@ -59,9 +59,11 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
         sort(segments.begin(), segments.end(), comparator);
 
         for(vector<LineSegment>::iterator left = segments.begin(); left < segments.end(); left++) {
+            if(left->deleted) continue;
             double leftGradient = left->gradient();
 
             for(vector<LineSegment>::iterator right = left + 1; right < segments.end(); right++) {
+                if(right->deleted) continue;
                 if(abs(right->gradient() - leftGradient) > MAX_GRADIENT_DIFFERENCE) break;
 
                 SegmentDistance dist = left->distanceTo(*right);
@@ -71,14 +73,14 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
                         if(dist.dy <= 8) {
                             left->joinWith(*right);
                             leftGradient = left->gradient();
-                            segments.erase(right);
+                            right->deleted = true;
                             foundMatching = true;
                         }
                     } else {
                         if(dist.dx <= 8) {
                             left->joinWith(*right);
                             leftGradient = left->gradient();
-                            segments.erase(right);
+                            right->deleted = true;
                             foundMatching = true;
                         }
                     }
@@ -86,6 +88,13 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
             }
         }
     } while(foundMatching);
+
+
+    segments.erase(
+        remove_if(segments.begin(), segments.end(), [](LineSegment &s) {
+            return s.deleted;
+        }),
+        segments.end());
 }
 
 void DoorDetector::applyLswms(cv::Mat img, vector<LineSegment> &segments)
