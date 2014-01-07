@@ -23,7 +23,7 @@ void DoorRenderingContext::initialize()
 
 void DoorRenderingContext::drawAugmentedScene()
 {
-    modelViewMatrix.translate(poseResult.width / 2.0, poseResult.height);
+    modelViewMatrix.translate(poseResult.width / 2.0f, poseResult.height);
     modelViewMatrix.scale(0.6, 0.05, 0.3);
     modelViewMatrix.translate(0, 1, -1);
 

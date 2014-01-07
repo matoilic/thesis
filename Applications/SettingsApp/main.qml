@@ -114,7 +114,7 @@ ApplicationWindow {
             width: 94
             text: "Save & quit"
             onClicked: {
-                controller.flipBackground = chkFlipBackground.state
+                controller.flipBackground = chkFlipBackground.checked
                 controller.boardWidth = txtWidth.text
                 controller.boardHeight = txtHeight.text
                 controller.saveSettings()

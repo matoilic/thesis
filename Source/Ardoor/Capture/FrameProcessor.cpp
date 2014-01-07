@@ -1,25 +1,24 @@
 #include "FrameProcessor.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
 
-FrameProcessor::FrameProcessor(ArdoorContext *ardoorContext, PoseEstimator *poseEstimator, ArRenderingContext *renderingContext)
+FrameProcessor::FrameProcessor(ArdoorContext *ardoorContext, PoseEstimator *poseEstimator, ArRenderingContext *renderingContext, QWindow *window)
     : ardoorContext(ardoorContext)
     , poseEstimator(poseEstimator)
     , renderingContext(renderingContext)
+    , window(window)
 {
 }
 
 void FrameProcessor::operator() (cv::Mat &frame)
 {
-    cv::Mat temp;
-    cv::Mat *resultImage = &frame;
-
     if (ardoorContext->isFrontCamera()) {
-        cv::flip(frame, temp, 1);
-        resultImage = &temp;
-    }
+        cv::flip(frame, frame, 1);
+    }   
 
-    cv::cvtColor(*resultImage, *resultImage, CV_BGR2RGB);
+    cv::cvtColor(frame, frame, CV_BGR2RGB);
 
-    PoseEstimationResult result = poseEstimator->estimatePose(*resultImage);
-    renderingContext->update(*resultImage, result);
+    PoseEstimationResult result = poseEstimator->estimatePose(frame);
+    renderingContext->update(frame, result);
+
+    window->resize(frame.cols, frame.rows);
 }

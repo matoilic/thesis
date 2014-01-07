@@ -13,18 +13,18 @@ int main(int argc, char** argv)
     ChessboardPoseEstimator poseEstimator(&ardoorContext);
     ChessboardRenderingContext renderingContext(&ardoorContext);
 
-    FrameProcessor frameProcessor(&ardoorContext, &poseEstimator, &renderingContext);
-
-    Capture capture;
-    capture.setHandler(&frameProcessor);
-    capture.start();
-
     QGuiApplication app(argc, argv);
 
     OpenGLWindow window(&renderingContext);
     window.resize(800, 600);
     window.show();
     window.setAnimating(true);
+
+    FrameProcessor frameProcessor(&ardoorContext, &poseEstimator, &renderingContext, &window);
+
+    Capture capture;
+    capture.setHandler(&frameProcessor);
+    capture.start();
 
     return app.exec();
 }

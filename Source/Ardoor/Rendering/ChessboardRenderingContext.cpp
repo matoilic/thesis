@@ -37,7 +37,7 @@ void ChessboardRenderingContext::drawCoordinateAxis()
 
     // The central point of the chessboard is estimated. To display the coordinate
     // axes for the whole board, we have to scale and translate it.
-    modelViewMatrix.translate(-poseResult.width / 2 - 1, -poseResult.height / 2 - 1);
+    modelViewMatrix.translate(-poseResult.width / 2.0f - 1, -poseResult.height / 2.0f - 1);
     modelViewMatrix.scale(poseResult.width + 1, poseResult.height + 1, poseResult.height);
 
     // Activate the shader programm

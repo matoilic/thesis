@@ -13,12 +13,6 @@ int main(int argc, char** argv)
     DoorPoseEstimator poseEstimator(&ardoorContext);
     DoorRenderingContext renderingContext(&ardoorContext);
 
-    FrameProcessor frameProcessor(&ardoorContext, &poseEstimator, &renderingContext);
-
-    Capture capture;
-    capture.setHandler(&frameProcessor);
-    capture.start();
-
     QGuiApplication app(argc, argv);
 
     OpenGLWindow window(&renderingContext);
@@ -26,6 +20,12 @@ int main(int argc, char** argv)
     window.resize(800, 600);
     window.show();
     window.setAnimating(true);
+
+    FrameProcessor frameProcessor(&ardoorContext, &poseEstimator, &renderingContext, &window);
+
+    Capture capture;
+    capture.setHandler(&frameProcessor);
+    capture.start();
 
     return app.exec();
 }

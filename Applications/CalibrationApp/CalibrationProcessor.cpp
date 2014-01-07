@@ -25,8 +25,11 @@ void CalibrationProcessor::operator() (cv::Mat &frame)
         window->resize(frame.cols, frame.rows);
     }
 
-    cv::cvtColor(frame, frame, CV_BGR2RGB);
+    if (ardoorContext->isFrontCamera()) {
+        cv::flip(frame, frame, 1);
+    }
 
+    cv::cvtColor(frame, frame, CV_BGR2RGB);
 
     std::vector<cv::Point2f> imageCorners;
     std::vector<cv::Point3f> objectCorners;
@@ -38,8 +41,6 @@ void CalibrationProcessor::operator() (cv::Mat &frame)
             imageSize = frame.size();
 
             calib->addPoints(imageCorners, objectCorners);
-            //cv::drawChessboardCorners(frame, imageSize, imageCorners, true);
-
             numOfDetections++;
         }
         prevTimestamp = clock();
