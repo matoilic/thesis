@@ -26,7 +26,7 @@ OpenGLWindow::~OpenGLWindow()
 
 void OpenGLWindow::updateSize()
 {
-    if (m_renderingContext)
+    if (m_renderingContext && m_context)
         m_renderingContext->resize(width(), height());
 }
 
