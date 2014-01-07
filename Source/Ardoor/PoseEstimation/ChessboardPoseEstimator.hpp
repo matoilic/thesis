@@ -12,7 +12,7 @@ public:
     ChessboardPoseEstimator(ArdoorContext *ardoorContext);
     ~ChessboardPoseEstimator();
 
-    virtual std::vector<PoseEstimationResult> estimatePose(cv::Mat& image);
+    virtual PoseEstimationResult estimatePose(cv::Mat& image);
 
 private:
     CameraCalib *calibration;

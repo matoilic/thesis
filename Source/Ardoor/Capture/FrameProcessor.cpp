@@ -20,6 +20,6 @@ void FrameProcessor::operator() (cv::Mat &frame)
 
     cv::cvtColor(*resultImage, *resultImage, CV_BGR2RGB);
 
-    std::vector<PoseEstimationResult> results = poseEstimator->estimatePose(*resultImage);
-    renderingContext->update(*resultImage, results);
+    PoseEstimationResult result = poseEstimator->estimatePose(*resultImage);
+    renderingContext->update(*resultImage, result);
 }

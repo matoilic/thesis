@@ -25,6 +25,9 @@ void CalibrationProcessor::operator() (cv::Mat &frame)
         window->resize(frame.cols, frame.rows);
     }
 
+    cv::cvtColor(frame, frame, CV_BGR2RGB);
+
+
     std::vector<cv::Point2f> imageCorners;
     std::vector<cv::Point3f> objectCorners;
 
@@ -44,7 +47,9 @@ void CalibrationProcessor::operator() (cv::Mat &frame)
 
     drawStatus(frame);
 
-    std::vector<PoseEstimationResult> emptyResult;
+    PoseEstimationResult emptyResult;
+    emptyResult.isObjectPresent = false;
+
     renderingContext->update(frame, emptyResult);
 
     if (numOfDetections >= CALIB_NUM_IMAGES) {

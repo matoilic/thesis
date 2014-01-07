@@ -16,26 +16,23 @@ ChessboardPoseEstimator::~ChessboardPoseEstimator()
     delete calibration;
 }
 
-std::vector<PoseEstimationResult> ChessboardPoseEstimator::estimatePose(cv::Mat& image)
+PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
 {
-    std::vector<PoseEstimationResult> results;
+    PoseEstimationResult result;
 
     CameraConfiguration camera = getArdoorContext()->getCameraConfiguration(image.cols, image.rows);
 
     std::vector<cv::Point2f> imageCorners;
     std::vector<cv::Point3f> objectCorners;
-    bool success = calibration->findChessboardPoints(image, imageCorners, objectCorners);
+    result.isObjectPresent = calibration->findChessboardPoints(image, imageCorners, objectCorners);
 
-    if (success) {
-        PoseEstimationResult result;
+    if (result.isObjectPresent) {
         result.width = calibration->getBoardSize().width;
         result.height = calibration->getBoardSize().height;
 
         ProjectionUtil::solvePnP(objectCorners, imageCorners, camera, result.mvMatrix);
         ProjectionUtil::reverseYZ(result.mvMatrix);
-
-        results.push_back(result);
     }
 
-    return results;
+    return result;
 }

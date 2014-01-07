@@ -8,6 +8,7 @@ SUBDIRS = \
     SettingsApp \
     CalibrationApp \
     ChessboardApp \
+    DoorApp \
     CameraCalibTest \
     CaptureTest \
     #CameraWindowTest \

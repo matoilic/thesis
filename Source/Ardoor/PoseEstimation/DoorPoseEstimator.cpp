@@ -37,9 +37,9 @@ float DoorPoseEstimator::getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::
     return sqrt(_ratio.at<float>(0, 0));
 }
 
-std::vector<PoseEstimationResult> DoorPoseEstimator::estimatePose(cv::Mat& image)
+PoseEstimationResult DoorPoseEstimator::estimatePose(cv::Mat& image)
 {
-    std::vector<PoseEstimationResult> results;
+    PoseEstimationResult result;
 
     CameraConfiguration camera = getArdoorContext()->getCameraConfiguration(image.cols, image.rows);
 
@@ -48,7 +48,10 @@ std::vector<PoseEstimationResult> DoorPoseEstimator::estimatePose(cv::Mat& image
 
     std::vector<cv::Point> corners;
     DoorDetector detector(cv::Size(image.cols, image.rows));
-    if (detector.findDoorCorners(gray, corners)) {
+
+    result.isObjectPresent = detector.findDoorCorners(gray, corners);
+    if (result.isObjectPresent) {
+        qDebug() << "Door found!";
 
         std::vector<cv::Point2f> imagePoints;
         for (std::vector<cv::Point>::iterator it = corners.begin(); it != corners.end(); it++) {
@@ -66,15 +69,12 @@ std::vector<PoseEstimationResult> DoorPoseEstimator::estimatePose(cv::Mat& image
         objectPoints.push_back(cv::Point3f(1, 0, 0));
         objectPoints.push_back(cv::Point3f(0, 0, 0));
 
-        PoseEstimationResult result;
         result.width = 1;
         result.height = doorRatio;
 
         ProjectionUtil::solvePnP(objectPoints, imagePoints, camera, result.mvMatrix);
         ProjectionUtil::reverseYZ(result.mvMatrix);
-
-        results.push_back(result);
     }
 
-    return results;
+    return result;
 }

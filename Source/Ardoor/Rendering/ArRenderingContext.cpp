@@ -17,11 +17,11 @@ ArdoorContext* ArRenderingContext::getArdoorContext()
     return ardoorContext;
 }
 
-void ArRenderingContext::update(const cv::Mat &image, const std::vector<PoseEstimationResult> &results)
+void ArRenderingContext::update(const cv::Mat &image, const PoseEstimationResult &result)
 {
     mutex.lock();
 
-    poseResults = results;
+    poseResult = result;
     image.copyTo(backgroundImage);
 
     mutex.unlock();
@@ -65,9 +65,7 @@ void ArRenderingContext::display()
 
     drawCameraFrame();
 
-    for (std::vector<PoseEstimationResult>::iterator it = poseResults.begin(); it != poseResults.end(); it++) {
-        poseResult = *it;
-
+    if (poseResult.isObjectPresent) {
         // Set the extrinsic transformation
         modelViewMatrix = poseResult.mvMatrix * modelViewMatrix;
 

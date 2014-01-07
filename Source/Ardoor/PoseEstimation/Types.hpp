@@ -7,6 +7,7 @@
 
 typedef ARD_EXPORT struct
 {
+    bool isObjectPresent;
     QMatrix4x4 mvMatrix;
     float width;
     float height;

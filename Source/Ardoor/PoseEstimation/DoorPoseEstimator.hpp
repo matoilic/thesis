@@ -11,7 +11,7 @@ public:
     DoorPoseEstimator(ArdoorContext *ardoorContext);
     ~DoorPoseEstimator();
 
-    virtual std::vector<PoseEstimationResult> estimatePose(cv::Mat& image);
+    virtual PoseEstimationResult estimatePose(cv::Mat& image);
     float getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::Point2f c2, cv::Point2f c3, cv::Point2f c4);
 };
 
