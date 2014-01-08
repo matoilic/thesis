@@ -5,7 +5,7 @@
 #include "LinePoint.hpp"
 #include "SegmentDistance.hpp"
 
-#define MAX_GRADIENT 0.267949192 //tan(15°)
+#define MAX_GRADIENT 0.466308 //tan(15°)
 #define MAX_GRADIENT_DIFFERENCE 0.2618 //tan(5°)
 #define PI_HALF 1.57079632679
 #define F_ZERO 0.00000001

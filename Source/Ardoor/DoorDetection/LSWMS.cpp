@@ -281,6 +281,13 @@ int LSWMS::findLineSegments(const cv::Mat &G, const cv::Mat &Gx, const cv::Mat &
 
                 int deltaX = __lSeg.dX();
                 int deltaY = __lSeg.dY();
+
+                if((deltaX < 0 && __lSeg.isHorizontal()) || (deltaY < 0 && __lSeg.isVertical())) {
+                    LinePoint start = __lSeg.start;
+                    __lSeg.start = __lSeg.end;
+                    __lSeg.end = start;
+                }
+
                 int segLength = deltaX * deltaX + deltaY * deltaY;
 
                 if(segLength > __minSegmentLength) {

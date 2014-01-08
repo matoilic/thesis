@@ -6,8 +6,10 @@
 #include "LSWMS.hpp"
 #include "LineSegment.hpp"
 
-#define MIN_SEGMENT_LENGTH 0.01 //in percent of the image diagonal
+#define MIN_SEGMENT_LENGTH 0.03 //in percent of the image diagonal
 #define MAX_SEGMENT_DISTANCE 0.1 //in percent of the image diagonal
+#define MAX_SEGMENT_SHIFT 3 //in px
+#define MAX_SEGMENT_GRADIENT_DIFFERENCE 0.17632 //in px
 #define LINE_GROWTH 0.03 //in percent of the image diagonal
 #define MIN_DOOR_WIDTH 0.15 //in percent of the image diagonal
 #define MIN_DOOR_HEIGHT 0.25 //in percent of the image diagonal

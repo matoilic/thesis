@@ -36,24 +36,23 @@ void findCorners(const string &input)
 
 int main(int argc, char** argv)
 {
-    findCorners("../../Data/Images/Doors/Black_door.jpg");
-    findCorners("../../Data/Images/Doors/back door 5.jpg");
-    findCorners("../../Data/Images/Doors/Front-Door.jpg");
-    findCorners("../../Data/Images/Doors/4.jpg");
-    findCorners("../../Data/Images/Doors/3.jpg");
-    findCorners("../../Data/Images/Doors/Standard-Office-Door-Size.jpg");
-    findCorners("../../Data/Images/Doors/c1000xContemporary timber front door Kloeber Funkyfront.jpg");
-    findCorners("../../Data/Images/Doors/door-designs-1.jpg");
-    findCorners("../../Data/Images/Doors/entry-door-x.jpg");
-    findCorners("../../Data/Images/Doors/front-door1.jpg");
-    findCorners("../../Data/Images/Doors/front-entry-doors-960x1280-feng-shui-front-door-interior-ae-i.com.jpg");
-    findCorners("../../Data/Images/Doors/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
-    findCorners("../../Data/Images/Doors/open_door1.jpg");
-    findCorners("../../Data/Images/Doors/Christmas front-door-mollica.jpg");
-    findCorners("../../Data/Images/Doors/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
+//    findCorners("../../Data/Images/Doors/Black_door.jpg");
+//    findCorners("../../Data/Images/Doors/back door 5.jpg");
+//    findCorners("../../Data/Images/Doors/Front-Door.jpg");
+//    findCorners("../../Data/Images/Doors/4.jpg");
+//    findCorners("../../Data/Images/Doors/3.jpg");
+//    findCorners("../../Data/Images/Doors/Standard-Office-Door-Size.jpg");
+//    findCorners("../../Data/Images/Doors/c1000xContemporary timber front door Kloeber Funkyfront.jpg");
+//    findCorners("../../Data/Images/Doors/door-designs-1.jpg");
+//    findCorners("../../Data/Images/Doors/entry-door-x.jpg");
+//    findCorners("../../Data/Images/Doors/front-door1.jpg");
+//    findCorners("../../Data/Images/Doors/front-entry-doors-960x1280-feng-shui-front-door-interior-ae-i.com.jpg");
+//    findCorners("../../Data/Images/Doors/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
+//    findCorners("../../Data/Images/Doors/open_door1.jpg");
+//    findCorners("../../Data/Images/Doors/Christmas front-door-mollica.jpg");
+//    findCorners("../../Data/Images/Doors/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
     findCorners("../../Data/Images/Doors/6.jpg");
-    findCorners("../../Data/Images/Doors/7.jpg");
-    findCorners("../../Data/Images/Doors/IMG_20140106_145915.jpg");
+//    findCorners("../../Data/Images/Doors/7.jpg");
 
 
     while(cv::waitKey() != 'q');

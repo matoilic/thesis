@@ -47,6 +47,7 @@ HEADERS += \
     Ardoor/DoorDetection/LineSegment.hpp \
     Ardoor/DoorDetection/LSWMS.hpp \
     Ardoor/DoorDetection/SegmentDistance.hpp \
+    Ardoor/DoorDetection/debugbreak.h \
     Ardoor/PoseEstimation/DoorPoseEstimator.hpp \
     Ardoor/Rendering/DoorRenderingContext.hpp \
     Ardoor/Projection/ProjectionUtil.hpp

@@ -1,6 +1,7 @@
 #include <cmath>
 #include <stdio.h>
 #include <iostream>
+#include <assert.h>
 
 #include "LineSegment.hpp"
 
@@ -130,7 +131,31 @@ double LineSegment::length() const
 }
 
 void LineSegment::joinWith(const LineSegment second)
-{
+{    
+    if(isHorizontal()) {
+        //asert(second.isHorizontal());
+
+        if(start.x < second.start.x && end.x > second.end.x) return;
+
+        if(second.start.x < start.x && second.end.x > end.x) {
+            start = second.start;
+            end = second.end;
+
+            return;
+        }
+    } else {
+        //asert(second.isVertical());
+
+        if(start.y < second.start.y && end.y > second.end.y) return;
+
+        if(second.start.y < start.y && second.end.y > end.y) {
+            start = second.start;
+            end = second.end;
+
+            return;
+        }
+    }
+
     cv::Point newStart, newEnd;
 
     newStart = (second.start.distanceFromOrigin() < start.distanceFromOrigin()) ? second.start : start;

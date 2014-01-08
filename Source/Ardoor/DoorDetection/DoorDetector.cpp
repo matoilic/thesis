@@ -64,20 +64,20 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
 
             for(vector<LineSegment>::iterator right = left + 1; right < segments.end(); right++) {
                 if(right->deleted) continue;
-                if(abs(right->gradient() - leftGradient) > MAX_GRADIENT_DIFFERENCE) break;
+                if(abs(right->gradient() - leftGradient) > MAX_SEGMENT_GRADIENT_DIFFERENCE) break;
 
                 SegmentDistance dist = left->distanceTo(*right);
 
                 if(dist.length < maxDistance) {
                     if(horizontal) {
-                        if(dist.dy <= 8) {
+                        if(dist.dy <= MAX_SEGMENT_SHIFT) {
                             left->joinWith(*right);
                             leftGradient = left->gradient();
                             right->deleted = true;
                             foundMatching = true;
                         }
                     } else {
-                        if(dist.dx <= 8) {
+                        if(dist.dx <= MAX_SEGMENT_SHIFT) {
                             left->joinWith(*right);
                             leftGradient = left->gradient();
                             right->deleted = true;
@@ -100,6 +100,10 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
 void DoorDetector::applyLswms(cv::Mat img, vector<LineSegment> &segments)
 {
     lswms->run(img, segments);
+    /*cv::Mat copy;
+    cv::cvtColor(img, copy, CV_GRAY2RGB);
+    drawSegments(copy, copy, segments, CV_RGB(255, 255, 0));
+    cv::imshow("lswm", copy);*/
 }
 
 void DoorDetector::findSegments(cv::Mat &grayImg, vector<LineSegment> &horizontal, vector<LineSegment> &vertical)
@@ -109,9 +113,25 @@ void DoorDetector::findSegments(cv::Mat &grayImg, vector<LineSegment> &horizonta
     enhanceEdges(grayImg);
     applyLswms(grayImg, segments);
 
+//    cv::Mat copy;
+//    cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
+//    drawSegments(copy, copy, segments, CV_RGB(255, 255, 0));
+//    cv::imshow("raw segments", copy);
+
     categorizeSegments(segments, horizontal, vertical);
+
+//    cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
+//    drawSegments(copy, copy, horizontal, CV_RGB(255, 0, 0));
+//    drawSegments(copy, copy, vertical, CV_RGB(0, 255, 0));
+//    cv::imshow("categorized segments", copy);
+
     joinSegments(horizontal, grayImg, true);
     joinSegments(vertical, grayImg, false);
+
+//    cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
+//    drawSegments(copy, copy, horizontal, CV_RGB(255, 0, 0));
+//    drawSegments(copy, copy, vertical, CV_RGB(0, 255, 0));
+//    cv::imshow("joined segments", copy);
 }
 
 void DoorDetector::growSegments(vector<LineSegment> &segments, int length)
