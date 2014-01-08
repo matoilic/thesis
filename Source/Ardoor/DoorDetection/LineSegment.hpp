@@ -20,7 +20,7 @@ public:
     bool deleted;
     float error;
 
-    LineSegment() { }
+    LineSegment() : deleted(false) { }
     LineSegment(LinePoint s, LinePoint e) : start(s), end(e), deleted(false) { }
 
     SegmentDistance distanceTo(const LineSegment &s2) const;
