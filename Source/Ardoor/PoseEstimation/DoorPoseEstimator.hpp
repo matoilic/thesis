@@ -9,10 +9,7 @@ class ARD_EXPORT DoorPoseEstimator : public PoseEstimator
 {
 public:
     DoorPoseEstimator(ArdoorContext *ardoorContext);
-    ~DoorPoseEstimator();
-
     virtual PoseEstimationResult estimatePose(cv::Mat& image);
-    float getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::Point2f c2, cv::Point2f c3, cv::Point2f c4);
 };
 
 #endif // CHESSBOARDPOSEESTIMATOR_H

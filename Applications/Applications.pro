@@ -16,4 +16,5 @@ SUBDIRS = \
     DoorDetectorTest \
     #DoorProjectionTest \
     SolvePnpTest \
+    DoorRatioTest \
     VideoCaptureTest
