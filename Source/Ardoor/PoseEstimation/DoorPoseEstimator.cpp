@@ -4,37 +4,9 @@
 #include <Ardoor/DoorDetection/DoorDetector.hpp>
 #include <Ardoor/Projection/ProjectionUtil.hpp>
 
-
 DoorPoseEstimator::DoorPoseEstimator(ArdoorContext *ardoorContext)
     : PoseEstimator(ardoorContext)
 {
-}
-
-DoorPoseEstimator::~DoorPoseEstimator()
-{
-}
-
-float DoorPoseEstimator::getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::Point2f c2, cv::Point2f c3, cv::Point2f c4)
-{
-    cv::Mat A(cameraMatrix);
-
-    float k2, k3;
-    cv::Mat _ratio;
-    cv::Mat n2, n3;
-
-    cv::Mat m1 = (cv::Mat_<float>(3,1) << (float) c1.x, (float) c1.y, 1);
-    cv::Mat m2 = (cv::Mat_<float>(3,1) << (float) c4.x, (float) c4.y, 1);
-    cv::Mat m3 = (cv::Mat_<float>(3,1) << (float) c2.x, (float) c2.y, 1);
-    cv::Mat m4 = (cv::Mat_<float>(3,1) << (float) c3.x, (float) c3.y, 1);
-
-    k2 = (m1.cross(m4).dot(m3)) / ((m2.cross(m4)).dot(m3));
-    k3 = (m1.cross(m4).dot(m2)) / ((m3.cross(m4)).dot(m2));
-    n2 = (k2 * m2) - m1;
-    n3 = (k3 * m3) - m1;
-
-    _ratio = (n2.t() * (A.inv().t()) * (A.inv()) * n2) / (n3.t() * (A.inv().t()) * (A.inv()) * n3);
-
-    return sqrt(_ratio.at<float>(0, 0));
 }
 
 PoseEstimationResult DoorPoseEstimator::estimatePose(cv::Mat& image)
@@ -50,29 +22,46 @@ PoseEstimationResult DoorPoseEstimator::estimatePose(cv::Mat& image)
     DoorDetector detector(cv::Size(image.cols, image.rows));
 
     result.isObjectPresent = detector.findDoorCorners(gray, corners);
+    result.isObjectPresent = true;
     if (result.isObjectPresent) {
-        qDebug() << "Door found!";
-
         std::vector<cv::Point2f> imagePoints;
         for (std::vector<cv::Point>::iterator it = corners.begin(); it != corners.end(); it++) {
             imagePoints.push_back(cv::Point2f((*it).x, (*it).y));
         }
 
-        float doorRatio = getRatio(camera.getIntrinsics(), imagePoints.at(0), imagePoints.at(1), imagePoints.at(2), imagePoints.at(3));
+
+        imagePoints.clear();
+        imagePoints.push_back(cv::Point2f(443, 34));
+        imagePoints.push_back(cv::Point2f(576, 71));
+        imagePoints.push_back(cv::Point2f(562, 533));
+        imagePoints.push_back(cv::Point2f(430, 593));
+
+        std::vector<cv::Point2f> undistortedPoints;
+        ProjectionUtil::undistortPoints(imagePoints, undistortedPoints, camera);
+
+        float doorRatio = ProjectionUtil::getRatio(camera.getIntrinsics(), undistortedPoints.at(0), undistortedPoints.at(1), undistortedPoints.at(2), undistortedPoints.at(3));
         if (doorRatio < 1) {
             doorRatio = 1/doorRatio;
         }
 
+        float w = 1.0;
+        float h = doorRatio;
+
+        // The solvePnP results with the floating point ratio were inaccurate.
+        // Scaling everything here and in the OpenGL context improved the results.
+        float wScaled = w * ARD_POSEESTIMATION_SCALE_FACTOR;
+        float hScaled = h * ARD_POSEESTIMATION_SCALE_FACTOR;
+
         std::vector<cv::Point3f> objectPoints;
-        objectPoints.push_back(cv::Point3f(0, doorRatio, 0));
-        objectPoints.push_back(cv::Point3f(1, doorRatio, 0));
-        objectPoints.push_back(cv::Point3f(1, 0, 0));
+        objectPoints.push_back(cv::Point3f(0, hScaled, 0));
+        objectPoints.push_back(cv::Point3f(wScaled, hScaled, 0));
+        objectPoints.push_back(cv::Point3f(wScaled, 0, 0));
         objectPoints.push_back(cv::Point3f(0, 0, 0));
 
-        result.width = 1;
-        result.height = doorRatio;
+        result.width = w;
+        result.height = h;
 
-        ProjectionUtil::solvePnP(objectPoints, imagePoints, camera, result.mvMatrix);
+        ProjectionUtil::solvePnP(objectPoints, imagePoints, camera, result.mvMatrix, CV_P3P);
         ProjectionUtil::reverseYZ(result.mvMatrix);
     }
 

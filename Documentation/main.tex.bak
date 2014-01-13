@@ -1,4 +1,4 @@
-\documentclass[listof=totocnumbered,bibliography=totocnumbered]{scrreprt}
+\documentclass[listof=totocnumbered,bibliography=totocnumbered,12pt]{scrreprt}
 \usepackage[english,german,ngerman]{babel}
 \usepackage{xltxtra}
 \usepackage{lmodern}
@@ -11,7 +11,10 @@
 \usepackage{color}
 \usepackage{url}
 \usepackage{setspace}
+\usepackage{titlesec}
 
+
+\newfontfamily\headingfont[]{Avenir Book}
 \definecolor{codebg}{rgb}{0.8,0.8,0.9}
 \newminted{c++}{linenos=true,bgcolor=codebg,tabsize=4}
 \setcounter{secnumdepth}{3}
@@ -21,6 +24,9 @@
 \renewcommand\theequation{\arabic{equation}}
 \setmainfont[Mapping=tex-text]{Avenir Book}
 \linespread{1.3}
+\titleformat*{\section}{\LARGE\headingfont}
+\titleformat*{\subsection}{\Large\headingfont}
+\titleformat*{\subsubsection}{\large\headingfont}
 
 \begin{document}
 % switches on printing of running heads

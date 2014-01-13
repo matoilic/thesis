@@ -31,13 +31,15 @@ void ChessboardRenderingContext::drawAugmentedScene()
 
 void ChessboardRenderingContext::drawCoordinateAxis()
 {
+    if (!getArdoorContext()->isDrawCoordinateAxes())
+        return;
+
     // Backup current matrix values
-    QMatrix4x4 projectionBackup = projectionMatrix;
     QMatrix4x4 modelViewBackup = modelViewMatrix;
 
     // The central point of the chessboard is estimated. To display the coordinate
     // axes for the whole board, we have to scale and translate it.
-    modelViewMatrix.translate(-poseResult.width / 2.0f - 1, -poseResult.height / 2.0f - 1);
+    modelViewMatrix.translate(-(poseResult.width + 1) / 2.0f, -(poseResult.height + 1) / 2.0f);
     modelViewMatrix.scale(poseResult.width + 1, poseResult.height + 1, poseResult.height);
 
     // Activate the shader programm
@@ -51,7 +53,6 @@ void ChessboardRenderingContext::drawCoordinateAxis()
     simpleShader->release();
 
     // Restore previous matrix values
-    projectionMatrix = projectionBackup;
     modelViewMatrix = modelViewBackup;
 }
 

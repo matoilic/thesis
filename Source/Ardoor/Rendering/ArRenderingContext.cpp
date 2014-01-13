@@ -69,6 +69,11 @@ void ArRenderingContext::display()
         // Set the extrinsic transformation
         modelViewMatrix = poseResult.mvMatrix * modelViewMatrix;
 
+        // The solvePnP results with the floating point ratio were inaccurate.
+        // Scaling the objectPoints improved results. We have to scale everything in OpenGL now
+        // or the rendering will be wrong.
+        modelViewMatrix.scale(ARD_POSEESTIMATION_SCALE_FACTOR);
+
         // Draw augmented scene
         drawAugmentedScene();
     }

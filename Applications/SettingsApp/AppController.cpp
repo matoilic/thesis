@@ -24,6 +24,7 @@ int AppController::execute(int argc, char **argv)
 void AppController::loadSettings()
 {
     m_flipBackground = ardoorContext.isFrontCamera();
+    m_drawCoordinateAxes = ardoorContext.isDrawCoordinateAxes();
     m_boardWidth = ardoorContext.getChessboardSize().width;
     m_boardHeight = ardoorContext.getChessboardSize().height;
 }
@@ -31,6 +32,7 @@ void AppController::loadSettings()
 void AppController::saveSettings()
 {
     ardoorContext.setFrontCamera(m_flipBackground);
+    ardoorContext.setDrawCoordinateAxes(m_drawCoordinateAxes);
 
     cv::Size size(m_boardWidth, m_boardHeight);
     ardoorContext.setChessboardSize(size);

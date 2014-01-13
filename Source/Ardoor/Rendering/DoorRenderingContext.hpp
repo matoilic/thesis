@@ -21,9 +21,11 @@ public:
 protected:
     virtual void drawAugmentedScene();
     void drawModel();
+    void drawCoordinateAxis();
 
 private:
     CubeGeometry *cube;
+    CoordinateAxisGeometry *coordinateAxes;
     QOpenGLShaderProgram *simpleShader;
 };
 

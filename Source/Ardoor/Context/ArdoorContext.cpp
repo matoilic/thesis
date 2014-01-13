@@ -26,6 +26,7 @@ void ArdoorContext::loadSettings()
     m_settings->sync();
 
     m_frontCamera = m_settings->value("camera/front", true).toBool();
+    m_drawCoordinateAxes = m_settings->value("rendering/coordinateAxes", true).toBool();
 
     int boardWidth = m_settings->value("board/width", 9).toInt();
     int boardHeight = m_settings->value("board/height", 6).toInt();
@@ -54,6 +55,7 @@ void ArdoorContext::loadSettings()
 void ArdoorContext::saveSettings()
 {
     m_settings->setValue("camera/front", m_frontCamera);
+    m_settings->setValue("rendering/coordinateAxes", m_drawCoordinateAxes);
 
     m_settings->setValue("board/width", m_boardSize.width);
     m_settings->setValue("board/height", m_boardSize.height);
