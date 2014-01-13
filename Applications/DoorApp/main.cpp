@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 
     Capture capture;
     capture.setHandler(&frameProcessor);
-    capture.start();
+    capture.startImageFile("D:\\BFH\\Semester8\\thesis\\Data\\Images\\Doors\\webcam-toy-foto3.jpg");
 
     return app.exec();
 }

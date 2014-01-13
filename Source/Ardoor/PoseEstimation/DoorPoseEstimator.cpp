@@ -29,28 +29,39 @@ PoseEstimationResult DoorPoseEstimator::estimatePose(cv::Mat& image)
             imagePoints.push_back(cv::Point2f((*it).x, (*it).y));
         }
 
+
         imagePoints.clear();
         imagePoints.push_back(cv::Point2f(443, 34));
         imagePoints.push_back(cv::Point2f(576, 71));
         imagePoints.push_back(cv::Point2f(562, 533));
         imagePoints.push_back(cv::Point2f(430, 593));
 
+        std::vector<cv::Point2f> undistortedPoints;
+        ProjectionUtil::undistortPoints(imagePoints, undistortedPoints, camera);
 
-        float doorRatio = ProjectionUtil::getRatio(camera.getIntrinsics(), imagePoints.at(0), imagePoints.at(1), imagePoints.at(2), imagePoints.at(3));
+        float doorRatio = ProjectionUtil::getRatio(camera.getIntrinsics(), undistortedPoints.at(0), undistortedPoints.at(1), undistortedPoints.at(2), undistortedPoints.at(3));
         if (doorRatio < 1) {
             doorRatio = 1/doorRatio;
         }
 
+        float w = 1.0;
+        float h = doorRatio;
+
+        // The solvePnP results with the floating point ratio were inaccurate.
+        // Scaling everything here and in the OpenGL context improved the results.
+        float wScaled = w * ARD_POSEESTIMATION_SCALE_FACTOR;
+        float hScaled = h * ARD_POSEESTIMATION_SCALE_FACTOR;
+
         std::vector<cv::Point3f> objectPoints;
-        objectPoints.push_back(cv::Point3f(0, doorRatio, 0));
-        objectPoints.push_back(cv::Point3f(1, doorRatio, 0));
-        objectPoints.push_back(cv::Point3f(1, 0, 0));
+        objectPoints.push_back(cv::Point3f(0, hScaled, 0));
+        objectPoints.push_back(cv::Point3f(wScaled, hScaled, 0));
+        objectPoints.push_back(cv::Point3f(wScaled, 0, 0));
         objectPoints.push_back(cv::Point3f(0, 0, 0));
 
-        result.width = 1;
-        result.height = doorRatio;
+        result.width = w;
+        result.height = h;
 
-        ProjectionUtil::solvePnP(objectPoints, imagePoints, camera, result.mvMatrix);
+        ProjectionUtil::solvePnP(objectPoints, imagePoints, camera, result.mvMatrix, CV_P3P);
         ProjectionUtil::reverseYZ(result.mvMatrix);
     }
 

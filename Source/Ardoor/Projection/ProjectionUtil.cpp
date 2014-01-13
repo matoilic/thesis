@@ -1,5 +1,6 @@
 #include "ProjectionUtil.hpp"
 #include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 
 void ProjectionUtil::solvePnP(cv::InputArray &objectCorners, cv::InputArray &imageCorners, CameraConfiguration &camera, QMatrix4x4 &out, int flags)
@@ -91,3 +92,22 @@ float ProjectionUtil::getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::Poi
     return sqrt(_ratio.at<float>(0, 0));
 }
 
+
+void ProjectionUtil::undistortPoints(std::vector<cv::Point2f> &points, std::vector<cv::Point2f> &undistortedPoints, CameraConfiguration &camera)
+{
+    cv::Matx33f intrinsics = camera.getIntrinsics();
+    std::vector<float> distCoeffs = camera.getDistorsion();
+
+    cv::Mat src(points);
+    cv::Mat dst;
+    cv::undistortPoints(src, dst, intrinsics, cv::Mat(distCoeffs).t());
+
+    undistortedPoints.clear();
+    for (int i = 0; i < points.size(); i++) {
+        auto x = dst.at<float>(i, 0);
+        auto y = dst.at<float>(i, 1);
+
+        cv::Point3f undistortedPoint = intrinsics * cv::Point3f(x, y, 1);
+        undistortedPoints.push_back(cv::Point2f(undistortedPoint.x, undistortedPoint.y));
+    }
+}

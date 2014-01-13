@@ -14,6 +14,7 @@ public:
     static void convertMatrix(cv::Matx44f &src, QMatrix4x4 &dest);
     static void reverseYZ(QMatrix4x4 &matrix);
     static float getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::Point2f c2, cv::Point2f c3, cv::Point2f c4);
+    static void undistortPoints(std::vector<cv::Point2f> &points, std::vector<cv::Point2f> &undistortedPoints, CameraConfiguration &camera);
 
 };
 

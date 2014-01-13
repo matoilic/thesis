@@ -30,7 +30,15 @@ PoseEstimationResult ChessboardPoseEstimator::estimatePose(cv::Mat& image)
         result.width = calibration->getBoardSize().width;
         result.height = calibration->getBoardSize().height;
 
-        ProjectionUtil::solvePnP(objectCorners, imageCorners, camera, result.mvMatrix);
+
+        // The solvePnP results with the floating point ratio were inaccurate.
+        // Scaling everything here and in the OpenGL context improved the results.
+        std::vector<cv::Point3f> scaledObjectCorners;
+        for (cv::Point3f point : objectCorners) {
+            scaledObjectCorners.push_back(point * ARD_POSEESTIMATION_SCALE_FACTOR);
+        }
+
+        ProjectionUtil::solvePnP(scaledObjectCorners, imageCorners, camera, result.mvMatrix);
         ProjectionUtil::reverseYZ(result.mvMatrix);
     }
 

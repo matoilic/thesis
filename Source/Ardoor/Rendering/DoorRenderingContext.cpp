@@ -1,4 +1,5 @@
 #include <Ardoor/Rendering/DoorRenderingContext.hpp>
+#include <Ardoor/PoseEstimation/DoorPoseEstimator.hpp>
 
 DoorRenderingContext::~DoorRenderingContext()
 {
@@ -12,6 +13,7 @@ void DoorRenderingContext::initialize()
 
     cube = new CubeGeometry();
     cube->setColor(QColor(255, 0, 0, 255));
+    coordinateAxes = new CoordinateAxisGeometry();
 
     // Load, compile & link shaders
     simpleShader = new QOpenGLShaderProgram();
@@ -23,15 +25,18 @@ void DoorRenderingContext::initialize()
 
 void DoorRenderingContext::drawAugmentedScene()
 {
-    modelViewMatrix.translate(poseResult.width / 2.0f, poseResult.height);
-    modelViewMatrix.scale(0.6, 0.05, 0.3);
-    modelViewMatrix.translate(0, 1, -1);
-
+    drawCoordinateAxis();
     drawModel();
 }
 
 void DoorRenderingContext::drawModel()
 {
+    // The door pose is at the lower left corner of the door. To render
+    // a canopy over the door, we have to translate!
+    modelViewMatrix.translate(poseResult.width / 2.0f, poseResult.height);
+    modelViewMatrix.scale(0.5, 0.05, 0.3);
+    modelViewMatrix.translate(0, 1, -1);
+
     // Activate the shader programm
     simpleShader->bind();
 
@@ -41,4 +46,25 @@ void DoorRenderingContext::drawModel()
     // draw geometry
     cube->draw(simpleShader);
     simpleShader->release();
+}
+
+void DoorRenderingContext::drawCoordinateAxis()
+{
+    if (!getArdoorContext()->isDrawCoordinateAxes())
+        return;
+
+    QMatrix4x4 modelViewMatrixBackup = modelViewMatrix;
+    modelViewMatrix.scale(poseResult.width, poseResult.height, poseResult.width);
+
+    // Activate the shader programm
+    simpleShader->bind();
+
+    // Pass the mvp matrix
+    simpleShader->setUniformValue("u_mvpMatrix", projectionMatrix * modelViewMatrix);
+
+    // draw geometry
+    coordinateAxes->draw(simpleShader);
+    simpleShader->release();
+
+    modelViewMatrix = modelViewMatrixBackup;
 }

@@ -5,6 +5,8 @@
 #include <opencv2/core/core.hpp>
 #include <Ardoor/Ardoor.hpp>
 
+#define ARD_POSEESTIMATION_SCALE_FACTOR 100.0
+
 typedef ARD_EXPORT struct
 {
     bool isObjectPresent;

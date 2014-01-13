@@ -38,6 +38,22 @@ ApplicationWindow {
         anchors.topMargin: 30
     }
 
+    CheckBox {
+        id: chkDrawCoordinateAxes
+        x: -7
+        y: 104
+        height: 17
+        text: "Draw coordinate axes"
+        checked: controller.drawCoordinateAxes
+        anchors.right: parent.right
+        anchors.top: chkFlipBackground.bottom
+        anchors.leftMargin: 15
+        anchors.left: parent.left
+        anchors.topMargin: 12
+        anchors.rightMargin: 15
+    }
+
+
     GroupBox {
         id: grpChessboardSize
         height: 102
@@ -46,7 +62,7 @@ ApplicationWindow {
         anchors.rightMargin: 15
         anchors.left: parent.left
         anchors.leftMargin: 15
-        anchors.top: chkFlipBackground.bottom
+        anchors.top: chkDrawCoordinateAxes.bottom
         anchors.topMargin: 30
 
         TextField {
@@ -115,6 +131,7 @@ ApplicationWindow {
             text: "Save & quit"
             onClicked: {
                 controller.flipBackground = chkFlipBackground.checked
+                controller.drawCoordinateAxes = chkDrawCoordinateAxes.checked
                 controller.boardWidth = txtWidth.text
                 controller.boardHeight = txtHeight.text
                 controller.saveSettings()
@@ -130,6 +147,5 @@ ApplicationWindow {
             onClicked: Qt.quit()
         }
     }
-
 
 }

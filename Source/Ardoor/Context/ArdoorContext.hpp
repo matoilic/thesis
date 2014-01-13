@@ -26,11 +26,15 @@ public:
     bool isFrontCamera() { return m_frontCamera; }
     void setFrontCamera(bool frontCamera) { m_frontCamera = frontCamera; }
 
+    bool isDrawCoordinateAxes() { return m_drawCoordinateAxes; }
+    void setDrawCoordinateAxes(bool drawCoordinateAxes) { m_drawCoordinateAxes = drawCoordinateAxes; }
+
 private:
     QSettings *m_settings;
     cv::Size m_boardSize;
     CameraConfiguration m_camera;
     bool m_frontCamera;
+    bool m_drawCoordinateAxes;
 };
 
 #endif // ARDOORCONTEXT_HPP
