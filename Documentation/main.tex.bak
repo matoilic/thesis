@@ -1,0 +1,71 @@
+\documentclass[listof=totocnumbered,bibliography=totocnumbered]{scrreprt}
+\usepackage[english,german,ngerman]{babel}
+\usepackage{xltxtra}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{chngcntr}
+\usepackage{amsmath,amsfonts}
+\usepackage{fancyvrb}
+\usepackage{minted}
+\usepackage{color}
+\usepackage{url}
+\usepackage{setspace}
+
+\definecolor{codebg}{rgb}{0.8,0.8,0.9}
+\newminted{c++}{linenos=true,bgcolor=codebg,tabsize=4}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\counterwithout{footnote}{chapter}
+\numberwithin{equation}{subsection}
+\renewcommand\theequation{\arabic{equation}}
+\setmainfont[Mapping=tex-text]{Avenir Book}
+\linespread{1.3}
+
+\begin{document}
+% switches on printing of running heads
+\subject{Bachelor-Thesis}
+\title{Door Tracked Augmented Reality}
+\author{Mato Ilic \and David Kron}
+\date{Januar 2014}
+\publishers{Betreuer: Marcus Hudritsch\\Experte: Andreas Dürsteler}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\include{contents/ziele}
+\newpage
+
+\include{contents/positionsbestimmung}
+\newpage
+
+\include{contents/umsetzung}
+\newpage
+
+\include{contents/fazit}
+\newpage
+
+\include{contents/ausblick}
+\newpage
+
+
+\newpage
+\begin{thebibliography}{5}
+
+\bibitem {learningopencv}
+Bradski, Gary / Kaehler Adrian:
+Learning OpenCV: Computer Vision with the OpenCV Library.
+Sebastopol: O'Reilly Media, Inc.
+
+\bibitem {zhang}
+Zhang, Zhengyou (1998): A Flexible New Technique for Camera Calibration. 
+Redmond: Microsoft Research.
+
+\bibitem {escalera}
+de la Escalera, Arturo / María Armingol, Jose: Automatic Chessboard Detection for Intrinsic and Extrinsic Camera Parameter Calibration. 
+Madrid: Universidad Carlos III de Madrid.
+
+\end{thebibliography}
+\end{document}
