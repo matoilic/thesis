@@ -13,20 +13,19 @@
 \usepackage{setspace}
 \usepackage{titlesec}
 
-
-\newfontfamily\headingfont[]{Avenir Book}
+\newfontfamily\headingfont[]{Avenir Heavy}
 \definecolor{codebg}{rgb}{0.8,0.8,0.9}
-\newminted{c++}{linenos=true,bgcolor=codebg,tabsize=4}
+\newminted{c++}{linenos=true,bgcolor=codebg,tabsize=4,showspaces=false}
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
 \counterwithout{footnote}{chapter}
 \numberwithin{equation}{subsection}
 \renewcommand\theequation{\arabic{equation}}
 \setmainfont[Mapping=tex-text]{Avenir Book}
+\setsansfont{Avenir Book}
+\titleformat{\chapter}{\Large\bfseries}{\headingfont}{0em}{\thechapter\hspace{1em}}
+\titleformat{\section}{\large\mdseries}{\headingfont}{0em}{\thesection\hspace{1em}}
 \linespread{1.3}
-\titleformat*{\section}{\LARGE\headingfont}
-\titleformat*{\subsection}{\Large\headingfont}
-\titleformat*{\subsubsection}{\large\headingfont}
 
 \begin{document}
 % switches on printing of running heads
