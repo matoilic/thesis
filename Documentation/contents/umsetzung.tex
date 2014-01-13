@@ -1,4 +1,4 @@
-\chapter{Umsetzung}
+\chapter{Plattformunabhängigkeit}
 
 In diesem Abschnitt werden die Details der Implementationen auf den beiden Smartphone-Plattformen iOS und Android, sowie den Aufbau unserer ARDoor Library beschrieben.
 
@@ -29,7 +29,7 @@ Pro Plattform wird ein eigener Client implementiert, der den Kamerazugriff über
 Zur Entwicklung und zum Testen unter Android wurde ein etwas in die Jahre gekommenes HTC Desire Z verwendet. Es wurde jedoch eine Custom Firmware aufgespielt, welche der Android Version 2.3 entspricht, um bessere Native-Unterstützung zu erhalten. Seit dieser Version, welche dem API Level 9 entspricht, gibt es u.a. die Möglichkeit, eine Native Activity zu implementieren.
 
 
-\section{Native Activity}
+\subsection{Native Activity}
 Eine Native Activity ist seit Android 2.3 (API Level 9) verfügbar. Eine Native Activity ist im Grunde ein nützlicher Weg, um eine Android App in C/C++ zu implementieren, ohne noch zusätzlichen Wrapper-Code in Java und JNI Code zu schreiben. Mittels der dem Android NDK beiliegenden Library android\_native\_app\_glue kann das Grundgerüst der Native Activity in C/C++ implementiert werden. Dies hat jedoch einige Probleme bereitet.
 
 \paragraph{}
@@ -42,7 +42,7 @@ Es gibt auch die Möglichkeit mittels der OpenCV Capture-API auf die Kamera des 
 Was bei der Native Activity auch beachtet werden muss ist, dass die ganzen Android-Events, z.B. Input oder App-Lifecycle-Events, selber abgeholt und weiterverarbeitet werden müssen. Dadurch schreibt man quasi von Grund auf ein eigenes Applikationsframework auf nativer Basis.
 
 
-\section{JNI Zugriff}
+\subsection{JNI Zugriff}
 Die andere Möglichkeit ist der Zugriff auf C/C++ via JNI. Die Grund-App wird dabei in Java implementiert. In der nativen Library werden bei dieser Methode spezielle JNI-Funktionen implementiert, die aus Java heraus aufgerufen werden können.
 
 \paragraph{}
@@ -55,7 +55,7 @@ Zur Entwicklung der iOS Version der Applikation haben wir ein iPhone 4 eingesetz
 \paragraph{}
 Einen weiteren Vorteil welchen Objective-C bietet ist, dass alle Klassen grundsätzlich Beliebig erweitert werden können. So konnten wir z.B. die \textit{UIImage} Klasse um Funktionen erweitern, welche es uns ermöglichen den Inhalt eines \textit{UIImage} in eine \textit{cv::Mat} Struktur umzuwandeln und umgekehrt (zu Finden in der Klasse \textit{UIImage+OpenCV}). Somit gestaltete sich der Datenaustausch zwischen den plattformspezifischen Komponenten und unserer unabhängigen ARDoor Library sehr einfach.
 
-\section{Kamerazugriff} Der Kamerazugriff ist eher etwas komplex gestaltet unter iOS. Glücklicherweise ist die Dokumentation von Apple sehr ausführlich und bietet zu allen komplexen Prozessen Codebeispiele. So auch für den Kamerazugriff. Dies hat uns einiges an Zeit gespart, denn ohne diese Beispiele muss man sehr tiefgehende Kenntnisse – ja man muss schon fast ein Experte sein – von iOS haben um den Kamerazugriff zu konfigurieren. Die Komponenten für Audio und Video In- und Output befinden sich im AVFoundation Framework Welches wiederrum CoreMedia und CoreVideo verwendet (Abb. \ref{fig:avfoundation}).
+\subsection{Kamerazugriff} Der Kamerazugriff ist eher etwas komplex gestaltet unter iOS. Glücklicherweise ist die Dokumentation von Apple sehr ausführlich und bietet zu allen komplexen Prozessen Codebeispiele. So auch für den Kamerazugriff. Dies hat uns einiges an Zeit gespart, denn ohne diese Beispiele muss man sehr tiefgehende Kenntnisse – ja man muss schon fast ein Experte sein – von iOS haben um den Kamerazugriff zu konfigurieren. Die Komponenten für Audio und Video In- und Output befinden sich im AVFoundation Framework Welches wiederrum CoreMedia und CoreVideo verwendet (Abb. \ref{fig:avfoundation}).
 
 \begin{figure}[!ht]
 \centering
@@ -82,7 +82,7 @@ Der Afbau ist in Abb. \ref{fig:ios-capture-overview} visualisiert. Der Code für
 \label{fig:ios-capture-overview}
 \end{figure}
 
-\section{OpenCV unter iOS}
+\subsection{OpenCV unter iOS}
 OpenCV lässt sich unter iOS mittlerweile sehr einfach einbinden. Noch bis vor kurzem musste man die Bibliothek noch selbst für die ARM-Plattform kompilieren, was sich als sehr mühsam erwies. Jedoch bieten die OpenCV-Macher mittlerweile vorkompilerte Binaries in Form eines Framework-Bundles an. Die Framework-Bundle Form hat den Grossen vorteil, dass die Binaries mit relativen Pfaden gelinkt sind. So ist das Deployment viel einfacher. Andernfalls müsste man nach der Kopilierung die Linker-Pfade mittels otool vor dem Deployment anpassen. Eine iOS App wird zuerst lokal auf dem Entwicklungsrechner Kompilert und danach auf das Endgerät (oder den iOS Simulator) installiert. Da die Verzeichnisstrukturen nicht auf beiden Geräten identisch ist, währen somit die Linker-Pfade nicht korrekt wenn sie absolut wären.
 
 \paragraph{Performance} Die Performance von OpenCV unter iOS ist nicht optimal. Innerhalb von OpenCV wird standardmässig OpenMP für die Parallelisierung eingesetzt. Da jedoch OpenMP bisher noch nicht auf ARM portiert wurde, wird die Leistung des Prozessors nicht voll ausgeschöpft. So drückt eine Sobel-Live-Kantendetektion des Kamerabildes die Framerate bereits auf ca. 13 fps runter. Die Erkennung einen Schachbrettmusters mittels \textit{cv::findChessboardCorners} bringt es nicht einmal mehr auf ein fps. Eine Möglichkeit hier die Performance zu Optimieren währe Grand Central Dispatch (GCD) einzusetzen. Dies ist die Objective-C spezifische Multithreading Umgebung von Apple. Seit der Version 2.4.3\footnote{\url{http://code.opencv.org/projects/opencv/wiki/ChangeLog}} besitzt OpenCV eine \textit{parallel\_for} Implementierung für diverse Multithreading Backends, unter anderem auch für GCD. Eine weitere Möglichkeit die Leistung der Anwendung zu optimieren währe, wo möglich, Operationen mittels NEON\footnote{\url{http://www.arm.com/products/processors/technologies/neon.php}} umzusetzen. NEON ist ein SMID Instruction Set, ähnlich wie MMX von Intel, welches parallele Operationen auf einer Instruktion erlaubt. Beide Optionen gilt es während der Bachelor-Thesis zu erforschen.
