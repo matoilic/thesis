@@ -1,5 +1,7 @@
-\documentclass[listof=totocnumbered,bibliography=totocnumbered,12pt]{scrreprt}
+\documentclass[listof=totocnumbered,bibliography=totocnumbered,12pt,oneside]{scrreprt}
+\def\@afterindentfalse{\let\if@afterindent\iffalse}
 \usepackage[english,german,ngerman]{babel}
+\usepackage{geometry}
 \usepackage{xltxtra}
 \usepackage{lmodern}
 \usepackage{textcomp}
@@ -11,25 +13,45 @@
 \usepackage{color}
 \usepackage{url}
 \usepackage{setspace}
-\usepackage{titlesec}
+\usepackage[noindentafter]{titlesec}
+\usepackage{titletoc}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
 
-
-\newfontfamily\headingfont[]{Avenir Roman}
+\newfontfamily\headingfont[]{Avenir Heavy}
 \definecolor{codebg}{rgb}{0.8,0.8,0.9}
-\newminted{c++}{linenos=true,bgcolor=codebg,tabsize=4}
+\newminted{c++}{linenos=true,bgcolor=codebg,tabsize=4,showspaces=false}
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
 \counterwithout{footnote}{chapter}
 \numberwithin{equation}{subsection}
 \renewcommand\theequation{\arabic{equation}}
 \setmainfont[Mapping=tex-text]{Avenir Book}
+\setsansfont{Avenir Book}
+\titleformat{\tableofcontents}{\Large\bfseries}{\headingfont}{0em}{}
+\titleformat{\chapter}{\Large\bfseries}{\headingfont}{0em}{\thechapter\hspace{1em}}
+\titleformat{\section}{\large\mdseries}{\headingfont}{0em}{\thesection\hspace{1em}}
+\titlespacing{\paragraph}{0pt}{3.5ex plus 1ex minus .2ex}{0pt}
 \linespread{1.3}
-\titleformat*{\section}{\LARGE\headingfont}
-\titleformat*{\subsection}{\Large\headingfont}
-\titleformat*{\subsubsection}{\large\headingfont}
+
+\lhead[O,E]{}
+\rhead[O,E]{Door Tracked AR}
+\lfoot[O,E]{Seite \thepage\ von \pageref{LastPage}}
+\cfoot[O,E]{}
+\rfoot[O,E]{Kron, Ilic}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\fancypagestyle{plain}{
+	\lhead[O,E]{}
+	\rhead[O,E]{Door Tracked AR}
+	\cfoot[O,E]{}
+	\rfoot[O,E]{Kron, Ilic}
+}
 
 \begin{document}
-% switches on printing of running heads
+\pagestyle{fancy}
+
 \subject{Bachelor-Thesis}
 \title{Door Tracked Augmented Reality}
 \author{Mato Ilic \and David Kron}
@@ -38,6 +60,9 @@
 
 \maketitle
 
+\include{contents/abstract}
+\newpage
+
 \tableofcontents
 \newpage
 
@@ -45,6 +70,9 @@
 \newpage
 
 \include{contents/positionsbestimmung}
+\newpage
+
+\include{contents/tuererkennung}
 \newpage
 
 \include{contents/umsetzung}
