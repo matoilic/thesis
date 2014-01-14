@@ -72,3 +72,21 @@ Dies ist nur ein Bild von zehn getesteten. Die Bilder welche während der Entwic
 \end{itemize}
 
 Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konzipiert wurde, kann mit den gemessenen 64ms Verarbeitungszeit pro Frame kein flüssiges Videobild bei 28fps wiedergegeben werden.
+
+\section{Implementation}
+
+\begin{figure}
+	\subfloat[Segmente wie sie mit LSWMS gefunden werden]{\includegraphics[width=0.45\textwidth]{images/seg-raw}}\qquad	
+	\subfloat[Segmente kategorisiert in horizontal (Rot) und vertikal (Gelb)]{\includegraphics[width=0.45\textwidth]{images/seg-categorized}}\qquad	
+	\subfloat[Reduzierte Segmente]{\includegraphics[width=0.45\textwidth]{images/seg-joined}}	\qquad	
+	\subfloat[Verlängerte Segmente]{\includegraphics[width=0.45\textwidth]{images/seg-grow}}	
+	\caption{Verarbeitungsprozess Türerkennung}
+\end{figure}
+
+\begin{figure}
+	\ContinuedFloat
+	\centering		
+	
+	\subfloat[Erkannte Tür]{\includegraphics[width=0.45\textwidth]{images/seg-detected}}\qquad
+	\caption{Verarbeitungsprozess Türerkennung}
+\end{figure}

@@ -17,6 +17,7 @@
 \usepackage{titletoc}
 \usepackage{fancyhdr}
 \usepackage{lastpage}
+\usepackage{subfig}
 
 \newfontfamily\headingfont[]{Avenir Heavy}
 \definecolor{codebg}{rgb}{0.8,0.8,0.9}
