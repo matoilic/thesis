@@ -22,19 +22,12 @@ PoseEstimationResult DoorPoseEstimator::estimatePose(cv::Mat& image)
     DoorDetector detector(cv::Size(image.cols, image.rows));
 
     result.isObjectPresent = detector.findDoorCorners(gray, corners);
-    result.isObjectPresent = true;
     if (result.isObjectPresent) {
         std::vector<cv::Point2f> imagePoints;
         for (std::vector<cv::Point>::iterator it = corners.begin(); it != corners.end(); it++) {
             imagePoints.push_back(cv::Point2f((*it).x, (*it).y));
         }
 
-
-        imagePoints.clear();
-        imagePoints.push_back(cv::Point2f(443, 34));
-        imagePoints.push_back(cv::Point2f(576, 71));
-        imagePoints.push_back(cv::Point2f(562, 533));
-        imagePoints.push_back(cv::Point2f(430, 593));
 
         std::vector<cv::Point2f> undistortedPoints;
         ProjectionUtil::undistortPoints(imagePoints, undistortedPoints, camera);
@@ -61,7 +54,7 @@ PoseEstimationResult DoorPoseEstimator::estimatePose(cv::Mat& image)
         result.width = w;
         result.height = h;
 
-        ProjectionUtil::solvePnP(objectPoints, imagePoints, camera, result.mvMatrix, CV_P3P);
+        ProjectionUtil::solvePnP(objectPoints, imagePoints, camera, result.mvMatrix);
         ProjectionUtil::reverseYZ(result.mvMatrix);
     }
 
