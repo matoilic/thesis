@@ -1,3 +1,10 @@
 Build*
 *.pro.user*
 *.autosave
+
+*.synctex.gz
+*.aux
+*.log
+*.toc
+*.pyg
+Documentation/*.pdf
