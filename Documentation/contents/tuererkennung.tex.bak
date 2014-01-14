@@ -90,3 +90,7 @@ Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konz
 	\subfloat[Erkannte Tür]{\includegraphics[width=0.45\textwidth]{images/seg-detected}}\qquad
 	\caption{Verarbeitungsprozess Türerkennung}
 \end{figure}
+
+\subsection{Performance}
+
+\subsection{Verbesserungsmöglichkeit}

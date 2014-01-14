@@ -71,7 +71,7 @@
 \include{contents/ziele}
 \newpage
 
-\include{contents/positionsbestimmung}
+\include{contents/grundlagen}
 \newpage
 
 \include{contents/tuererkennung}
@@ -79,6 +79,15 @@
 
 %\include{contents/umsetzung}
 %\newpage
+
+\include{contents/projektion}
+\newpage
+
+\include{contents/opengl}
+\newpage
+
+\include{contents/resultat}
+\newpage
 
 \include{contents/fazit}
 \newpage
@@ -104,4 +113,27 @@ de la Escalera, Arturo / María Armingol, Jose: Automatic Chessboard Detection f
 Madrid: Universidad Carlos III de Madrid.
 
 \end{thebibliography}
+
+\newpage
+\chapter{Ehrlichkeitserklärung}
+Hiermit bestätigen die Autoren, diese Arbeit ohne fremde Hilfe und unter Einhaltung der gebotenen Regeln erstellt zu haben.
+\\
+\\
+\\
+\textbf{Mato Ilic}
+\\
+\\
+\\
+\rule{0.85\textwidth}{0.4pt} \\
+Ort, Datum \hspace * {5cm} Unterschrift
+\\
+\\
+\\
+\textbf{David Kron}
+\\
+\\
+\\
+\rule{0.85\textwidth}{0.4pt} \\
+Ort, Datum \hspace * {5cm} Unterschrift
+
 \end{document}
