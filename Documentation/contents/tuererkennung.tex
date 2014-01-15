@@ -1,6 +1,6 @@
 \chapter{Türerkennung}
 
-Die Türerkennung erfolgt in mehreren Schritten. Zuerst, wird im Bild nach Kanten gesucht. Die gefundenen Kanten müssen hinsichtlich Länge und Ausrichtung optimiert werden. Anschliessend muss nach möglichen Vier-Kanten-Paaren gesucht werden, welche möglicherweise eine Tür bilden. Die gefundenen Kandidaten werden dann noch evaluiert, um den besten Treffer zu bestimmen.
+Die Türerkennung erfolgt in mehreren Schritten. Zuerst, wird im Bild nach Liniensegmenten gesucht. Die gefundenen Segmente müssen hinsichtlich Länge und Ausrichtung optimiert werden. Anschliessend muss nach möglichen Vier-Kanten-Paaren gesucht werden, welche möglicherweise eine Tür bilden. Die gefundenen Kandidaten werden dann noch evaluiert, um den besten Treffer zu bestimmen.
 
 \section{Kantendetektion}
 
@@ -23,18 +23,18 @@ Im Unterschied zur Standard Hough Transform verwendet die Probabalistic Hough Tr
 
 \pagebreak
 
-\subsection{Line Segment detection using Weighted Mean-Shift (LSWMS)}
+\subsection{Line Segment detection using Weighted Mean-Shift}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[scale=0.4]{images/lswms} 
+\includegraphics[width=\textwidth]{images/lswms} 
 \caption{Ablaufschema des LSWMS Algorithmus. Im ersten Teil wird wie Wahrscheinlichkeitsverteilung $\hat{p}(x,y)$ anhand der Parameter $\mu_1$ und $\mu_2$ ermittelt. Im zweiten Teil wird das erste Sample generiert und der Slice-Sampling-Prozess wird gestartet, um kontinuierlich Stichproben $z_k$ zu erhalten. Im dritten und letzten Teil werden die Samples verfeinert und als Ausgangspunkte für das iterative Line-Growing verwendet, welches die gesuchten Liniensegmente liefert. Quelle \cite{nieto}}
 \label{fig:lswms}
 \end{figure}
 
-Abb. \ref{fig:lswms} veranschaulicht den Ablauf des LSWMS Algorithmus. Im ersten Teil wird die Wahrscheinlichkeitsverteilung für jedes Pixel von Bild $I$ berechnet, so dass $\hat{p}(x,y)$ angibt, wie wahrscheinlich es ist das dieses Pixel Teil eines Liniensegmentes ist. Diese Wahrscheinlichkeitsverteilung, parametrisiert durch $\mu_1$ und $\mu_2$, wird anhand der Tensor Matrix und den dazugehörigen Eigenvalues. Gute Kandidatenpixel müssen zwei Bedingungen erfüllen. Zum einen muss der Betrag des Gradienten auf eine gewisse Signifikanz des Pixels hindeuten und zum anderen muss eine dominante Gradienten-Richtung in der Nachbarschaft des Pixels vorhanden sein.
+Abb. \ref{fig:lswms} veranschaulicht den Ablauf des "Line Segment detection using Weighted Mean-Shift" (LSWMS) Algorithmus. Im ersten Teil wird die Wahrscheinlichkeitsverteilung für jedes Pixel von Bild $I$ berechnet, so dass $\hat{p}(x, y)$ angibt, wie wahrscheinlich es ist, dass das Pixel $(x, y$) Teil eines Liniensegmentes ist. Diese Wahrscheinlichkeitsverteilung, parametrisiert durch $\mu_1$ und $\mu_2$, wird anhand der Tensor Matrix und den dazugehörigen Eigenvalues errechnet. Gute Kandidatenpixel müssen zwei Bedingungen erfüllen. Zum einen muss der Betrag des Gradienten auf eine gewisse Signifikanz des Pixels hindeuten und zum anderen muss eine dominante Gradienten-Richtung in der Nachbarschaft des Pixels vorhanden sein.
 \paragraph{}
-Der zweite Teil "sequential sampling" selektiert, basierend auf $\hat{p}(x,y)$, kontinuierlich Pixel ($z_k$) welche eine hohe Wahrscheinlichkeit besitzen zu einem Liniensegment zu gehören. Gleichzeitig wirk sichergestellt, dass kein Pixel mehrmals gesampelt wird. Dies ist ein wichtiger unterschied zu PHT, da es die Effizienz von LSWMS im Vergleich zu PHT erhöht. Der Slice Sampler basiert auf dem Markov-Chain-Monte-Carlo-Verfahren\footnote{\protect\url{http://de.wikipedia.org/wiki/MCMC-Verfahren}}, welches es erlaubt kontinuierlich Stichproben aus einer bestimten Wahrscheinlichkeitsverteilung $p$ zu ziehen, welche in unserem Fall die Qualität des Kandidatenpixel angibt.
+Der zweite Teil "sequential sampling" selektiert, basierend auf $\hat{p}(x,y)$, kontinuierlich Pixel ($z_k$) welche eine hohe Wahrscheinlichkeit besitzen zu einem Liniensegment zu gehören. Gleichzeitig wirk sichergestellt, dass kein Pixel eines Segmentes mehrmals gesampelt wird. Dies ist ein wichtiger unterschied zu PHT, da es die Effizienz von LSWMS im Vergleich zu PHT erhöht. Der Slice Sampler basiert auf dem Markov-Chain-Monte-Carlo-Verfahren\footnote{\protect\url{http://de.wikipedia.org/wiki/MCMC-Verfahren}}, welches es erlaubt kontinuierlich Stichproben aus einer bestimten Wahrscheinlichkeitsverteilung $p$ zu ziehen, welche in unserem Fall die Qualität des Kandidatenpixel angibt.
 \paragraph{}
 Die Wahrscheinlichkeitsverteilung wird beim LSWMS Algorithmus anhand der Eigenvalues $(\lambda_1, \lambda_2)$ eines jeden Pixel berechnet. Wobei $f$ die Eigenvalues $(\lambda_1, \lambda_2)$ zu einem beliebigen Pixel $(x, y)$ zurückgibt.
 
@@ -55,18 +55,32 @@ $\mu_1$ und $\mu_2$ sind die Durchschnittswerte aller Eigenvalues über das ganz
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[scale=0.5]{images/lswms-eigenvalues} 
+\includegraphics[width=\textwidth]{images/lswms-eigenvalues} 
 \caption{Eigenvalues welche die Gradientenstruktur abbilden. Die schwarzen Punkte sind die Werte der Nachbarpixel eines Pixels $(I_x, I_y)$. a) Verteilung eines Liniensegmentes. b) Verteilung einer Ecke oder einer heterogenen Gradienten. Quelle \cite{nieto}}
 \label{fig:lswms-eigenvalues}
 \end{figure}
 
+\paragraph{}
+Basierend auf diesen Grundlagen werden die Liniensegmente wie folgt ermittelt. Initial wird iterativ ein erster Kandidatenpixel gesucht, welcher die Bedingung $\hat{p}(x, y) > \mu$ erfüllt. $\mu$ ist der Mittelwert von $\hat{p}(x, y)$ über das ganze Bild. Dies stellt sicher, das für den Schritt der Segmentgenerierung eine optimale Ausgangslage geschaffen wird. So gibt es so wenig Fehlversuche wie möglich. Nachfolgend such der Sampler Pixel mit einem ähnlichen Wert für $\hat{p}(x, y)$ wie der Initialpixel. Jedes mal wenn ein Liniensegment generiert wird, werden sämtliche Pixel des Segmentes aus dem Pool der Pixel aus dem der Sampler wählt entfernt. Auch, werden die Nachbarpixel innerhalb einer definierten Fensters von $r x r$ entfernt, wobei r die räumliche Weite des Mean Shift ist. Aufgrund dieser Tatsache kann der Fall eintreten, dass der Slice Sampler feststellt, dass alle Pixel in der Nachbarschaft des initialen Pixels bereits verarbeitet wurden. In diesem Fall wird ein neuer Initialpixel gesucht, welcher die gegebenen Kriterien erfüllt. Der Sampler sucht so lange nach neuen Kandidaten bis keine geeigneten mehr gefunden werden oder bis eine gegebene Obergrenze bei der Anzahl zu suchender Liniensegmente erreicht wurde.
+\paragraph{}
+Die geeigneten Bildpunkte welche vom Slice Sampler ermittelt werden, werden kontinuierlich dem Line Segment Generator übergeben. Erhält dieser ein Sample $z_k$ und die dazugehörige Orientierung der Nromalen $\theta_k$, so steuert er die Richtung des Generierungsprozesses anhand des Vektors $\textbf{x}_{k} = (x_k, y_k, \theta_k)$. Obwohl der Sampler bereits sehr gute Kandidaten liefert, besteht immer noch die Möglichkeit, dass in der Nachbarschaft von $\textbf{x}_k$ ein Bildpunkt mit einem höheren Wert für $\hat{p}(x, y)$ vorhanden ist. Aus diesem grund wird mittels Weighted Mean Shift (wMS) nach einem Optimum $\hat{\textbf{x}}_k$ gesucht. Mean Shift (MS) ist ein iterativer, parameterfreier Algorithmus, welcher dazu eingesetzt werden kann lokale Maxima einer unbekannten Dichtefunktion zu ermitteln, wenn eine Menge von Samples vorhanden ist. Bei jeder Iteration startet MS bei einer initialen Stichprobe und bewegt sich in richtung der dichtesten Region innerhalb des Suchraumes. LSWMS gewichtet die Stichproben zusätzlich noch anhand der zuvor berechneten Wahrscheinlichkeiten $\hat{p}$.
+\paragraph{}
+Anhand des verfeinerten Punktes $\hat{\textbf{x}}_k = (\hat{x}_k, \hat{y}_k, \hat{\theta}_k)$ wird dann die Generierung des Segmentes vorgenommen, basierend auf dem Bresenham Algorithmus \cite{bresenham}. Das obere Segment in der Abb. \ref{fig:lswms-line-growing}a veranschaulicht diesen Vorgang.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{images/lswms-line-growing} 
+\caption{Oriented Line Growing. a) Oberes Segment mit einer genauen Wachstumsrichtung. Unteres segment mit einem Wachstumsprozess welcher eine Verfeinerung der Richtung benötigt. b) In beiden Fällen wurde ein korrektes Segment ermittelt, welches sich innerhalb des Gradienten der Kante befindet. Quelle \cite{nieto}}
+\label{fig:lswms-line-growing}
+\end{figure}
+
 \subsection{Evaluation}
 
-Die Entscheidung fiel auf den LSWMS Algorithmus, aus mehreren Gründen. LSWMS wurde von Anfang an für die unbeaufsichtigte Kantendetektion innerhalb von Echtzeitanwendungen konzipiert. Da die Umgebungen in denen die Türdetektion stattfindet stark variieren können, ist es nicht möglich im vorhinein fixe Parameter für die Hough-Transformation zu definieren, welche überall gleich gut funktionieren. LSWMS bietet im Schnitt unter sich verändernden Verhältnissen die bessere Leistung.
+Die Entscheidung fiel auf den LSWMS Algorithmus, aus mehreren Gründen. LSWMS wurde von Anfang an für die unbeaufsichtigte Kantendetektion innerhalb von Echtzeitanwendungen konzipiert. Da die Umgebungen in denen die Türdetektion stattfindet stark variieren können, ist es nicht möglich im vorhinein fixe Parameter für die Hough-Transformation zu definieren, welche überall gleich gut funktionieren. LSWMS bietet im Schnitt unter sich verändernden Verhältnissen die bessere Leistung. Der Algorithmus erforder zwar auch einen Parameter r, welcher oben erklärt wurde, jedoch kann dieser auf dem Standardwert 3 belassen werden. Mit diesem gibt LSWMS akzeptable Resultate zurück.
 \paragraph{}
 Ein weiterer Faktor ist die Qualutät der zurückgegebenen Resultate. Die Anzahl fehlerhaft erkannten Kanten ist bei Hough erheblich höher als bei LSWMS und wirkt sich damit auch auf die Performance der weiteren Verarbeitungsschritte negativ aus. Die Möglichkeit bei LSWMS eine Obergrenze bezüglich der Anzahl erwarteter Treffer angeben zu können war ebenfalls ausschlaggebend. Bei "ruhigen" Bildern mit wenig potentiellen Kanten wirkt sich dies wenig aus. Bilder welche z.B. Türem mit Holzmuster enthalten führen bei Hough zu einer Fehlerquote von teilweise über 50\%.
 \paragraph{}
-Der letzte Faktor welcher zur Entscheidung geführt hat LSWMS vorzuziehen war die Gesamtperformance. Hough benötigt als Input ein Kantenbild, welches zuvor mit einem separaten Algorithmus aufgearbeitet werden muss, z.B. Canny\footnote{\protect\url{http://de.wikipedia.org/wiki/Canny-Algorithmus}}. Dieser Schritt führt zusätzliche Parameter ein, welche situationsbedingt optimiert werden müssen und erhöht die Verarbeitungszeit der Hough-Transformation. Da Canny empfindlich gegenüber Rauschen im Bildmaterial ist, muss ein weiterer Verarbeitungsschritt vorangestellt werden. Bevor Canny angewendet wird, werden mittels einem Gausschen Filter Störfaktoren reduziert. Um ein optimales Ergebnis zu erhalten müssen vertikale und horizontale Kanten separat gesucht werden. Dies hat zu folge das die Hough-Transformation zwei mal dürchgeführt werden muss (Canny muss nur einmal angewendet werden, beide Male kann das selbe Kantenbild verwendet werden).
+Der letzte Faktor welcher zur Entscheidung geführt hat LSWMS vorzuziehen war die Gesamtperformance. Hough benötigt als Input ein Kantenbild, welches zuvor mit einem separaten Algorithmus aufgearbeitet werden muss, z.B. Canny\footnote{\protect\url{http://de.wikipedia.org/wiki/Canny-Algorithmus}}. Dieser Schritt führt zusätzliche Parameter ein, welche situationsbedingt optimiert werden müssen und erhöht die Verarbeitungszeit der Hough-Transformation. Da Canny empfindlich gegenüber Rauschen im Bildmaterial ist, muss ein weiterer Verarbeitungsschritt vorangestellt werden. Bevor Canny angewendet wird, werden mittels einem Gausschen Filter Störfaktoren reduziert. Um ein optimales Ergebnis zu erhalten müssen vertikale und horizontale Kanten separat gesucht werden. Dies hat zu folge das die Hough-Transformation zweimal dürchgeführt werden muss (Canny muss nur einmal angewendet werden, beide Male kann das selbe Kantenbild verwendet werden).
 \paragraph{}
 Für den Vergleich der Hough-Transformation und LSWMS wurden folgende Parameter verwendet:
 \paragraph{}
@@ -96,20 +110,11 @@ LSWMS
 Die gelben Linien stellen die gefundenen Kanten bzw. Kanstensegmente dar.
 \pagebreak
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[scale=0.6]{images/hough-raw-segments} 
-\caption{Ergebnis Hough-Transformation}
-\label{fig:hough-raw-segments}
-\end{figure}
-
-\pagebreak
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[scale=0.6]{images/lswms-raw-segments} 
-\caption{Ergebnis LSWMS}
-\label{fig:hough-raw-segments}
+\begin{figure}
+\subfloat[Ergebnis Hough-Transformation]{\includegraphics[width=0.47\textwidth]{images/hough-raw-segments}}\qquad
+\subfloat[Ergebnis LSWMS]{\includegraphics[width=0.47\textwidth]{images/lswms-raw-segments}}
+\caption{Vergleich PHT und LSWMS}
+\label{fig:comp-pht-lswms}
 \end{figure}
 
 \pagebreak
@@ -125,10 +130,25 @@ Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konz
 
 \section{Implementation}
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{images/door-detection} 
+\caption{Ablauf der Türerkennung}
+\label{fig:door-detection}
+\end{figure}
 
+Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennung aus mehreren Teilschritten (Abb. \ref{fig:door-detection}). Als erstes wird der LSWMS Algorithmus angewendet. Dieser Arbeitet auf Graustufenbildern. Somit wird der Input entsprechend konvertiert. Da die Lichtverhältnisse vor allem and den Türkanten oft subobtimal sind, aufgrund eines leichten Schattenwurfes, wird noch eine Contrast Limited Adaptive Histogram Equialization (CLAHE) angewendet mit einem Clip Limit von 5 und einer Fenstergrösse von 8. Diese Werte wurden experimentel ermittelt. Der Grund, dass CLAHE angewendet wurde und keine normale (Adaptive) Histogram Equalization ist, dass wir festgestellt das die Verstärkung von Rauschen und von feinen Muster (z.B. Holzmaserungen) die Qualität der Resultate von LSWMS verringert. Weiterhin ist für uns wichtig, dass die Regionen um die Tür herum ausgebessert werden sollen. Dies ist damit gegeben, dass CLAHE den Kontrast immer innerhalb eines bestimmten Fensters ausgleicht. Um sichtbare Kanten der einzelnen Fenster auszugleichen, wird die Randregion noch interpoliert. Der Unterschied der globalen Histogram Equalization und CLAHE wird in Abb. \ref{fig:clahe} verdeutlicht.
 
 \begin{figure}
-	\subfloat[Segmente wie sie mit LSWMS gefunden werden]{\includegraphics[width=0.45\textwidth]{images/seg-raw}}\qquad	
+\subfloat[Ausgangsbild]{\includegraphics[width=0.47\textwidth]{images/clahe-orig}}\qquad
+\subfloat[Global Histogram Equalization]{\includegraphics[width=0.47\textwidth]{images/clahe-ghe}}\qquad
+\subfloat[Contrast Limited Adaptive Histogram Equialization]{\includegraphics[width=0.47\textwidth]{images/clahe}}\qquad
+\caption{Vergleich Global Histogram Equalization und CLAHE}
+\label{fig:clahe}
+\end{figure}
+
+\begin{figure}
+	\subfloat[Segmente wie sie von LSWMS gefunden werden]{\includegraphics[width=0.45\textwidth]{images/seg-raw}}\qquad	
 	\subfloat[Segmente kategorisiert in horizontal (Rot) und vertikal (Gelb)]{\includegraphics[width=0.45\textwidth]{images/seg-categorized}}\qquad	
 	\subfloat[Reduzierte Segmente]{\includegraphics[width=0.45\textwidth]{images/seg-joined}}	\qquad	
 	\subfloat[Verlängerte Segmente]{\includegraphics[width=0.45\textwidth]{images/seg-grow}}	
