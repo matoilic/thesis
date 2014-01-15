@@ -4,11 +4,61 @@ Die Türerkennung erfolgt in mehreren Schritten. Zuerst, wird im Bild nach Kante
 
 \section{Kantendetektion}
 
-Es existieren verschiedene Algorithmen um Kanten in Bildern zu suchen. In dieser Arbeit wurden speziell die "Probabilistic Hough-Line-Transformation" und die "Line Segment detection using Weighted Mean-Shift" oder kurz LSWMS untersucht. Beide sind darauf spezialisiert Geraden zu finden, wobei es merkliche Unterschiede zwischen den zwei Methoden gibt.
+Es existieren verschiedene Algorithmen um Kanten in Bildern zu suchen. In dieser Arbeit wurden speziell die "Probabilistic Hough Transform" und die "Line Segment detection using Weighted Mean-Shift" oder kurz LSWMS untersucht. Beide sind darauf spezialisiert Geraden zu finden, wobei es merkliche Unterschiede zwischen den zwei Methoden gibt.
 
-\subsection{Probabilistic Hough-Line-Transformation}
+\subsection{Probabilistic Hough Transform}
 
-\subsection{LSWMS}
+In der Literaturn wird der Term Probabalistic Hough Transform (PHT) mit verschiedenen Ideen bezüglich der Optimierung der Standard Hough Transform (SHT) assoziiert. Wir beziehen uns auf die Methode von Kiryati \cite{kiryati} welche Stichproben verwendet um die Effizienz der SHT zu verbessern.
+\paragraph{}
+Die Standard Hough Transform wird dazu verwendet um die Parameter von Features, wie in unserem Fall Linien, zu ermitteln. Als Ausgangspunkt wird ein Binärbild verwendet, in welchem jedes aktive Pixel (weiss) Teil einer Kante oder Linie aus dem Originalbild ist. Die SHT bildet jedes dieser Pixel auf verschiedene Punkte im Hough Raum ab, in Form eines Sinusoiden. Dieser stellt alle Linien dar welche durch diesen Pixel verlaufen könnten. Diese Abbildungsphase wird auch Voting Phase genannt. Sind mehrere aktive Pixel colinear, so werden sich ihre Sinusoiden kreuzen. Sucht man nun die Punkte im Hough Raum wo sich viele Sinusoiden kreuzen, kann man daraus die Parameter der Linien im Originalbild bestimmen.
+\paragraph{}
+Im Unterschied zur Standard Hough Transform verwendet die Probabalistic Hough Transform nur einen Teil, eine Stichprobe, der aktiven Pixel im Binärbild. Die PHT geht davon aus, dass ein Anteil $\alpha$ (0\% < $\alpha$ < 100\%) ausreicht um die Parameter der Linien im Bild zu ermitteln. Kiryati kam zum Ergebnis, dass ab einem bestimmten Threshold $\alpha_t$ vermehrt False-Positives bei der Detektion auftreten. Wähl man mit Hilfe einer Probability Density Function ein Subset $\alpha$ $\approx$ $\alpha_t$ so kann man den Rechenaufwand erheblich reduzieren ohne signifikante Abstriche bei der Qualität der Ergebnisse. Der Bereich von $\alpha_t$ liegt bei 5\%-15\%, je nach Anwendungsfall.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.25]{images/hough-transform} 
+\caption{Verarbeitungsschritte der Standard Hough Transform. Ausgangsbild, Binärbild, Hough Raum und die gefundenen Linien. Quelle \cite{kiryati}}
+\label{fig:hough-transform}
+\end{figure}
+
+\pagebreak
+
+\subsection{Line Segment detection using Weighted Mean-Shift (LSWMS)}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.4]{images/lswms} 
+\caption{Ablaufschema des LSWMS Algorithmus. Im ersten Teil wird wie Wahrscheinlichkeitsverteilung $\hat{p}(x,y)$ anhand der Parameter $\mu_1$ und $\mu_2$ ermittelt. Im zweiten Teil wird das erste Sample generiert und der Slice-Sampling-Prozess wird gestartet, um kontinuierlich Stichproben $z_k$ zu erhalten. Im dritten und letzten Teil werden die Samples verfeinert und als Ausgangspunkte für das iterative Line-Growing verwendet, welches die gesuchten Liniensegmente liefert. Quelle \cite{nieto}}
+\label{fig:lswms}
+\end{figure}
+
+Abb. \ref{fig:lswms} veranschaulicht den Ablauf des LSWMS Algorithmus. Im ersten Teil wird die Wahrscheinlichkeitsverteilung für jedes Pixel von Bild $I$ berechnet, so dass $\hat{p}(x,y)$ angibt, wie wahrscheinlich es ist das dieses Pixel Teil eines Liniensegmentes ist. Diese Wahrscheinlichkeitsverteilung, parametrisiert durch $\mu_1$ und $\mu_2$, wird anhand der Tensor Matrix und den dazugehörigen Eigenvalues. Gute Kandidatenpixel müssen zwei Bedingungen erfüllen. Zum einen muss der Betrag des Gradienten auf eine gewisse Signifikanz des Pixels hindeuten und zum anderen muss eine dominante Gradienten-Richtung in der Nachbarschaft des Pixels vorhanden sein.
+\paragraph{}
+Der zweite Teil "sequential sampling" selektiert, basierend auf $\hat{p}(x,y)$, kontinuierlich Pixel ($z_k$) welche eine hohe Wahrscheinlichkeit besitzen zu einem Liniensegment zu gehören. Gleichzeitig wirk sichergestellt, dass kein Pixel mehrmals gesampelt wird. Dies ist ein wichtiger unterschied zu PHT, da es die Effizienz von LSWMS im Vergleich zu PHT erhöht. Der Slice Sampler basiert auf dem Markov-Chain-Monte-Carlo-Verfahren\footnote{\protect\url{http://de.wikipedia.org/wiki/MCMC-Verfahren}}, welches es erlaubt kontinuierlich Stichproben aus einer bestimten Wahrscheinlichkeitsverteilung $p$ zu ziehen, welche in unserem Fall die Qualität des Kandidatenpixel angibt.
+\paragraph{}
+Die Wahrscheinlichkeitsverteilung wird beim LSWMS Algorithmus anhand der Eigenvalues $(\lambda_1, \lambda_2)$ eines jeden Pixel berechnet. Wobei $f$ die Eigenvalues $(\lambda_1, \lambda_2)$ zu einem beliebigen Pixel $(x, y)$ zurückgibt.
+
+\begin{equation}
+\begin{split}
+p = g \circ f:  &I \to (\lambda_1, \lambda_2) \to \mathbb{R} \\
+                &(x, y) \mapsto \hat{p}(x, y) = g(f(x, y))
+\end{split}
+\end{equation}
+
+Die Funktion erfüllt zwei wichtige Kriterien. Zum einen gibt sie nur hohe Werte zurück für Eigenvalues-Paare bei dem ein Wert deutlich grösser ist als der Andere. Zum anderen fällt der Wert rapide ab, wenn beide Werte hoch oder tief sind. $g$ gibt die Wahrscheinlichkeit an, dass ein Eigenvalue-Paar zu einem Liniensegment gehört.
+
+\begin{equation}
+g(\lambda_1, \lambda_2) = (1 - exp(-\lambda_1/\mu_1)) exp(-\lambda_2/\mu_2)
+\end{equation}
+
+$\mu_1$ und $\mu_2$ sind die Durchschnittswerte aller Eigenvalues über das ganze Bild. Diese wurden im ersten Teil ermittelt. Stellt man die Verteilung visuell dar, so ergibt sich das Bild in Abb. \ref{fig:lswms-eigenvalues}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.5]{images/lswms-eigenvalues} 
+\caption{Eigenvalues welche die Gradientenstruktur abbilden. Die schwarzen Punkte sind die Werte der Nachbarpixel eines Pixels $(I_x, I_y)$. a) Verteilung eines Liniensegmentes. b) Verteilung einer Ecke oder einer heterogenen Gradienten. Quelle \cite{nieto}}
+\label{fig:lswms-eigenvalues}
+\end{figure}
 
 \subsection{Evaluation}
 
@@ -30,7 +80,7 @@ Canny Edge Detection\footnote{\protect\url{http://docs.opencv.org/doc/tutorials/
 	\item highThreshold: 80
 	\item kernelSize: 3
 \end{itemize}
-Probabilistic Hough-Line-Transformation\footnote{\protect\url{http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/hough_lines/hough_lines.html}}
+Probabilistic Hough Transform\footnote{\protect\url{http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/hough_lines/hough_lines.html}}
 \begin{itemize}
 	\item rho: 1
 	\item theta: 1 rad
@@ -74,6 +124,8 @@ Dies ist nur ein Bild von zehn getesteten. Die Bilder welche während der Entwic
 Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konzipiert wurde, kann mit den gemessenen 64ms Verarbeitungszeit pro Frame kein flüssiges Videobild bei 28fps wiedergegeben werden.
 
 \section{Implementation}
+
+
 
 \begin{figure}
 	\subfloat[Segmente wie sie mit LSWMS gefunden werden]{\includegraphics[width=0.45\textwidth]{images/seg-raw}}\qquad	

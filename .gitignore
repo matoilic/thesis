@@ -1,6 +1,7 @@
 Build*
 *.pro.user*
 *.autosave
+*.bak
 
 *.synctex.gz
 *.aux
