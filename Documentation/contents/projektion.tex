@@ -43,7 +43,7 @@ Diese Methode wurde durch F.Moreno-Noguer, V.Lepetit und P.Fua in der Publikatio
 Ein wichtiger Schritt zur finalen Positionsbestimmung ist die Definition der Objektpunkte. Da wir bei einem Kamerabild keine Kenntnisse über die Dimensionen von Objekten haben, wird durch die definierten Objektpunkte ein eigenes Einheitensystem geschaffen. Da die Schachbretterkennung die Eckkanten zwischen den Flächen liefert, macht es Sinn für den Abstand der Objektpunkte den Wert 1 zu wählen. Somit beschreibt 1 Objekteinheit die Grösse eines Quadrates auf dem Schachbrett. Die Punkte werden grundsätzlich im dreidimensionalen Raum definiert, für den Fall des Schachbretts können wir jedoch z = 0 setzen, da alle Punkte sich in der selben Ebene befinden.
 \noindent
 Weiter gilt es zu beachten, dass die definierten koordinaten der Objektpunkte einen Einfluss auf die resultierende Positionsmatrix haben. Der PnP Algorithmus berechnet die Position anhand des Ursprungs im Objektkoordinatensystem, d.h. die Matrix zeigt genau auf den Punkt (0, 0, 0). 
-Da ein 3D Objekt auf die Mitte des Schachbretts projiziert werden soll, werden die Objektpunkte um diesen Nullpunkt konstriert, siehe Abbildung \ref{fig:object-points}.
+Da ein 3D Objekt auf die Mitte des Schachbretts projiziert werden soll, werden die Objektpunkte um diesen Nullpunkt konstriert, siehe Abb. \ref{fig:object-points}.
 
 \begin{figure}[!ht]
 \centering
