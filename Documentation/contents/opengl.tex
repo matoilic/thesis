@@ -14,7 +14,7 @@ Der Ablauf des Texture Mappings kann vereinfacht mit folgenden Schritten in Open
 \item Zeichne ein planares, rechteckiges Objekt in die Szene.
 \item Entsprechend der definierten Textur-Koordinaten zeichnet die Grafikkarte die Oberfläche des Objekts mit der Textur.
 \end{enumerate}
-
+\noindent
 Ausserdem wird für diesen Schritt eine orthogonale Projektion durchgeführt, damit das gerenderte Hintergrundbild die gleichen Dimensionen hat, egal ob es sich vorne oder hinten in der Szene befindet. Wir können dadurch das Hintergrundbild weit nach hinten schieben, so dass es keine Kollision mit den später zu rendernden Objekten gibt.
 
 
@@ -30,7 +30,7 @@ Durch die pose estimation konnte bereits die extrinsische Matrix bestimmt werden
 \label{fig:opencv-to-opengl}
 \end{figure}
 
-
+\noindent
 Die Matrix aus OpenCV kann jedoch nicht direkt an OpenGL übergeben werden, da die beiden unterschiedliche Koordinatensysteme verwenden. Die Abbildung \ref{fig:opencv-to-opengl} stellt diese Gegebenheit grafisch dar. Die Konvertierung kann mit einer einfachen Matrixmultiplikation erreicht werden, indem die Y- und Z-Achsen invertiert werden:
 
 \begin{equation}
@@ -83,7 +83,7 @@ Persp
 \section{Positionierung der 3D Objekte}
 
 Wie bereits in Kapitel \ref{sec:projektion-door} beschrieben, wurden die Objektpunkte einer Türe so definiert, dass die untere linke Ecke als Ursprungspunkt (0, 0) dient. Da ein Ziel dieser Arbeit ist, ein Vordach über die Türe zu prjizieren, muss eine entsprechende Translation vorgenommen werden.
-
+\noindent \paragraph{}
 Da keine Kenntnisse über die realen Einheiten (siehe Kapitel \ref{sec:definition-objektpunkte}) bekannt sind, müssen wir die Translation entsprechend der Einheit der definierten Objektpunkte durchführen. Da die Breite der Türe als Einheitsgrösse 1 definiert wurde und die Höhe dem Verhältnis Höhe zu Breite entspricht, können wir die Model-View-Matrix um die halbe Breite (0.5) und die Höhe (r = Verhältnis Höhe zu Breite) verschieben (Abbildung \ref{fig:opengl-translation}).
 
 \begin{equation}
