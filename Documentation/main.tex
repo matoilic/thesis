@@ -1,5 +1,4 @@
 \documentclass[listof=totocnumbered,bibliography=totocnumbered,12pt,oneside]{scrreprt}
-\def\@afterindentfalse{\let\if@afterindent\iffalse}
 \usepackage[english,german,ngerman]{babel}
 \usepackage{geometry}
 \usepackage{xltxtra}
@@ -26,7 +25,6 @@
 \setcounter{tocdepth}{3}
 \counterwithout{footnote}{chapter}
 \numberwithin{equation}{subsection}
-\renewcommand\theequation{\arabic{equation}}
 \setmainfont[Mapping=tex-text]{Avenir Book}
 \setsansfont{Avenir Book}
 \titleformat{\tableofcontents}{\Large\bfseries}{\headingfont}{0em}{}
@@ -35,6 +33,10 @@
 \titleformat{\subsection}{\normalsize\mdseries}{\headingfont}{0em}{\thesubsection\hspace{1em}}
 \titlespacing{\paragraph}{0pt}{3.5ex plus 1ex minus .2ex}{0pt}
 \linespread{1.3}
+\def\@afterindentfalse{\let\if@afterindent\iffalse}
+
+\renewcommand\theequation{\arabic{equation}}
+\newcommand{\code}[1]{\texttt{#1}}
 
 \lhead[O,E]{}
 \rhead[O,E]{Door Tracked AR}
@@ -51,8 +53,13 @@
 	\rfoot[O,E]{Kron, Ilic}
 }
 
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
 \begin{document}
 \pagestyle{fancy}
+\def\@afterindentfalse{\let\if@afterindent\iffalse}
 
 \subject{Bachelor-Thesis}
 \title{Door Tracked Augmented Reality}

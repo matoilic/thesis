@@ -41,7 +41,7 @@ Diese Methode wurde durch F.Moreno-Noguer, V.Lepetit und P.Fua in der Publikatio
 \label{sec:definition-objektpunkte}
 
 Ein wichtiger Schritt zur finalen Positionsbestimmung ist die Definition der Objektpunkte. Da wir bei einem Kamerabild keine Kenntnisse über die Dimensionen von Objekten haben, wird durch die definierten Objektpunkte ein eigenes Einheitensystem geschaffen. Da die Schachbretterkennung die Eckkanten zwischen den Flächen liefert, macht es Sinn für den Abstand der Objektpunkte den Wert 1 zu wählen. Somit beschreibt 1 Objekteinheit die Grösse eines Quadrates auf dem Schachbrett. Die Punkte werden grundsätzlich im dreidimensionalen Raum definiert, für den Fall des Schachbretts können wir jedoch z = 0 setzen, da alle Punkte sich in der selben Ebene befinden.
-
+\noindent
 Weiter gilt es zu beachten, dass die definierten koordinaten der Objektpunkte einen Einfluss auf die resultierende Positionsmatrix haben. Der PnP Algorithmus berechnet die Position anhand des Ursprungs im Objektkoordinatensystem, d.h. die Matrix zeigt genau auf den Punkt (0, 0, 0). 
 Da ein 3D Objekt auf die Mitte des Schachbretts projiziert werden soll, werden die Objektpunkte um diesen Nullpunkt konstriert, siehe Abbildung \ref{fig:object-points}.
 
@@ -56,7 +56,7 @@ Da ein 3D Objekt auf die Mitte des Schachbretts projiziert werden soll, werden d
 \subsection{Floating-point Ungenauigkeiten}
 
 Ein Problem dass während des Projekts erst spät durch experimentieren gelöst werden konnte war, dass die berechnete und anschliessend dargestellte Projektion minimale Abweichungen aufweiste (siehe Abbildung \ref{floating-point-problem}). Das Problem war darauf zurückzuführen, dass die Algorithmen in OpenCV, die zur Lösung des PnP Problems verwendet wurden, scheinbar Probleme mit Gleitkommazahlen (engl. floating point) haben und dadurch das Resultat verfälschten.
-
+\noindent
 Zur Lösung dieses Problems wurde ein möglichst einfacher Weg gewählt: Die Koordinaten der Objektpunkte wurden mit einem fix definierten Faktor von 100.0 hochskaliert. Dadurch wurden optisch erheblich bessere Resultate erzielt. Damit diese Methode anschliessend mit dem 3D-Rendering noch funktioniert, muss vor dem Rendering des 3D-Models die Model-View-Matrix entsprechend um den selben Skalierungsfaktor hochskaliert werden.
 
 \begin{figure}[!ht]
@@ -87,7 +87,7 @@ Als Input für die Lagebestimmung der Türe stehen genau deren vier Eckpunkte zu
 \item \textbf{(1, 1)} unten rechts
 \item \textbf{(0, 1)} unten links
 \end{itemize}
-
+\noindent
 Mit diesen Punkten wäre es theoretisch ebenfalls möglich, die Lage eines minimalen Schachbrettmusters (3x3) zu bestimmen. Das Problem im Falle einer Türe ist jedoch folgendes: Bei einem Schachbrettmuster sind die schwarzen bzw. weissen Flächen \textit{immer} Quadrate. Aus diesem Grund können die Objektpunkte ebenfalls als Quadrat definiert werden. Falls jedoch mit diesen Objektpunkten versucht wird die Lage eines nicht quadratischen Objekts, z.B. eine Türe, zu bestimmen, erhält man falsche Resultate. Da eine Türe auch kein standardisiertes Grössenverhältnis hat kann man keine vordefinierten Objektpunkte zur Lösung des Problems verwenden.
 
 \subsection{Bestimmung des Grössenverhältnisses}
@@ -96,9 +96,9 @@ Mit diesen Punkten wäre es theoretisch ebenfalls möglich, die Lage eines minim
 
 \paragraph{}
 In einer Arbeit von Zhengyou Zhang \cite{zhangrectification} wurde ein Verfahren entwickelt, mit welchem anhand genau vier Punkten eines Rechtecks dessen Grössenverhältnis berechnet werden kann. Hintergrund dieser Arbeit ist das automatische Erkennen von perspektivisch aufgenommenen Whiteboards mit anschliessender perspektivischen Entzerrung des Whiteboard-Inhalts.
-
+\noindent
 Die Theorie funktioniert, weil bei den gegebenen Eckpunkten davon ausgegangen wird, dass diese sich in der gleichen Ebene befinden, was natürlich bei einem Whiteboard zutrifft. Aus diesem Grund kann auch für die Bestimmung des Grössenverthältnisses einer Türe dieses Verfahren herangezogen werden.
-
+\noindent
 In Zhangs Dokument wird grundsätzlich von einer unkalibrierten Kamera ausgegangen und setzt bestimmte Kameraeigenschaften voraus, z.B. dass der Bildmittelpunkt genau in der Mitte ist, was bei einer Kamera nicht unbedingt der Fall sein muss. Zhang erwähnt auch, dass die Verzerrung der Kamera die Fehlerrate erhöhen kann. Da wir in unserem Modell von einer kalibrierten Kamera ausgehen, sind uns intrinsische Parameter und Verzerrung bekannt. Wir können deshalb vor der Anwendung des Algorithmus die Bildpunkte vorher entzerren.
 
 
@@ -136,7 +136,7 @@ Zur Verifizierung der vorangehenden Arbeit von Zhang \cite{zhangrectification} w
   \label{fig:ratio-v1-undist}
 \end{figure}
 
-
+\noindent
 Die erste Durchführung der Messungen ergab ein unerwartetes Ergebnis. Der Verhältnis-Algorithmus wurde sowohl auf die verzerrten als auch die entzerrten Punkten angewendet. Überraschenderweise erhielten wir in der entzerrten Version schlechtere Resultate, was bei einer Spiegelreflexkamera verwunderlich ist, da diese eine sehr geringe Verzerrung haben sollte bzw. eine Entzerrung kameraseitig bereits durchführen sollte (siehe Abbildungen \ref{fig:ratio-v1-dist} und \ref{fig:ratio-v1-undist}).
 \\
 \\
@@ -171,7 +171,7 @@ Der Versuch wurde also ein zweites Mal gemacht. Diesmal wurde das Schachbrett zu
   \label{fig:ratio-v2-undist}
 \end{figure}
 
-
+\noindent
 Die zweiten Resultate entsprachen nun den erwarteten Werten. Auf den Abbildungen \ref{fig:ratio-v2-dist} und \ref{fig:ratio-v2-undist}) ist gut zu erkennen, dass sowohl die verzerrte als auch die entzerrte Version ähnliche Resultate zurückliefert, was von einer Spiegelreflexkamera erwartet werden sollte. Zudem haben wir einen maximalen Fehlerwert von 2.8 Prozent messen können, was ein guter Wert ist. Der Versuch hat zudem gezeit, dass eine schlecht kalibrierte Kamera erhebliche Verfälschungen des Resultats zur Folge haben kann. 
 
 
@@ -187,6 +187,6 @@ Da nun, wie in den vorherigen Abschnitten beschrieben, das Grössenverhältnis d
 \item \textbf{(1, r)} oben rechts
 \item \textbf{(0, 1)} unten rechts
 \end{itemize}
-
+\noindent
 Diese Punkte können nun zusammen mit den erkannten Eckpunkten der Türe an einen PnP Algorithmus übergeben werden, welcher die Position und Rotation berechnet.
 

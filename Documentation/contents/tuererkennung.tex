@@ -31,7 +31,7 @@ Im Unterschied zur Standard Hough Transform verwendet die Probabalistic Hough Tr
 \caption{Ablaufschema des LSWMS Algorithmus. Im ersten Teil wird wie Wahrscheinlichkeitsverteilung $\hat{p}(x,y)$ anhand der Parameter $\mu_1$ und $\mu_2$ ermittelt. Im zweiten Teil wird das erste Sample generiert und der Slice-Sampling-Prozess wird gestartet, um kontinuierlich Stichproben $z_k$ zu erhalten. Im dritten und letzten Teil werden die Samples verfeinert und als Ausgangspunkte für das iterative Line-Growing verwendet, welches die gesuchten Liniensegmente liefert. Quelle \cite{nieto}}
 \label{fig:lswms}
 \end{figure}
-
+\noindent
 Abb. \ref{fig:lswms} veranschaulicht den Ablauf des "Line Segment detection using Weighted Mean-Shift" (LSWMS) Algorithmus. Im ersten Teil wird die Wahrscheinlichkeitsverteilung für jedes Pixel von Bild $I$ berechnet, so dass $\hat{p}(x, y)$ angibt, wie wahrscheinlich es ist, dass das Pixel $(x, y$) Teil eines Liniensegmentes ist. Diese Wahrscheinlichkeitsverteilung, parametrisiert durch $\mu_1$ und $\mu_2$, wird anhand der Tensor Matrix und den dazugehörigen Eigenvalues errechnet. Gute Kandidatenpixel müssen zwei Bedingungen erfüllen. Zum einen muss der Betrag des Gradienten auf eine gewisse Signifikanz des Pixels hindeuten und zum anderen muss eine dominante Gradienten-Richtung in der Nachbarschaft des Pixels vorhanden sein.
 \paragraph{}
 Der zweite Teil "sequential sampling" selektiert, basierend auf $\hat{p}(x,y)$, kontinuierlich Pixel ($z_k$) welche eine hohe Wahrscheinlichkeit besitzen zu einem Liniensegment zu gehören. Gleichzeitig wirk sichergestellt, dass kein Pixel eines Segmentes mehrmals gesampelt wird. Dies ist ein wichtiger unterschied zu PHT, da es die Effizienz von LSWMS im Vergleich zu PHT erhöht. Der Slice Sampler basiert auf dem Markov-Chain-Monte-Carlo-Verfahren\footnote{\protect\url{http://de.wikipedia.org/wiki/MCMC-Verfahren}}, welches es erlaubt kontinuierlich Stichproben aus einer bestimten Wahrscheinlichkeitsverteilung $p$ zu ziehen, welche in unserem Fall die Qualität des Kandidatenpixel angibt.
@@ -44,13 +44,13 @@ p = g \circ f:  &I \to (\lambda_1, \lambda_2) \to \mathbb{R} \\
                 &(x, y) \mapsto \hat{p}(x, y) = g(f(x, y))
 \end{split}
 \end{equation}
-
+\noindent
 Die Funktion erfüllt zwei wichtige Kriterien. Zum einen gibt sie nur hohe Werte zurück für Eigenvalues-Paare bei dem ein Wert deutlich grösser ist als der Andere. Zum anderen fällt der Wert rapide ab, wenn beide Werte hoch oder tief sind. $g$ gibt die Wahrscheinlichkeit an, dass ein Eigenvalue-Paar zu einem Liniensegment gehört.
 
 \begin{equation}
 g(\lambda_1, \lambda_2) = (1 - exp(-\lambda_1/\mu_1)) exp(-\lambda_2/\mu_2)
 \end{equation}
-
+\noindent
 $\mu_1$ und $\mu_2$ sind die Durchschnittswerte aller Eigenvalues über das ganze Bild. Diese wurden im ersten Teil ermittelt. Stellt man die Verteilung visuell dar, so ergibt sich das Bild in Abb. \ref{fig:lswms-eigenvalues}.
 
 \begin{figure}[!ht]
@@ -59,7 +59,7 @@ $\mu_1$ und $\mu_2$ sind die Durchschnittswerte aller Eigenvalues über das ganz
 \caption{Eigenvalues welche die Gradientenstruktur abbilden. Die schwarzen Punkte sind die Werte der Nachbarpixel eines Pixels $(I_x, I_y)$. a) Verteilung eines Liniensegmentes. b) Verteilung einer Ecke oder einer heterogenen Gradienten. Quelle \cite{nieto}}
 \label{fig:lswms-eigenvalues}
 \end{figure}
-
+\noindent
 \paragraph{}
 Basierend auf diesen Grundlagen werden die Liniensegmente wie folgt ermittelt. Initial wird iterativ ein erster Kandidatenpixel gesucht, welcher die Bedingung $\hat{p}(x, y) > \mu$ erfüllt. $\mu$ ist der Mittelwert von $\hat{p}(x, y)$ über das ganze Bild. Dies stellt sicher, das für den Schritt der Segmentgenerierung eine optimale Ausgangslage geschaffen wird. So gibt es so wenig Fehlversuche wie möglich. Nachfolgend such der Sampler Pixel mit einem ähnlichen Wert für $\hat{p}(x, y)$ wie der Initialpixel. Jedes mal wenn ein Liniensegment generiert wird, werden sämtliche Pixel des Segmentes aus dem Pool der Pixel aus dem der Sampler wählt entfernt. Auch, werden die Nachbarpixel innerhalb einer definierten Fensters von $r x r$ entfernt, wobei r die räumliche Weite des Mean Shift ist. Aufgrund dieser Tatsache kann der Fall eintreten, dass der Slice Sampler feststellt, dass alle Pixel in der Nachbarschaft des initialen Pixels bereits verarbeitet wurden. In diesem Fall wird ein neuer Initialpixel gesucht, welcher die gegebenen Kriterien erfüllt. Der Sampler sucht so lange nach neuen Kandidaten bis keine geeigneten mehr gefunden werden oder bis eine gegebene Obergrenze bei der Anzahl zu suchender Liniensegmente erreicht wurde.
 \paragraph{}
@@ -106,7 +106,7 @@ LSWMS
 \begin{itemize}
 	\item numMaxLSegs: 1000
 \end{itemize}
-
+\noindent
 Die gelben Linien stellen die gefundenen Kanten bzw. Kanstensegmente dar.
 \pagebreak
 
@@ -116,16 +116,14 @@ Die gelben Linien stellen die gefundenen Kanten bzw. Kanstensegmente dar.
 \caption{Vergleich PHT und LSWMS}
 \label{fig:comp-pht-lswms}
 \end{figure}
-
-\pagebreak
-
+\noindent
 Dies ist nur ein Bild von zehn getesteten. Die Bilder welche während der Entwicklung zum Testen verwendet wurden können im Projektverzeichnis unter Data/Images/Doors/Misc gefunden werden. Es ist klar ersichtlich, dass LSWMS das qualitativ bessere Ergebnis liefert. Einziger Nachteil hier ist, dass LSWMS oft nicht durgehende Kanten erkennt sondern kleinere Segmente entlang der Kante zurückgibt. Neben der Qualität der Resultate wurde auch die Performance beider Methoden analysiert. Da einige Testbilder grösser sind als in der finalen Applikation benötigt, wurden alle Bilder auf eine Höhe von 800 Pixel verkleinert. Nachfolgend das Ergebnis (Durchschnitt aus 100 Durchgängen):
 
 \begin{itemize}
 	\item Hough: 165ms, 1871 Segmente
 	\item LSWMS: 64ms, 868 Segmente
 \end{itemize}
-
+\noindent
 Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konzipiert wurde, kann mit den gemessenen 64ms Verarbeitungszeit pro Frame kein flüssiges Videobild bei 28fps wiedergegeben werden.
 
 \section{Implementation}
@@ -136,8 +134,8 @@ Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konz
 \caption{Ablauf der Türerkennung}
 \label{fig:door-detection}
 \end{figure}
-
-Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennung aus mehreren Teilschritten (Abb. \ref{fig:door-detection}). Als erstes wird der LSWMS Algorithmus angewendet. Dieser Arbeitet auf Graustufenbildern. Somit wird der Input entsprechend konvertiert. Da die Lichtverhältnisse vor allem and den Türkanten oft subobtimal sind, aufgrund eines leichten Schattenwurfes, wird noch eine Contrast Limited Adaptive Histogram Equialization (CLAHE) angewendet mit einem Clip Limit von 5 und einer Fenstergrösse von 8. Diese Werte wurden experimentel ermittelt. Der Grund, dass CLAHE angewendet wurde und keine normale (Adaptive) Histogram Equalization ist, dass wir festgestellt das die Verstärkung von Rauschen und von feinen Muster (z.B. Holzmaserungen) die Qualität der Resultate von LSWMS verringert. Weiterhin ist für uns wichtig, dass die Regionen um die Tür herum ausgebessert werden sollen. Dies ist damit gegeben, dass CLAHE den Kontrast immer innerhalb eines bestimmten Fensters ausgleicht. Um sichtbare Kanten der einzelnen Fenster auszugleichen, wird die Randregion noch interpoliert. Der Unterschied der globalen Histogram Equalization und CLAHE wird in Abb. \ref{fig:clahe} verdeutlicht.
+\noindent
+Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennung aus mehreren Teilschritten (Abb. \ref{fig:door-detection}). Als erstes wird der LSWMS Algorithmus angewendet. Dieser Arbeitet auf Graustufenbildern. Somit wird der Input entsprechend konvertiert. Da die Lichtverhältnisse vor allem and den Türkanten oft subobtimal sind, aufgrund eines leichten Schattenwurfes, wird eine Contrast Limited Adaptive Histogram Equialization (CLAHE) angewendet mit einem Clip Limit von 5 und einer Fenstergrösse von 8. Diese Werte wurden experimentel ermittelt. Der Grund, dass CLAHE angewendet wurde und keine normale (Adaptive) Histogram Equalization ist, dass festgestellt wurde, dass die Verstärkung von Rauschen und von feinen Muster (z.B. Holzmaserungen) die Qualität der Resultate von LSWMS verringert. Weiterhin ist es wichtig, dass die Regionen um die Tür herum ausgebessert werden. Dies ist damit gegeben, dass CLAHE den Kontrast immer innerhalb eines bestimmten Fensters ausgleicht. Um sichtbare Kanten der einzelnen Fenster zu vermeiden, wird die Randregion noch interpoliert. Der Unterschied der globalen Histogram Equalization und CLAHE wird in Abb. \ref{fig:clahe} verdeutlicht. Ein Beispiel wie die Ausgabe der LSWMS Erkennung aussieht, ist in Abb. \ref{fig:lswms-output} ersichtlich.
 
 \begin{figure}
 \subfloat[Ausgangsbild]{\includegraphics[width=0.47\textwidth]{images/clahe-orig}}\qquad
@@ -148,9 +146,9 @@ Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennu
 \end{figure}
 
 \begin{figure}
-	\subfloat[Segmente wie sie von LSWMS gefunden werden]{\includegraphics[width=0.45\textwidth]{images/seg-raw}}\qquad	
-	\subfloat[Segmente kategorisiert in horizontal (Rot) und vertikal (Gelb)]{\includegraphics[width=0.45\textwidth]{images/seg-categorized}}\qquad	
-	\subfloat[Reduzierte Segmente]{\includegraphics[width=0.45\textwidth]{images/seg-joined}}	\qquad	
+	\subfloat[Segmente wie sie von LSWMS gefunden werden]{\includegraphics[width=0.45\textwidth]{images/seg-raw}\label{fig:lswms-output}}\qquad	
+	\subfloat[Segmente kategorisiert in horizontal (Rot) und vertikal (Gelb)]{\includegraphics[width=0.45\textwidth]{images/seg-categorized}\label{fig:segs-categorized}}\qquad	
+	\subfloat[Verschmolzene Segmente]{\includegraphics[width=0.45\textwidth]{images/seg-joined}}	\qquad	
 	\subfloat[Verlängerte Segmente]{\includegraphics[width=0.45\textwidth]{images/seg-grow}}	
 	\caption{Verarbeitungsprozess Türerkennung}
 \end{figure}
@@ -158,10 +156,51 @@ Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennu
 \begin{figure}
 	\ContinuedFloat
 	\centering		
-	
+	\subfloat[Gefundene Kandidaten]{\includegraphics[width=0.45\textwidth]{images/seg-candidates}}\qquad
 	\subfloat[Erkannte Tür]{\includegraphics[width=0.45\textwidth]{images/seg-detected}}\qquad
 	\caption{Verarbeitungsprozess Türerkennung}
+	\label{fig:door-detection}
 \end{figure}
+
+\subsection{Kategorisierung}
+Im nächsten Schritt werden die gefundenen Liniensegmente nach ihrer Ausrichtung kategorisiert (Abb. \ref{fig:segs-categorized}). Hierzu muss zuerst bestimmt weren, was horizontal und vertikal ist. Wird die Türe frontal aufgenommen, so sind dies die gewohnten werde $0$ für horizontal und $\frac{\pi}{2}$ für vertikal. Nimmt man die Türe seitlich auf, so werden vor allem die Horizontale verzerrt. Um nun zu bestimmen welcher Winkel die als Ausgangspunkt für die Horizontale ist, werden bestimmte Annahmen getroffen. Horizontale Linien weichen auch bei einer starken seitlichen aufnahme nie mehr als 50° (0.839rad) von der unverzerten Horizontale ab. Für die Vertikale wurde ein Wert von 20° (0.3491rad) festgelegt. Diese Werte wurden aus Probeaufnahmen aus verschiedenen Winkeln ermittelt und sind in Source/Ardoor/DoorDetection/DoorDetector.hpp in den Konstanten MAX\_HORIZONTAL\_DIVERGENCE bzw. MAX\_VERTICAL\_DIVERGENCE festgehalten. Da nur längere Segmente verlässliche Informationen bezüglich der Ausrichtung liefern, wird eine Mindestlänge von 10\% der Diagonalen vorrausgesetzt. Alle Längenangaben bei der Türerkennung sind anhand prozentualer Anteile gegenüber der Diagonalen festgelegt, da die Diagonale die längst-mögliche Strecke in jedem Bild ist. So sind die Vorraussetzungen für jede Bildgrösse die selben. Wurden die Grenzwerte ermittelt, werden die Segmente nun kategorisiert. Hier wird eine Abweichung von 15° (MAX\_GRADIENT in Source/Ardoor/DoorDetection/LineSegment.hpp) zur Vertikalen bzw. Horizontalen erlaubt, um Fehler bei der Liniensegment-Erkennung auszugleichen und um eine bessere Grundlage für den nächsten Verarbeitungsschritt zu schaffen.
+
+\subsection{Segment Joining}
+Da die gefundenen Kanten oft nicht aus durchgehenden Segmenten bestehen sondern aus mehreren kleinen (Abb. \ref{fig:segments-pre-join}), müssen in diesem Schritt Liniensegmente die nahe bei einander liegen und eine änhliche Ausrichtung haben verschmolzen werden. Dabei wird wie folgt vorgegenagen. Als erstes wird die Distanz der Segmente berechnet. Dabei müssen mehrere Fälle unterschieden werden.
+
+\begin{itemize}
+	\item Segmente sind Parallel $\Rightarrow$ Die Distanz kann von jedem Punkt aus in der "Überlappungszone" bestimmt werden kann.
+	\item Segmente stehen schief zueinander $\Rightarrow$ Die Segmentpunkte mit der geringsten Distanz müssen ermittelt werden.
+	\item Segmente haben keine "Überlappungszone" $\Rightarrow$ Distanz von End- zu Startpunkt wird berechnet
+	\item Segmente kreuzen sich $\Rightarrow$ Schnittpunkt muss ermittelt werden
+\end{itemize}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{images/segments-pre-join} 
+\caption{Segmente vor der Verschmelzung (gezoomt)}
+\label{fig:segments-pre-join}
+\end{figure}
+\noindent
+Eine Distanz von max. 8px hat sich als guter Wert erwiesen. Wurden zwei Segmente gefunden die nahe genug bei einander sind, wird das Segment Joining initialisiert. Hier wird zuerst überprüft, ob es Sinn macht die Segmente zu vereinen. Liegt ein Segment innerhalb des Bereiches des anderen, so macht dies keinen Sinn, da das Segment nicht erweiter wird (Abb. \ref{fig:segment-joining-1}).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{images/segment-joining-1} 
+\caption{Hier macht es keinen Sinn die zwei Segmente zu verschmelzen}
+\label{fig:segment-joining-1}
+\end{figure}
+\noindent
+Ist dies nicht der Fall, so wird ermittelt, welches Segment die bessere Ausrichtung gegenüber der errechneten Horizontalen bzw. Vertikalen hat. Die bessere Ausrichtung wird beim Verbinden beibehalten. Anschliessend werden die Längen addiert und das neue Segment wird zwischen den zwei Ausgangssegmenten platziert (Abb. \ref{fig:segment-joining-2}).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{images/segment-joining-2} 
+\caption{Ausgangssegmente grau und verschmolzenes Segment rot}
+\label{fig:segment-joining-2}
+\end{figure}
+
+\subsection{Kandidatensuche}
 
 \subsection{Performance}
 
