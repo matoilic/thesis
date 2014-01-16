@@ -49,7 +49,7 @@ LSWMS::LSWMS(const cv::Size imSize, const int R, const double minSegLength, cons
 
     __R = R;
     __numMaxLSegs = numMaxLSegs;
-    __minSegmentLength = (imSize.width * imSize.width + imSize.height * imSize.height) * minSegLength * minSegLength;
+    __minSegmentLength = minSegLength * minSegLength;
 
     __N = 2*__R + 1;
 

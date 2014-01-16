@@ -135,7 +135,7 @@ Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konz
 \label{fig:door-detection}
 \end{figure}
 \noindent
-Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennung aus mehreren Teilschritten (Abb. \ref{fig:door-detection}). Als erstes wird der LSWMS Algorithmus angewendet. Dieser Arbeitet auf Graustufenbildern. Somit wird der Input entsprechend konvertiert. Da die Lichtverhältnisse vor allem and den Türkanten oft subobtimal sind, aufgrund eines leichten Schattenwurfes, wird eine Contrast Limited Adaptive Histogram Equialization (CLAHE) angewendet mit einem Clip Limit von 5 und einer Fenstergrösse von 8. Diese Werte wurden experimentel ermittelt. Der Grund, dass CLAHE angewendet wurde und keine normale (Adaptive) Histogram Equalization ist, dass festgestellt wurde, dass die Verstärkung von Rauschen und von feinen Muster (z.B. Holzmaserungen) die Qualität der Resultate von LSWMS verringert. Weiterhin ist es wichtig, dass die Regionen um die Tür herum ausgebessert werden. Dies ist damit gegeben, dass CLAHE den Kontrast immer innerhalb eines bestimmten Fensters ausgleicht. Um sichtbare Kanten der einzelnen Fenster zu vermeiden, wird die Randregion noch interpoliert. Der Unterschied der globalen Histogram Equalization und CLAHE wird in Abb. \ref{fig:clahe} verdeutlicht. Ein Beispiel wie die Ausgabe der LSWMS Erkennung aussieht, ist in Abb. \ref{fig:lswms-output} ersichtlich.
+Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennung aus mehreren Teilschritten (Abb. \ref{fig:door-detection}). Als erstes wird der LSWMS Algorithmus angewendet. Dieser Arbeitet auf Graustufenbildern. Somit wird der Input entsprechend konvertiert. Da die Lichtverhältnisse vor allem and den Türkanten oft subobtimal sind, aufgrund eines leichten Schattenwurfes, wird eine Contrast Limited Adaptive Histogram Equialization (CLAHE) angewendet mit einem Clip Limit von 5 und einer Fenstergrösse von 8. Diese Werte wurden experimentel ermittelt. Der Grund, dass CLAHE angewendet wurde und keine normale (Adaptive) Histogram Equalization ist, dass festgestellt wurde, dass die Verstärkung von Rauschen und von feinen Muster (z.B. Holzmaserungen) die Qualität der Resultate von LSWMS verringert. Weiterhin ist es wichtig, dass die Regionen um die Tür herum ausgebessert werden. Dies ist damit gegeben, dass CLAHE den Kontrast immer innerhalb eines bestimmten Fensters ausgleicht. Um sichtbare Kanten der einzelnen Fenster zu vermeiden, wird die Randregion noch interpoliert. Der Unterschied der globalen Histogram Equalization und CLAHE wird in Abb. \ref{fig:clahe} verdeutlicht. Ein Beispiel wie die Ausgabe der LSWMS Erkennung aussieht, ist in Abb. \ref{fig:lswms-output} ersichtlich. Der Algorithmus wurde zusätzlich noch für diese spezielle Anwendung optimiert. Zu kurze Segmente werden bereits bei der Suche verworfen. Weiterhin wurde der Mean Shift teil entfernt. Dieser dient rein der Fehlerkorrektur. LSWMS gibt aber auch ohne diese Berechnung gute Resultate zurück. Der Mean Shift ist der Rechenintensivste Teil des Algorithmus. Durch den Ausbau konnte die Verarbeitungszeit um 70\% reduziert werden. Nur so konnte der oben genannte, deutliche Performancegewinn gegenüber PHT erreicht werden.
 
 \begin{figure}
 \subfloat[Ausgangsbild]{\includegraphics[width=0.47\textwidth]{images/clahe-orig}}\qquad
@@ -156,7 +156,7 @@ Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennu
 \begin{figure}
 	\ContinuedFloat
 	\centering		
-	\subfloat[Gefundene Kandidaten]{\includegraphics[width=0.45\textwidth]{images/seg-candidates}}\qquad
+	\subfloat[Gefundene Kandidaten]{\includegraphics[width=0.45\textwidth]{images/seg-candidates}\label{fig:seg-candidates}}\qquad
 	\subfloat[Erkannte Tür]{\includegraphics[width=0.45\textwidth]{images/seg-detected}}\qquad
 	\caption{Verarbeitungsprozess Türerkennung}
 	\label{fig:door-detection}
@@ -201,7 +201,36 @@ Ist dies nicht der Fall, so wird ermittelt, welches Segment die bessere Ausricht
 \end{figure}
 
 \subsection{Kandidatensuche}
+Nun gehr es darum Vierer-Paare von Liniensegmenten zu finden, welche eine Tür darstellen könnten (Abb. \ref{fig:seg-candidates}). Währen der Implementation der Suche hat sich ergeben, dass die Segmente welche die Tür umgeben sich nicht kreuzen. Aus diesem Grund werden die Linien vor der Suche noch um 5\% der Diagonalenlänge verlängert. Mit diesem Wert konnte in allen Tests sichergestellt werden, dass sich die Türsegmente überlappen. 
+\paragraph{}
+Nun wird nach der Tür gesucht. Hierfür werden als erstes die vertikalen Kanten evaluiert. Diese müssen einen gewissen Mindestabstand besitzen (15\% der Diagonallänge). Damit gehen wir davon aus, dass die Tür an sich im Bild eine gewisse Grösse hat. Dies lässt sich nicht vermeiden, um nicht fälschlicherweise Fenster als Türen zu erkennen. Anschliessen wird nach passenden horizontalen Segmenten gesucht. Diese müssen min. eine Türhöhe von 25\% bilden. Es werden nur die horizontalen Linien evaluiert, welche beide vertikalen Segmente überlappen.
+
+\subsection{Kandidatenevaluation}
+In diesem letzten Shcritt werden die gefundenen Kandidaten bewertet. Dabei wird das Seitenverhältnis Höhe:Breite von diesen ausgewertet. Es wurden verschidene Türtypen aufgenommen und im Internet gesucht um zu erruieren, was in etwa das Standardmass einer Durchschnitttür ist. Es sind zwar DIN-Normen vorhanden, diese weichen aber stark von den meisten Türen ab welche untersucht wurden. Die DIN-Norm für eine einflüglige Türe hat ein Seitenverhältnis von 7.2. Durch auswertung von 30 Aufnahmen wurde aber ein Verhältnis von 4.91 errechnet. In den Tests hat sich dieses klar als besser herausgestellt in 100\% der Fälle. 
+\paragraph{}
+Es wurden auch dieverste andere mögliche Evaluationskriterien getestet, jedoch haben sich diese nicht bewährt. Ein Ansatz war, die frabliche Homogenität der Fläche der Kandidaten zu bewerten. Aufgrund von Schattenwurf, Fenstern und Mustern auf vielen Türen hat sich dies nicht bewährt. Ein anderer Ansatz war, den Türgriff zu suchen. Da die Vielfalt hier aber enorm gross ist und der Griff oft zu klein ist auf den Bildern um ihn zu Analysieren, wurde auch dieses Kriterium fallen gelassen. Generell ist es sehr schwierig bei Aussentüren einen gemeinsamen Nenner zu finden. Die Evaluation der Seitenverhältnisse allein liefert aber in vielen Fällen bereits gute Resultate.
 
 \subsection{Performance}
+Die Performance wurde anhand von 100 Durchläufen auf 10 verschiedene Bilder gemessen.
+
+\begin{itemize}
+	\item \textbf{LSWMS} (inkl. CLAHE): 64ms
+	\item \textbf{Kategorisierung} 0.02ms
+	\item \textbf{Segment Joining} 1.05ms
+	\item \textbf{Kandidatenevaluation} 9$\mu$s
+\end{itemize}
+
+\noindent
+Wie zu sehen ist, ist nur der Teil der Kantendetektion für die Gesamtperformance relevant. 
 
 \subsection{Verbesserungsmöglichkeit}
+Zwei essentielle Punkte können an der Türerkennung verbessert werden. CLAHE ist eine vergleichsweise rechenintensive Operation. Ohne diese nimmt der LSWMS im Schnitt nur 23ms in Anspruch. Jedoch sind die Suchresultate deutlich schlechter ohne diese Kontrastoptimierung. Hier muss nach einer Alternative gesucht werden.
+\paragraph{}
+Ein zweiter Schwanchpunkt ist die ermittlung der effktiven Horizontalen und Vertikalen. Bei startken Seitenaufnahmen mit einem Winkel von <70° sind die Abweichungen zu gross (Abb. \ref{fig:door-joining-error}). Hier muss der Fluchtpunkt ermittelt werden um die Zuverlässigkeit zu verbessern. Da das Ziel war die Performance auf Echtzeiniveau zu bringen, wurde versucht auf die Berechnung der Fluchtpunkte zu verzichten. Jedoch hat sich zum Schluss ergeben, dass dies wohl unumgänglich ist. Zeitlich konnte dies aber nicht mehr realisiert werden.
+
+\begin{figure}	
+\subfloat[Kanten vor dem Joining]{\includegraphics[width=0.48\textwidth]{images/door-side-raw}}\qquad
+\subfloat[Kanten nach dem Joining]{\includegraphics[width=0.48\textwidth]{images/door-side-joined}}\qquad
+\caption{Abweichung bei der Bestimmung der Horizontalen. Die untere Türkante weicht nach dem Segment Joining klar von der effektiven Horizontalen ab.}%
+\label{fig:door-joining-error}
+\end{figure}

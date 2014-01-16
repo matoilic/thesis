@@ -5,7 +5,7 @@
 #include "LinePoint.hpp"
 #include "SegmentDistance.hpp"
 
-#define MAX_GRADIENT 0.466308 //tan(15°)
+#define MAX_GRADIENT 0.14054 //tan(15°)
 #define MAX_GRADIENT_DIFFERENCE 0.2618 //tan(5°)
 #define PI_HALF 1.57079632679
 #define F_ZERO 0.00000001
@@ -19,9 +19,11 @@ public:
     LinePoint end;
     bool deleted;
     float error;
+    float horizontalAngle;
+    float verticalAngle;
 
-    LineSegment() : deleted(false) { }
-    LineSegment(LinePoint s, LinePoint e) : start(s), end(e), deleted(false) { }
+    LineSegment() : deleted(false), horizontalAngle(0), verticalAngle(PI_HALF) { }
+    LineSegment(LinePoint s, LinePoint e) : start(s), end(e), deleted(false), horizontalAngle(0), verticalAngle(PI_HALF) { }
 
     SegmentDistance distanceTo(const LineSegment &s2) const;
     LinePoint intersectionPointWith(const LineSegment &s2) const;
@@ -42,7 +44,7 @@ class GradientComparator
 public:
     bool operator()(const LineSegment &s1, const LineSegment &s2) const
     {
-        return s1.gradient() < s2.gradient();
+        return abs(s1.gradient()) < abs(s2.gradient());
     }
 };
 

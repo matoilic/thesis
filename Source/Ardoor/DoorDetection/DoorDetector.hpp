@@ -5,17 +5,20 @@
 #include <Ardoor/Ardoor.hpp>
 #include "LSWMS.hpp"
 #include "LineSegment.hpp"
+#include "PHough.hpp"
+#include "Timer.hpp"
 
-#define MIN_SEGMENT_LENGTH 0.03 //in percent of the image diagonal
-#define MAX_SEGMENT_DISTANCE 0.1 //in percent of the image diagonal
-#define MAX_SEGMENT_SHIFT 3 //in px
-#define MAX_SEGMENT_GRADIENT_DIFFERENCE 0.17632 //in px
-#define LINE_GROWTH 0.03 //in percent of the image diagonal
+#define MIN_SEGMENT_LENGTH 0.001 //in percent of the image diagonal
+#define MAX_SEGMENT_DISTANCE 0.05 //in percent of the image diagonal
+#define MAX_SEGMENT_SHIFT 8 //in px
+#define MAX_SEGMENT_GRADIENT_DIFFERENCE 0.08748 //tan(5°)
+#define SEGMENT_GROWTH 0.05 //in percent of the image diagonal
 #define MIN_DOOR_WIDTH 0.15 //in percent of the image diagonal
 #define MIN_DOOR_HEIGHT 0.25 //in percent of the image diagonal
-#define MAX_EDGE_DIFFERENCE 0.03 //in percent of the image diagonal
-
 #define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a DIN door
+#define MAX_HORIZONTAL_DIVERGENCE 0.839
+#define MAX_VERTICAL_DIVERGENCE 0.3491
+#define MIN_LENGTH_CATEGORIZATION 0.1 //in percent of the image diagonal
 
 using namespace std;
 
@@ -31,14 +34,16 @@ public:
 class ARD_EXPORT DoorDetector
 {
     cv::Ptr<cv::CLAHE> clahe;
-    LSWMS *lswms;
+    LSWMS *segmentDetector;
+//    PHough *segmentDetector;
+    Timer timer;
     int diagonalLength;
 
     DoorDetector();
     void categorizeSegments(vector<LineSegment> &segments, vector<LineSegment> &horizontal, vector<LineSegment> &vertical);
     void enhanceEdges(cv::Mat &image);
     void joinSegments(vector<LineSegment> &segments, const cv::Mat &img, bool horizontal);
-    void applyLswms(cv::Mat img, vector<LineSegment> &segments);
+    void runSegmentDetection(cv::Mat img, vector<LineSegment> &segments);
     void findSegments(cv::Mat &grayImg, vector<LineSegment> &horizontal, vector<LineSegment> &vertical);
     void growSegments(vector<LineSegment> &segments, int length);
     void findDoor(vector<LineSegment> &horizontal, vector<LineSegment> &vertical, vector<cv::Point> &corners);

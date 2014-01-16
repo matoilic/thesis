@@ -1,9 +1,10 @@
 #include <cmath>
 #include <stdio.h>
 #include <iostream>
-#include <assert.h>
 
 #include "LineSegment.hpp"
+
+using namespace std;
 
 SegmentDistance LineSegment::distanceTo(const LineSegment &s2) const
 {
@@ -99,7 +100,7 @@ double LineSegment::gradient() const
 {
     if(dX() == 0) return PI_HALF;
 
-    return std::atan(std::abs((double)dY() / dX()));
+    return std::atan((double)dY() / dX());
 }
 
 int LineSegment::dX() const
@@ -114,12 +115,12 @@ int LineSegment::dY() const
 
 bool LineSegment::isHorizontal() const
 {
-    return (gradient() <= MAX_GRADIENT);
+    return (abs(abs(gradient()) - horizontalAngle) <= MAX_GRADIENT);
 }
 
 bool LineSegment::isVertical() const
 {
-    return (gradient() >= PI_HALF - MAX_GRADIENT);
+    return (abs(abs(gradient()) - verticalAngle) <= MAX_GRADIENT);
 }
 
 double LineSegment::length() const
@@ -131,9 +132,9 @@ double LineSegment::length() const
 }
 
 void LineSegment::joinWith(const LineSegment second)
-{    
+{
     if(isHorizontal()) {
-        //asert(second.isHorizontal());
+        //assert(second.isHorizontal() == true);
 
         if(start.x < second.start.x && end.x > second.end.x) return;
 
@@ -144,7 +145,7 @@ void LineSegment::joinWith(const LineSegment second)
             return;
         }
     } else {
-        //asert(second.isVertical());
+        //assert(second.isVertical() == true);
 
         if(start.y < second.start.y && end.y > second.end.y) return;
 
@@ -156,10 +157,30 @@ void LineSegment::joinWith(const LineSegment second)
         }
     }
 
-    cv::Point newStart, newEnd;
+    LinePoint newStart, newEnd;
 
     newStart = (second.start.distanceFromOrigin() < start.distanceFromOrigin()) ? second.start : start;
     newEnd = (second.end.distanceFromOrigin() > end.distanceFromOrigin()) ? second.end : end;
+    LineSegment tmp(newStart, newEnd);
+
+    double thisGradient = gradient(), secondGradient = second.gradient(), newGradient;
+    if(isHorizontal()) {
+        if(abs(abs(thisGradient) - horizontalAngle) < abs(abs(secondGradient) - horizontalAngle)) {
+            newGradient = thisGradient;
+        } else {
+            newGradient = secondGradient;
+        }
+    } else {
+        if(abs(abs(thisGradient) - verticalAngle) < abs(abs(secondGradient) - verticalAngle)) {
+            newGradient = thisGradient;
+        } else {
+            newGradient = secondGradient;
+        }
+    }
+
+    float newLength = tmp.length();
+    newEnd.x = newStart.x + round(newLength * cos(newGradient));
+    newEnd.y = newStart.y + round(newLength * sin(newGradient));
 
     double thisWeight, secondWeight, thisLength = length(), secondLength = second.length();
 
@@ -173,10 +194,8 @@ void LineSegment::joinWith(const LineSegment second)
 
     if(isHorizontal()) {
         newStart.y = round(thisWeight * start.y + secondWeight * second.start.y);
-        newEnd.y = round(thisWeight * end.y + secondWeight * second.end.y);
     } else {
         newStart.x = round(thisWeight * start.x + secondWeight * second.start.x);
-        newEnd.x = round(thisWeight * end.x + secondWeight * second.end.x);
     }
 
     start = newStart;

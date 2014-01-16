@@ -50,7 +50,9 @@ HEADERS += \
     Ardoor/DoorDetection/debugbreak.h \
     Ardoor/PoseEstimation/DoorPoseEstimator.hpp \
     Ardoor/Rendering/DoorRenderingContext.hpp \
-    Ardoor/Projection/ProjectionUtil.hpp
+    Ardoor/Projection/ProjectionUtil.hpp \
+    Ardoor/DoorDetection/PHough.hpp \
+    Ardoor/DoorDetection/Timer.hpp
 
 SOURCES += \
     Ardoor/PoseEstimation/PoseEstimator.cpp \
@@ -78,7 +80,9 @@ SOURCES += \
     Ardoor/DoorDetection/DoorDetector.cpp \
     Ardoor/PoseEstimation/DoorPoseEstimator.cpp \
     Ardoor/Rendering/DoorRenderingContext.cpp \
-    Ardoor/Projection/ProjectionUtil.cpp
+    Ardoor/Projection/ProjectionUtil.cpp \
+    Ardoor/DoorDetection/PHough.cpp \
+    Ardoor/DoorDetection/Timer.cpp
 
 RESOURCES += \
     ../Data/Shader/shaders.qrc
