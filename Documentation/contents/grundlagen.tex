@@ -1,11 +1,11 @@
 \chapter{Grundlagen}
 
-Die Positionsbestimmung besteht aus drei elementaren Teilen. Der Kamerakalibrierung, welche das Bild entzerrt und wichtige Parameter der Kamera zurückliefert, welche für die Bestimmung der Perspektive wichtig sind. Anhand dieser Daten wird mittels der von OpenCV bereitgestellten Funktion die Perspektive von der Kamera zur Projektionsfläche bestimmt. Zuletzt wird mit Hilfe von Rodrigues die Rotation der Projektionsfläche angepasst. Diese drei Teile wollen wir hier nun etwas detaillierter erklären.
+Die Positionsbestimmung besteht aus drei elementaren Teilen. Der Kamerakalibrierung, welche das Bild entzerrt und wichtige Parameter der Kamera zurückliefert, welche für die Bestimmung der Perspektive wichtig sind. Anhand dieser Daten wird mittels einer von OpenCV bereitgestellten Funktion die Perspektive von der Kamera zur Projektionsfläche bestimmt. Zuletzt wird mit Hilfe von Rodrigues die Rotation der Projektionsfläche angepasst. Diese drei Teile wollen wir hier nun etwas detaillierter erklären.
 
 \section{Kamerakalibrierung}
 Unsere Motivation einen Kalibrierungsprozess in die Applikation einzubauen war zum einen um zu verifizieren, ob unsere eingesetzten Kameras, wie von uns angenommen, verzerrungsfrei arbeiten. Zum anderen benötigen wir die intrinsischen Parameter der Kamera um ein Objekt korrekt in eine Augmented Reality Szene projizieren zu können. Die extrinsischen Parameter sind in unserem Fall zweitrangig, da diese von der Position der Kamera zur Projektionsfläche abhängen und somit zur Laufzeit stetig neu berechnet werden müssen.
 \paragraph{}
-Die Kalibrierung an sich umfasst die Analyse einer Serie von Projektionen von charakteristischen Punkten eines Musters, wobei die Position dieser "Feature Points" mit hoher Präzision bekannt ist. Die Position und die Distanz zwischen den einzelnen Punkten innerhalb der Projektion liefern Rückschlüsse bezüglich der Verzerrung innerhalb von dieser als auch Informationen bezüglich der intrinsischen und extrinsischen Eigenschaften des Aufnahmegerätes. 
+Die Kalibrierung an sich umfasst die Analyse einer Serie von Projektionen von charakteristischen Punkten eines Musters, wobei die Position dieser "Feature Points" mit hoher Präzision erkannt werden kann. Die Position und die Distanz zwischen den einzelnen Punkten innerhalb der Projektion liefern Rückschlüsse bezüglich der Verzerrung als auch Informationen bezüglich der intrinsischen und extrinsischen Eigenschaften des Aufnahmegerätes. 
 \paragraph{}
 Das Muster welches in diesem Projekt verwendet wurde ist ein Schachbrett. Durch die hohen Kontraste eines Schachbrettes lassen sich die Schnittpunkte der einzelnen Kacheln mit einer sehr hohen Präzision ermitteln. Die Projektionen sind in unserem Fall Aufnahmen des Schachbrettes aus verschiedenen Blickrichtungen. Wir haben uns für diese Basis für den Kalibrierungsprozess entschieden, weil diese sich in diversen Projekten bewährt hat und weil OpenCV bereits entsprechende Funktionen enthält um mit dieser Datengrundlage die Kalibrierung zu vollziehen. 
 
@@ -33,15 +33,15 @@ X \\ Y \\ Z
 \end{bmatrix} 
 \end{equation}
 \noindent
-Da die intrinsischen Parametereigenschaften der Hardware und unabhängig von der Umgebung sind, müssen sie für jedes Aufnahmegerät nur einmal zu Begin bestimmt werden und können anschliessend fix in der Applikation hinterlegt werden.
+Da die intrinsischen Parametereigenschaften der Hardware unabhängig von der Umgebung sind, müssen sie für jedes Aufnahmegerät nur einmal zu Beginn bestimmt werden und können anschliessend fix in der Applikation hinterlegt werden.
 
 \section{Verzerrung}
-Es gibt zwei Arten von Verzerrungen welche bei Aufnahmen mit Kameras entstehen können: radiale und tangentiale. Radiale Verzerrungen sind auf die gewölbte Form der Linsen zurückzuführen. Im Zentrum des Bildes ist die radiale Verzerrung noch bei null und nimmt gegen den Rand immer wie stärker zu. Theoretisch währe es möglich eine nahezu perfekte parabolische Linse herzustellen, jedoch wäre diese viel zu kostspielig in der Produktion. Deshalb werden allgemein sphärische Linsen eingesetzt.
+Es gibt zwei Arten von Verzerrungen welche bei Aufnahmen mit Kameras entstehen können: radiale und tangentiale. Radiale Verzerrungen sind auf die gewölbte Form der Linsen zurückzuführen. Im Zentrum des Bildes ist die radiale Verzerrung noch bei null und nimmt gegen den Rand immer stärker zu. Theoretisch wäre es möglich eine nahezu perfekte parabolische Linse herzustellen, jedoch wäre diese viel zu kostspielig in der Produktion. Deshalb werden allgemein sphärische Linsen eingesetzt.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.5]{images/radial-disortion.png} 
-\caption{Strahlen welche die Linse weiter weg vom Zentrum passieren werden stärker abgelenkt als solche nahe dem Zentrum. Darum erschein die Projektion verzerrt.\protect\cite{learningopencv}}
+\caption{Strahlen welche die Linse weiter weg vom Zentrum passieren werden stärker abgelenkt als solche nahe dem Zentrum. Darum erschein die Projektion verzerrt. \protect\cite{learningopencv}}
 \label{fig:radial-disortion}
 \end{figure}
 \noindent
@@ -50,28 +50,28 @@ Tangentiale Verzerrungen werden durch Ungenauigkeiten bei der Zusammensetzung de
 \begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.5]{images/tangential-disortion.png} 
-\caption{Tangentiale Verzerrung aufgrund von Fehlern im optischen System.\protect\cite{learningopencv}}
+\caption{Tangentiale Verzerrung aufgrund von Fehlern im optischen System. \protect\cite{learningopencv}}
 \label{fig:tangential-disortion}
 \end{figure}
 
-\section{Koordinatensysteme}
-Um den Kalibrierungsprozess zu verstehen, muss man auch die einzelnen Koordinatensysteme kennen, welche bei der Aufnahme eines Bildes durchlaufen werden. Deshalb möchten wir diese Hier kurz erläutern.
+\section{Koordinatensysteme }
+Um den Kalibrierungsprozess zu verstehen, muss man auch die einzelnen Koordinatensysteme kennen, welche bei der Aufnahme eines Bildes durchlaufen werden. Deshalb möchten wir diese hier kurz erläutern.
 
-\paragraph{Weltkoordinatensystem} Dieses ist das Koordinatensystem in welchen die "reale Welt" gemessen wird und ist dreidimensional. Dies ist der Ursprung der Bilddaten.
+\paragraph{Weltkoordinatensystem } Dieses ist ein dreidimensionales Koordinatensystem, in welchem die "reale Welt" gemessen wird. Dies ist der Ursprung der Bilddaten.
 
-\paragraph{Standardkoordinatensystem} Dieses dreidimensionale Koordinatensystem hat den Ursprung im Projektionszentrum. Seine Z-Achse verläuft entlang der optischen Achse.
+\paragraph{Standardkoordinatensystem } Dieses dreidimensionale Koordinatensystem hat den Ursprung im Projektionszentrum. Seine z-Achse verläuft entlang der optischen Achse.
 
-\paragraph{Bildkoordinatensystem} Dieses hat seinen Ursprung beim Schnittpunkt der optischen Achse und der Bildebene. Die x- und y-Achse sind parallel zur X- bzw. Y-Achse des Standardkoordinatensystems.
+\paragraph{Bildkoordinatensystem } Dieses hat seinen Ursprung beim Schnittpunkt der optischen Achse und der Bildebene. Die x- und y-Achse sind parallel zur x- bzw. y-Achse des Standardkoordinatensystems.
 
-\paragraph{Pixelkoordinatensystem} Das Pixelkoordinatensystem hat seinen Ursprung beim Korrigierten Punkt $c_x$ \/ $c_y$  und seine x- und y-Achse sind parallel zur x- bzw. y-Achse des Bildkoordinatensystem.
+\paragraph{Pixelkoordinatensystem } Das Pixelkoordinatensystem hat seinen Ursprung beim korrigierten Punkt $c_x$ \/ $c_y$  und seine x- und y-Achse sind parallel zur x- bzw. y-Achse des Bildkoordinatensystem.
 
 \paragraph{} Während dem Abbildungsprozess durchlaufen die einzelnen Bildimformationen nun diese Systeme wie folgt: Weltkoordinaten $\Rightarrow$ Standardkoordinaten $\Rightarrow$ Bildkoordinaten $\Rightarrow$ Pixelkoordinaten
 
 \section{Implementierung}
-Die Funktionalität für die Kalibrierung ist in der Klasse CameraCalibration implementiert. Da alle benötigten Algorithmen bereits in OpenCV implementiert sind, ist der Kalibrierungsprozess relativ einfach umzusetzen. OpenCV selbst verwendet das Verfahren, welches 1998 von Zhang\cite{zhang} entwickelt wurde. Dabei werden die einzelnen Parameter nicht exakt berechnet sondern mittels einer "Maximum likelihood estimation" mit einer hohen Präzision geschätzt. Eine präzise Schätzung erfordert jedoch eine breite Datenbasis. Deshalb reicht es nicht aus, nur eine Aufnahme des Schachbrettmusters als Input zu liefern. Empfohlen werden 15 - 20 Aufnahmen aus möglichst verschiedenen Blickwinkeln. Da die Erkennung des Musters nicht 100\% treffgenau ist, haben wir uns dazu entschieden immer min. 20 Aufnahmen zu verwenden. So können wir davon ausgehen, dass immer mehr als 15 erfolgreiche Erkennungen stattfinden.
+Die Funktionalität für die Kalibrierung ist in der Klasse CameraCalibration implementiert. Da alle benötigten Algorithmen bereits in OpenCV implementiert sind, ist der Kalibrierungsprozess relativ einfach umzusetzen. OpenCV selbst verwendet das Verfahren, welches 1998 von Zhang \cite{zhang} entwickelt wurde. Dabei werden die einzelnen Parameter nicht exakt berechnet sondern mittels einer "maximum likelihood estimation" mit einer hohen Präzision geschätzt. Eine präzise Schätzung erfordert jedoch eine breite Datenbasis. Deshalb reicht es nicht aus, nur eine Aufnahme des Schachbrettmusters als Input zu liefern. Empfohlen werden 15 - 20 Aufnahmen aus möglichst verschiedenen Blickwinkeln. Da die Erkennung des Musters nicht 100\% treffgenau ist, haben wir uns dazu entschieden immer min. 20 Aufnahmen zu verwenden. So können wir davon ausgehen, dass immer mehr als 15 erfolgreiche Erkennungen stattfinden.
 
 \paragraph{}
-Die Funktion \textit{CameraCalibration::cornerSubPix} akzeptiert eine Liste von aufnahmen des Schachbrettmusters. Als zweiter Parameter muss die Grösse des Brettes angegeben werden (die Anzahl innerer Eckpunkte in horizontaler und vertikaler Richtung). Dabei sollten die Breite ungerade und die Höhe gerade sein und das Muster sollte breiter als hoch sein. Wir haben uns für ein 6x9 grosses Muster entschieden, da dies die geläufigste Grösse zu sein scheint. Nun wird mittels \textit{CameraCalibration::findChessboardPoints} die Erkennung durchgeführt. Dabei müssen die \textit{objectCorners} (Bildkoordinatensystem) auf einen initialen Erwartungswert gesetzt werden.
+Die Funktion \textit{CameraCalibration::cornerSubPix} akzeptiert eine Liste von aufnahmen des Schachbrettmusters. Als zweiter Parameter muss die Grösse des Brettes angegeben werden (die Anzahl innerer Eckpunkte in horizontaler und vertikaler Richtung). Dabei sollten die Breite ungerade und die Höhe gerade sein und das Muster sollte breiter sein als hoch. Wir haben uns für ein 6x9 grosses Muster entschieden, da dies die geläufigste Grösse zu sein scheint. Nun wird mittels \textit{CameraCalibration::findChessboardPoints} die Erkennung durchgeführt. Dabei müssen die \textit{objectCorners} (Bildkoordinatensystem) auf einen initialen Erwartungswert gesetzt werden.
 
 \begin{c++code}
 for(int i = 0; i < boardSize.height; i++)
@@ -122,7 +122,7 @@ Da \textit{cv::findChessboardCorners} nur die ungefähre Position der Eckpunkte 
 \begin{figure}[!ht]
 \centering
 \subfloat[Ausgangsbild]{\includegraphics[width=0.49\textwidth]{images/calib-distorted.jpg}}
-\subfloat[Korrigiertes Bils]{\includegraphics[width=0.49\textwidth]{images/calib-undistorted.jpg}}
+\subfloat[korrigiertes Bild]{\includegraphics[width=0.49\textwidth]{images/calib-undistorted.jpg}}
 \caption{Zum vergleich ein Bild mit einer Kamera welche Verzerrungen verursacht (a) und die entzerrte Variante (b)}
 \label{fig:calibration}
 \end{figure}
