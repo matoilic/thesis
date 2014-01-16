@@ -48,12 +48,36 @@ M_{OpenGL}
  
 \section{Perspektivische Projektion}
 
+Damit ein virtuelles Objekt sich in die reale Szene einfügen kann, muss die korrekte perspektivische Projektion gesetzt werden, nämlich dieselbe, welche auch die Kamera hatte, die das reale Bild aufgenommen hat. Die dazu benötigte Projektionsmatrix kann anhand der \textit{intrinsischen Parameter} abgeleitet werden. Ein Vergleich einer inkorrekten Projektionsmatrix mit einer korrekten ist in Abbildung \ref{fig:opengl-perspektive} zu sehen.
+
+
 \begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.5]{images/opengl-perspective.jpg} 
 \caption{Eine inkorrekt gesetzt perspektivische Projektion oder falsche intrinsische Parameter können das projizierte Objekt stark verfälschen.}
-\label{fig:opencv-perspektive}
+\label{fig:opengl-perspektive}
 \end{figure}
+
+
+K. Simek \cite{simek} erklärt die notwendigen Schritte, wie die perspektivische Projektion anhand der Kameramatrix gesetzt werden kann. Er teilt dazu die Projektionsmatrix dazu in die Teile Perspektive und NDC (Normalized Device Coordinates) auf (Gleichung \ref{eq:projektion}).
+
+\begin{equation}
+Proj = NDC * Persp
+\label{eq:projektion}
+\end{equation}
+
+Der NDC kann in OpenGL mit einer orthogonalen Projektion umgesetzt werden. Die Perspektivenmatrix muss mit den kameraspezifischen intrinsischen Parametern ergänzt werden. $\alpha$ und $\beta$ entsprechen dabei der horizontalen und vertikalen Brennweiten der Kamera, $x_0$ und $y_0$ der Abweichung der optischen Bildmitte zum Bildzentrum. Die resultierende Projektionsmatrix kann später direkt in OpenGL angewandt werden.
+
+\begin{equation}
+Persp
+=
+\begin{bmatrix}
+\alpha & 0 & -x_0 & 0 \\
+0 & \beta & -y_0 & 0 \\
+0 & 0 & near + far & near * far \\
+0 & 0 & -1 & 0
+\end{bmatrix} 
+\end{equation}
 
 
 \section{Positionierung der 3D Objekte}
@@ -76,11 +100,14 @@ M_{translation}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[scale=0.5]{images/opengl-translation.jpg} 
+\includegraphics[scale=0.75]{images/opengl-translation.jpg} 
 \caption{Schematische Darstellung der Translation von der unteren linken Ecke der Türe zur Oberkante.}
 \label{fig:opencv-perspektive}
 \end{figure}
 
 
 \section{Konvertierung nach Core Profile}
+
+Nach einer ersten funktionierenden Version der Schachbretterkennung inklusive Projektion und 3D-Rendering haben wir Zeit in die Konvertierung nach Core Profile OpenGL investiert. Diesen Schritt haben wir gewählt, weil die in dieser Version zur Verfügung stehenden Routinen ebenfalls auf den mobilen Versionen von OpenGL (OpenGL ES) zu finden und eine zukünftige Portierung dadurch erheblich vereinfacht wird. Core Profile wird aktuell auch als moderne Art der OpenGL-Entwicklung betrachtet und bietet eine vereinfachte API und bessere Performance.
+
 
