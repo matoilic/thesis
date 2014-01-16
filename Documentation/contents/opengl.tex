@@ -1,9 +1,27 @@
 
 \chapter{Projektion in OpenGL}
 
-Durch die Bestimmung der Lage eines Objekts wurde ein wichtiger Teil zur Fertigstellung einer Augmented Reality Szene erreicht. Die letzte Schritt zur Darstellung eines Objekts 
+Durch die Objekterkennung und anschliessender Bestimmung dessen Lage wurde ein wichtiger Teil zur Fertigstellung einer Augmented Reality Szene bereits erreicht. Im letzten Schritt geht es nun darum, die Resultate aus den vorhergehenden Schritten zu verwenden und schlussendlich ein 3D-Objekt mit korrekter Perspektive in die Szene zu rendern.
+
+
+\section{Livebild mittels Texturemapping}
+
+Da wir für eine Augmented Reality Szene immer auch die Realität als Hintergrund betrachten wollen, müssen wir das Livebild der Kamera ebenfalls in die dreidimensionale Szene integrieren. Dies erreichen wir, indem wir für jedes Einzelbild der Kamera ein \textit{Texture Mapping} durchführen.
+Der Ablauf des Texture Mappings kann vereinfacht mit folgenden Schritten in OpenGL aufgezeigt werden:
+
+\begin{enumerate}
+\item Das Bild wird in eine Textur konvertiert und auf die Grafikkarte hochgeladen.
+\item Zeichne ein planares, rechteckiges Objekt in die Szene.
+\item Entsprechend der definierten Textur-Koordinaten zeichnet die Grafikkarte die Oberfläche des Objekts mit der Textur.
+\end{enumerate}
+
+Ausserdem wird für diesen Schritt eine orthogonale Projektion durchgeführt, damit das gerenderte Hintergrundbild die gleichen Dimensionen hat, egal ob es sich vorne oder hinten in der Szene befindet. Wir können dadurch das Hintergrundbild weit nach hinten schieben, so dass es keine Kollision mit den später zu rendernden Objekten gibt.
+
 
 \section{Transformation der extrinsischen Matrix}
+
+Durch die pose estimation konnte bereits die extrinsische Matrix bestimmt werden. Damit ein in OpenGL gerendertes Objekt an der selben Position mit der selben Rotation wie das real erkannte Objekt erscheint, muss die extrinsische Matrix an OpenGL übergeben werden.
+
 
 \begin{figure}[!ht]
 \centering
@@ -13,8 +31,56 @@ Durch die Bestimmung der Lage eines Objekts wurde ein wichtiger Teil zur Fertigs
 \end{figure}
 
 
+Die Matrix aus OpenCV kann jedoch nicht direkt an OpenGL übergeben werden, da die beiden unterschiedliche Koordinatensysteme verwenden. Die Abbildung \ref{fig:opencv-to-opengl} stellt diese Gegebenheit grafisch dar. Die Konvertierung kann mit einer einfachen Matrixmultiplikation erreicht werden, indem die Y- und Z-Achsen invertiert werden:
+
+\begin{equation}
+M_{OpenGL}
+=
+\begin{bmatrix}
+1 & 0 & 0 & 0 \\
+0 & -1 & 0 & 0 \\
+0 & 0 & -1 & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix} 
+[R | t]
+\end{equation}
+
+ 
 \section{Perspektivische Projektion}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.5]{images/opengl-perspective.jpg} 
+\caption{Eine inkorrekt gesetzt perspektivische Projektion oder falsche intrinsische Parameter können das projizierte Objekt stark verfälschen.}
+\label{fig:opencv-perspektive}
+\end{figure}
+
 
 \section{Positionierung der 3D Objekte}
 
+Wie bereits in Kapitel \ref{sec:projektion-door} beschrieben, wurden die Objektpunkte einer Türe so definiert, dass die untere linke Ecke als Ursprungspunkt (0, 0) dient. Da ein Ziel dieser Arbeit ist, ein Vordach über die Türe zu prjizieren, muss eine entsprechende Translation vorgenommen werden.
+
+Da keine Kenntnisse über die realen Einheiten (siehe Kapitel \ref{sec:definition-objektpunkte}) bekannt sind, müssen wir die Translation entsprechend der Einheit der definierten Objektpunkte durchführen. Da die Breite der Türe als Einheitsgrösse 1 definiert wurde und die Höhe dem Verhältnis Höhe zu Breite entspricht, können wir die Model-View-Matrix um die halbe Breite (0.5) und die Höhe (r = Verhältnis Höhe zu Breite) verschieben (Abbildung \ref{fig:opengl-translation}).
+
+\begin{equation}
+M_{translation}
+=
+\begin{bmatrix}
+1 & 0 & 0 & w/2 \\
+0 & 1 & 0 & h \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix} 
+\end{equation}
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.5]{images/opengl-translation.jpg} 
+\caption{Schematische Darstellung der Translation von der unteren linken Ecke der Türe zur Oberkante.}
+\label{fig:opencv-perspektive}
+\end{figure}
+
+
 \section{Konvertierung nach Core Profile}
+
