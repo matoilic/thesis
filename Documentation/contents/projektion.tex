@@ -1,7 +1,7 @@
 \chapter{Bestimmung der Lage}
 \label{chap:projektion}
 
-Ein wichtiger Teil in der Augmented Reality ist die Lage (engl. pose) eines Objekts im dreidimensionalen Raum. Diese setzt sich aus der Position und der Rotation des Objekts in einem räumlichen Koordinatensystem zusammen. Oft werden diese auch \textit{extrinsische Parameter} genannt. Algorithmen zur Bestimmung dieser Parameter fallen in die Kategorie \textit{pose estimation}.
+Ein wichtiger Teil der Augmented Reality ist die Lage (engl. pose) eines Objekts im dreidimensionalen Raum. Diese setzt sich aus der Position und der Rotation des Objekts in einem räumlichen Koordinatensystem zusammen. Oft werden diese auch \textit{extrinsische Parameter} genannt. Algorithmen zur Bestimmung dieser Parameter fallen in die Kategorie \textit{Pose Estimation}.
 \\
 \\
 Im diesem Kapitel werden die verwendeten Methoden zur Lagebestimmung von Objekten erläutert.
@@ -15,13 +15,13 @@ Um die Grundlagen der Lagebestimmung in der Augmented Reality zu verstehen und a
 
 \subsection{Lösen des PnP Problems}
 
-Wie bereits in Kapitel \ref{sec:projektionsmodell} angesprochen, wird in der Pose Estimation vom Pinhole-Kameramodell ausgegangen, in dem 3D Punkte im Raum auf eine Bildebene projiziert werden. Zur Bestimmung der Lage eines Objekts wird von der Gegenrichtung ausgegangen: Es wird versucht eine Menge von Punkten auf der zweidimensionalen Bildebene mittels einer kombinierten Rotations- und Translationsmatrix den korrespondierenden Objektpunkten zuzuordnen. Zur Lösung dieses Problems werden häufig sogenannte PnP Algorithmen eingesetzt. PnP wird in der Literatur als \textit{Perspective-n-Point-Problem} bezeichnet, wobei n für die Anzahl an Punktent steht. 
+Wie bereits in Kapitel \ref{sec:projektionsmodell} angesprochen, wird in der Pose Estimation vom Pinhole-Kameramodell ausgegangen, in dem 3D Punkte im Raum auf eine Bildebene projiziert werden. Zur Bestimmung der Lage eines Objekts wird von der Gegenrichtung ausgegangen: Es wird versucht eine Menge von Punkten auf der zweidimensionalen Bildebene mittels einer kombinierten Rotations- und Translationsmatrix den korrespondierenden Objektpunkten zuzuordnen. Zur Lösung dieses Problems werden häufig sogenannte PnP Algorithmen eingesetzt. PnP wird in der Literatur als \textit{Perspective-n-Point-Problem} bezeichnet, wobei n für die Anzahl an Punkten steht. 
 
 \paragraph{}
-In OpenCV existieren diverse Funktionen, die gängige Algorithmen zur Positionsbestimmung implementieren. In diesem Projekt wird primär die Funktion \textit{solvePnP} eingesetzt.  Zur Ermittlung der benötigten Bildpunkte können für die erste Version der Positionsbestimmung ebenfalls auf OpenCV zurückgreifen, da die Erkennung eines beliebig grossen Schachbrettmusters  darin bereits implementiert wurde. 
+In OpenCV existieren diverse Funktionen, die gängige Algorithmen zur Positionsbestimmung implementieren. In diesem Projekt wird primär die Funktion \textit{solvePnP} eingesetzt. Zur Ermittlung der benötigten Bildpunkte können für die erste Version der Positionsbestimmung ebenfalls auf OpenCV zurückgreifen. Die Erkennung eines beliebig grossen Schachbrettmusters wurde darin bereits implementiert. 
 
 \paragraph{}
-Die $solvePnP$ Funktion in OpenCV unterstützt drei verschiedene Methoden zur Lösung eines PnP Problems:
+Die \textit{solvePnP} Funktion in OpenCV unterstützt drei verschiedene Methoden zur Lösung eines PnP Problems:
 
 \begin{itemize}
 
@@ -75,11 +75,11 @@ In diesem Kapitel wird die verwendete Methode zur Bestimmung der Lage einer Tür
 \subsection{Grundidee}
 
 \paragraph{}
-Diese Grundidee zur Lagebestimmung einer Türe lässt sich anhand des Schachbrettmusters ableiten: Türe sowie Schachbrett sind beides rechteckige Objekte, dessen Eckpunkte ausserdem in der selben Ebene liegen. So wäre es physikalisch möglich, eine Türe mit dem Schachbrettmuster zu bemalen. 
+Diese Grundidee zur Lagebestimmung einer Türe lässt sich anhand des Schachbrettmusters ableiten: Türe sowie Schachbrett sind beides rechteckige Objekte, deren Eckpunkte ausserdem in der selben Ebene liegen. So wäre es physikalisch möglich, eine Türe mit dem Schachbrettmuster zu bemalen. 
 Diese Idee wurde mit dieser Arbeit versucht virtuell zu entwickeln.
 \\
 \\
-Als Input für die Lagebestimmung der Türe stehen genau deren vier Eckpunkte zur Verfügung. Diese werden von der Türerkennung generiert und bestehen aus einer X- und Y-Koordinaten, welche die Position eines Punktes im Ursprungsbild definieren. Ein erster Ansatz war, diese vier Bildpunkte weiteren vier vordefinierte Objektpunkten zuzuordnen und mittels eines PnP Algorithmus zu lösen. Die Objektpunkte wurden wie folgt definiert:
+Als Input für die Lagebestimmung der Türe stehen genau deren vier Eckpunkte zur Verfügung. Diese werden von der Türerkennung generiert und bestehen aus einer x- und y-Koordinaten, welche die Position eines Punktes im Ursprungsbild definieren. Ein erster Ansatz war, diese vier Bildpunkte weiteren vier vordefinierten Objektpunkten zuzuordnen und mittels eines PnP Algorithmus zu lösen. Die Objektpunkte wurden wie folgt definiert:
 
 \begin{itemize}
 \item \textbf{(0, 0)} oben links
@@ -88,16 +88,16 @@ Als Input für die Lagebestimmung der Türe stehen genau deren vier Eckpunkte zu
 \item \textbf{(0, 1)} unten links
 \end{itemize}
 \noindent
-Mit diesen Punkten wäre es theoretisch ebenfalls möglich, die Lage eines minimalen Schachbrettmusters (3x3) zu bestimmen. Das Problem im Falle einer Türe ist jedoch folgendes: Bei einem Schachbrettmuster sind die schwarzen bzw. weissen Flächen \textit{immer} Quadrate. Aus diesem Grund können die Objektpunkte ebenfalls als Quadrat definiert werden. Falls jedoch mit diesen Objektpunkten versucht wird die Lage eines nicht quadratischen Objekts, z.B. eine Türe, zu bestimmen, erhält man falsche Resultate. Da eine Türe auch kein standardisiertes Grössenverhältnis hat kann man keine vordefinierten Objektpunkte zur Lösung des Problems verwenden.
+Mit diesen Punkten wäre es theoretisch ebenfalls möglich, die Lage eines minimalen Schachbrettmusters (3x3) zu bestimmen. Das Problem im Falle einer Türe ist jedoch folgendes: Bei einem Schachbrettmuster sind die schwarzen bzw. weissen Flächen immer Quadrate. Aus diesem Grund können die Objektpunkte ebenfalls als Quadrat definiert werden. Falls jedoch mit diesen Objektpunkten versucht wird die Lage eines nicht quadratischen Objekts, z.B. eine Türe, zu bestimmen, erhält man falsche Resultate. Da eine Türe auch kein standardisiertes Grössenverhältnis hat kann man keine vordefinierten Objektpunkte zur Lösung des Problems verwenden.
 
 \subsection{Bestimmung des Grössenverhältnisses}
 
 % TODO: evtl. noch Formeln aus Paper herleiten
 
 \paragraph{}
-In einer Arbeit von Zhengyou Zhang \cite{zhangrectification} wurde ein Verfahren entwickelt, mit welchem anhand genau vier Punkten eines Rechtecks dessen Grössenverhältnis berechnet werden kann. Hintergrund dieser Arbeit ist das automatische Erkennen von perspektivisch aufgenommenen Whiteboards mit anschliessender perspektivischen Entzerrung des Whiteboard-Inhalts.
+In einer Arbeit von Zhengyou Zhang \cite{zhangrectification} wurde ein Verfahren entwickelt, mit welchem anhand genau vier Punkten eines Rechtecks dessen Grössenverhältnis berechnet werden kann. Hintergrund dieser Arbeit ist das automatische Erkennen von perspektivisch aufgenommenen Whiteboards, mit anschliessender perspektivischen Entzerrung des Whiteboard-Inhalts.
 \noindent
-Die Theorie funktioniert, weil bei den gegebenen Eckpunkten davon ausgegangen wird, dass diese sich in der gleichen Ebene befinden, was natürlich bei einem Whiteboard zutrifft. Aus diesem Grund kann auch für die Bestimmung des Grössenverthältnisses einer Türe dieses Verfahren herangezogen werden.
+Die Theorie funktioniert, weil bei den gegebenen Eckpunkten davon ausgegangen wird, dass diese sich in der gleichen Ebene befinden, was natürlich bei einem Whiteboard zutrifft. Aus diesem Grund kann auch für die Bestimmung des Grössenverhältnisses einer Türe dieses Verfahren herangezogen werden.
 \noindent
 In Zhangs Dokument wird grundsätzlich von einer unkalibrierten Kamera ausgegangen und setzt bestimmte Kameraeigenschaften voraus, z.B. dass der Bildmittelpunkt genau in der Mitte ist, was bei einer Kamera nicht unbedingt der Fall sein muss. Zhang erwähnt auch, dass die Verzerrung der Kamera die Fehlerrate erhöhen kann. Da wir in unserem Modell von einer kalibrierten Kamera ausgehen, sind uns intrinsische Parameter und Verzerrung bekannt. Wir können deshalb vor der Anwendung des Algorithmus die Bildpunkte vorher entzerren.
 
@@ -105,7 +105,7 @@ In Zhangs Dokument wird grundsätzlich von einer unkalibrierten Kamera ausgegang
 \subsection{Messungen Grössenverhältnisse}
 
 \paragraph{}
-Zur Verifizierung der vorangehenden Arbeit von Zhang \cite{zhangrectification} wurden mit einer Spiegelreflexkamera hochauflösende Bilder einer Türe aufgenommen. Die Bilder wurden mit einem fixen Abstand zur Türe aufgenommen und ausgehend von der Türwand mit den Winkeln $10^\circ$, $30^\circ$, $50^\circ$, $70^\circ$ und $90^\circ$ aufgenommen. Anschliessend wurden die Koordinaten der vier Eckpunkte der Türe von Hand ausgelesen und mittels Algorithmus das Grössenverhältnis berechnet. Dieses wurde mit dem berechneten Verhältnis von \textbf{2.07} der aufgenommenen Türe mit den Massen \textbf{98.50cm x 204.00cm} verglichen.
+Zur Verifizierung der vorangehenden Arbeit von Zhang \cite{zhangrectification} wurden mit einer Spiegelreflexkamera hochauflösende Bilder einer Türe aufgenommen. Die Bilder wurden mit einem fixen Abstand zur Türe geschossen und ausgehend von der Türwand mit den Winkeln $10^\circ$, $30^\circ$, $50^\circ$, $70^\circ$ und $90^\circ$ aufgenommen. Anschliessend wurden die Koordinaten der vier Eckpunkte der Türe von Hand ausgelesen und mittels Algorithmus das Grössenverhältnis berechnet. Dieses wurde mit dem berechneten Verhältnis von \textbf{2.07} der aufgenommenen Türe mit den Massen \textbf{98.50cm x 204.00cm} verglichen.
 
 \begin{center}
 	\resizebox{\linewidth}{!}{%
@@ -172,7 +172,7 @@ Der Versuch wurde also ein zweites Mal gemacht. Diesmal wurde das Schachbrett zu
 \end{figure}
 
 \noindent
-Die zweiten Resultate entsprachen nun den erwarteten Werten. Auf den Abbildungen \ref{fig:ratio-v2-dist} und \ref{fig:ratio-v2-undist}) ist gut zu erkennen, dass sowohl die verzerrte als auch die entzerrte Version ähnliche Resultate zurückliefert, was von einer Spiegelreflexkamera erwartet werden sollte. Zudem haben wir einen maximalen Fehlerwert von 2.8 Prozent messen können, was ein guter Wert ist. Der Versuch hat zudem gezeit, dass eine schlecht kalibrierte Kamera erhebliche Verfälschungen des Resultats zur Folge haben kann. 
+Die zweiten Resultate entsprachen nun den erwarteten Werten. Auf den Abbildungen \ref{fig:ratio-v2-dist} und \ref{fig:ratio-v2-undist}) ist gut zu erkennen, dass sowohl die verzerrte als auch die entzerrte Version ähnliche Resultate zurückliefert, was von einer Spiegelreflexkamera erwartet werden sollte. Zudem haben wir einen maximalen Fehlerwert von 2.8 Prozent messen können, was ein guter Wert ist. Der Versuch hat zudem gezeigt, dass eine schlecht kalibrierte Kamera erhebliche Verfälschungen des Resultats zur Folge haben kann. 
 
 
 \subsection{Umsetzung}
@@ -189,4 +189,3 @@ Da nun, wie in den vorherigen Abschnitten beschrieben, das Grössenverhältnis d
 \end{itemize}
 \noindent
 Diese Punkte können nun zusammen mit den erkannten Eckpunkten der Türe an einen PnP Algorithmus übergeben werden, welcher die Position und Rotation berechnet.
-
