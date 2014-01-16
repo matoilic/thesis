@@ -74,6 +74,8 @@ void ArRenderingContext::display()
         // or the rendering will be wrong.
         modelViewMatrix.scale(ARD_POSEESTIMATION_SCALE_FACTOR);
 
+        modelViewMatrix.rotate(180, 1.0, 0.0, 0.0);
+
         // Draw augmented scene
         drawAugmentedScene();
     }
