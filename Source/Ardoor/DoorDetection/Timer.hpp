@@ -1,10 +1,11 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <string>
+
 #if defined(DEBUG) && !defined(WIN32)
 
 #include <iostream>
-#include <string>
 #include <chrono>
 #include <ctime>
 
@@ -18,6 +19,18 @@ public:
     void stop();
     void show(std::string label);
     void reset();
+};
+
+#else
+
+class Timer
+{
+public:
+    Timer() {}
+    void start() {}
+    void stop() {}
+    void show(std::string label) {}
+    void reset() {}
 };
 
 #endif
