@@ -1,12 +1,18 @@
-\chapter{Resultat}
+\chapter{Komponenten}
+
+Im nachfolgenden noch ein Kurzer beschrieb der einzelnen Komponenten.
 
 \section{Ardoor Library}
+Die Ardoor Library enthält alle für die Türerkennung nötigen Funktionalitäten. Die Abhängigkeiten zu externen Bibliotheken wurden minimal gehalten, so dass diese Komponente leicht portabel auf andere Plattformen ist.
 
 \section{Settings App}
+Die Settings-App dient dazu die Grundeinstellungen für die Calibration App vorzunehmen. Wird kein anderes Schachbrettmuster als im Anhang verwendet, so können hier die Defaulteinstellungen gespeichert werden.
 
 \section{Calibration App}
+Die Calibration App dient dazu, die intrinsichen Parameter der angeschlossenen Kamera zu ermitteln. Hierzu wird das Schachbrettmuster in die Kamera gehalten und bewegt, bis 50 Aufnahmen gemacht wurden. Nach einer kurzen Berechnung, erscheint eine Meldung wenn die Kalibration angeschlossen wurde. Der Prozess muss nur einmal gemacht werden, ausser man wechselt die Kamera. Die ermittelten Parameter werden unter Windows im Verzeichnis \%HOME\%AppData/Roaming/BFH/Ardor.ini und unter Mac OS X im Verzeichnis ~/.config/BFH/Ardoor.ini abgelegt.
 
 \section{Chessboard App}
+Die Chessboard App demonstriert die Grundlagen für eine perspektivisch korrekte Projektion von Objekten auf eine bestimmte fläche. Diese war die Grundvorraussetzung für die Door App und kann auch als Ausgangslage für zukünftige Augmented Reality Entwicklungsarbeiten eingesetzt werden.
 
 \section{Door App}
-
+Die Door App ist das eigentliche Endresultat unserer Arbeit. Diese vereint alle Komponenten und führt die Türerkennung durch.
