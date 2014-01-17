@@ -155,10 +155,10 @@ void DoorDetector::findSegments(cv::Mat &grayImg, vector<LineSegment> &horizonta
     timer.stop();
     timer.show("categorizeSegments");
 
-    cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
+    /*cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
     drawSegments(copy, copy, horizontal, CV_RGB(255, 0, 0));
     drawSegments(copy, copy, vertical, CV_RGB(0, 255, 0));
-    cv::imshow("categorized segments", copy);
+    cv::imshow("categorized segments", copy);*/
 
     timer.start();
     joinSegments(horizontal, grayImg, true);
@@ -166,10 +166,10 @@ void DoorDetector::findSegments(cv::Mat &grayImg, vector<LineSegment> &horizonta
     timer.stop();
     timer.show("joinSegments");
 
-    cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
+    /*cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
     drawSegments(copy, copy, horizontal, CV_RGB(255, 0, 0));
     drawSegments(copy, copy, vertical, CV_RGB(0, 255, 0));
-    cv::imshow("joined segments", copy);
+    cv::imshow("joined segments", copy);*/
 }
 
 void DoorDetector::growSegments(vector<LineSegment> &segments, int length)

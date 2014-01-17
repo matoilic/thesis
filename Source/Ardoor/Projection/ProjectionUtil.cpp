@@ -33,17 +33,17 @@ void ProjectionUtil::extrinsicVectorsToMatrix(cv::Vec<float, 3> &R, cv::Vec<floa
 
     Rt(0, 0) = rotMat(0, 0);
     Rt(0, 1) = rotMat(0, 1);
-    Rt(0, 2) = rotMat(0, 2);
+    Rt(0, 2) = -rotMat(0, 2);
     Rt(0, 3) = T(0);
 
     Rt(1, 0) = rotMat(1, 0);
     Rt(1, 1) = rotMat(1, 1);
-    Rt(1, 2) = rotMat(1, 2);
+    Rt(1, 2) = -rotMat(1, 2);
     Rt(1, 3) = T(1);
 
     Rt(2, 0) = rotMat(2, 0);
     Rt(2, 1) = rotMat(2, 1);
-    Rt(2, 2) = rotMat(2, 2);
+    Rt(2, 2) = -rotMat(2, 2);
     Rt(2, 3) = T(2);
 }
 

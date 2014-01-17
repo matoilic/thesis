@@ -13,7 +13,7 @@
 #define MAX_SEGMENT_SHIFT 8 //in px
 #define MAX_SEGMENT_GRADIENT_DIFFERENCE 0.08748 //tan(5°)
 #define SEGMENT_GROWTH 0.05 //in percent of the image diagonal
-#define MIN_DOOR_WIDTH 0.15 //in percent of the image diagonal
+#define MIN_DOOR_WIDTH 0.10 //in percent of the image diagonal
 #define MIN_DOOR_HEIGHT 0.25 //in percent of the image diagonal
 #define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a DIN door
 #define MAX_HORIZONTAL_DIVERGENCE 0.839
