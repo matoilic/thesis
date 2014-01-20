@@ -54,6 +54,8 @@ void CalibrationProcessor::operator() (cv::Mat &frame)
     renderingContext->update(frame, emptyResult);
 
     if (numOfDetections >= CALIB_NUM_IMAGES) {
+        cv::putText(frame, "Clibration running. This may take a while...", cv::Point(60, 150), cv::FONT_HERSHEY_DUPLEX, 0.8, cv::Scalar(255, 255, 255));
+        renderingContext->update(frame, emptyResult);
         doCalibration();
     }
 }

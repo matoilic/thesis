@@ -4,6 +4,8 @@ MODULES = calib3d contrib core features2d flann gpu highgui imgproc legacy \
 
 OPENCV_DIR = $$PWD/../Libraries/opencv
 
+INCLUDEPATH += $$OPENCV_DIR/include
+
 # OpenCV module includes
 for (module, MODULES) {
     INCLUDEPATH += $$OPENCV_DIR/modules/$$module/include

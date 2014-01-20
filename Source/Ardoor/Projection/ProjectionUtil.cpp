@@ -72,6 +72,8 @@ void ProjectionUtil::reverseYZ(QMatrix4x4 &matrix)
 float ProjectionUtil::getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::Point2f c2, cv::Point2f c3, cv::Point2f c4)
 {
     cv::Mat A(cameraMatrix);
+    cv::Mat inv = A.inv();
+    cv::Mat invt = A.inv().t();
 
     float k2, k3;
     cv::Mat _ratio;
@@ -87,7 +89,9 @@ float ProjectionUtil::getRatio(cv::Matx33f cameraMatrix, cv::Point2f c1, cv::Poi
     n2 = (k2 * m2) - m1;
     n3 = (k3 * m3) - m1;
 
-    _ratio = (n2.t() * (A.inv().t()) * (A.inv()) * n2) / (n3.t() * (A.inv().t()) * (A.inv()) * n3);
+
+
+    _ratio = (n2.t() * invt * inv * n2) / (n3.t() * invt * inv * n3);
 
     return sqrt(_ratio.at<float>(0, 0));
 }

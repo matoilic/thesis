@@ -21,6 +21,20 @@ bool Capture::start(const std::string &inputFile)
     bool success = (!inputFile.empty()) ? capture.open(inputFile) : capture.open(0);
 
     if (success) {
+        capture.set(CV_CAP_PROP_CONVERT_RGB, 1);
+
+        //scale large inputs down, since we don't need highres images
+        cv::Mat frame;
+        int scaledWidth, scaledHeight;
+        success = capture.read(frame);
+        if(success && frame.cols > CAPTURE_MAX_FRAME_WIDTH) {
+            float factor = CAPTURE_MAX_FRAME_WIDTH / (float)frame.cols;
+            scaledWidth = frame.cols * factor;
+            scaledHeight = frame.rows * factor;
+            capture.set(CV_CAP_PROP_FRAME_WIDTH, scaledWidth);
+            capture.set(CV_CAP_PROP_FRAME_HEIGHT, scaledHeight);
+        }
+
         stopped = false;
 
         moveToThread(&captureThread);
@@ -60,10 +74,9 @@ void Capture::stop()
 
 void Capture::captureLoop()
 {
-    bool success;
+    bool success, doStop = false;
     cv::Mat frame;
 
-    bool doStop = false;
     while (!doStop) {
         success = capture.read(frame);
         if (!success) {
