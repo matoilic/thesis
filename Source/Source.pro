@@ -16,6 +16,13 @@ LIBS += \
     -lopencv_calib3d \
     -lopencv_imgproc \
     -lopencv_highgui \
+    -llmfit \
+    -lglew \
+    -lglfw
+
+INCLUDEPATH += $$ARDOOR_DIR/Libraries/lmfit
+INCLUDEPATH += $$ARDOOR_DIR/Libraries/glew/include
+INCLUDEPATH += $$ARDOOR_DIR/Libraries/glfw/include
 
 android: LIBS += -lGLESv2
 
@@ -47,12 +54,13 @@ HEADERS += \
     Ardoor/DoorDetection/LineSegment.hpp \
     Ardoor/DoorDetection/LSWMS.hpp \
     Ardoor/DoorDetection/SegmentDistance.hpp \
-    Ardoor/DoorDetection/debugbreak.h \
     Ardoor/PoseEstimation/DoorPoseEstimator.hpp \
     Ardoor/Rendering/DoorRenderingContext.hpp \
     Ardoor/Projection/ProjectionUtil.hpp \
     Ardoor/DoorDetection/PHough.hpp \
-    Ardoor/DoorDetection/Timer.hpp
+    Ardoor/DoorDetection/Timer.hpp \
+    Ardoor/DoorDetection/MSAC.hpp \
+    Ardoor/DoorDetection/errorNIETO.hpp
 
 SOURCES += \
     Ardoor/PoseEstimation/PoseEstimator.cpp \
@@ -82,7 +90,9 @@ SOURCES += \
     Ardoor/Rendering/DoorRenderingContext.cpp \
     Ardoor/Projection/ProjectionUtil.cpp \
     Ardoor/DoorDetection/PHough.cpp \
-    Ardoor/DoorDetection/Timer.cpp
+    Ardoor/DoorDetection/Timer.cpp \
+    Ardoor/DoorDetection/MSAC.cpp \
+    Ardoor/DoorDetection/errorNIETO.cpp
 
 RESOURCES += \
     ../Data/Shader/shaders.qrc

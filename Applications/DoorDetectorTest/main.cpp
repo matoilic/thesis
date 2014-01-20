@@ -58,8 +58,8 @@ int main(int argc, char** argv)
 //    findCorners("../../Data/Images/Doors/Misc/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
 //    findCorners("../../Data/Images/Doors/Misc/open_door1.jpg");
 //    findCorners("../../Data/Images/Doors/Misc/Christmas front-door-mollica.jpg");
-//    findCorners("../../Data/Images/Doors/Misc/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
-    findCorners("/Users/matoilic/Workspace/School/Thesis/Documentation/images/door-side.jpg");
+    findCorners("../../Data/Images/Doors/Misc/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
+//    findCorners("../../Data/Images/Doors/Canon EOS 500D/IMG_0979.JPG");
 //    findCorners("../../Data/Images/Doors/Misc/7.jpg");
 
     while(cv::waitKey() != 'q');

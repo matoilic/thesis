@@ -3,18 +3,20 @@
 
 #include <opencv2/core/core.hpp>
 #include <Ardoor/Ardoor.hpp>
+#include <Ardoor/Context/ArdoorContext.hpp>
 #include "LSWMS.hpp"
 #include "LineSegment.hpp"
 #include "PHough.hpp"
 #include "Timer.hpp"
+#include "MSAC.hpp"
 
-#define MIN_SEGMENT_LENGTH 0.001 //in percent of the image diagonal
+#define MIN_SEGMENT_LENGTH 0.1 //in percent of the image diagonal
 #define MAX_SEGMENT_DISTANCE 0.05 //in percent of the image diagonal
 #define MAX_SEGMENT_SHIFT 8 //in px
 #define MAX_SEGMENT_GRADIENT_DIFFERENCE 0.08748 //tan(5°)
 #define SEGMENT_GROWTH 0.05 //in percent of the image diagonal
 #define MIN_DOOR_WIDTH 0.10 //in percent of the image diagonal
-#define MIN_DOOR_HEIGHT 0.25 //in percent of the image diagonal
+#define MIN_DOOR_HEIGHT 0.49 //in percent of the image diagonal
 #define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a DIN door
 #define MAX_HORIZONTAL_DIVERGENCE 0.839
 #define MAX_VERTICAL_DIVERGENCE 0.3491
@@ -35,9 +37,11 @@ class ARD_EXPORT DoorDetector
 {
     cv::Ptr<cv::CLAHE> clahe;
     LSWMS *segmentDetector;
+    MSAC *vanishingPointDetector;
 //    PHough *segmentDetector;
     Timer timer;
     int diagonalLength;
+    cv::Matx33f intrinsics;
 
     DoorDetector();
     void categorizeSegments(vector<LineSegment> &segments, vector<LineSegment> &horizontal, vector<LineSegment> &vertical);

@@ -30,8 +30,8 @@ public:
         if (frame.empty() || glfwWindowShouldClose(window))
             return;
 
-        cv::imshow("test", frame);
-        cv::waitKey(0);
+        /*cv::imshow("test", frame);
+        cv::waitKey(0);*/
 
         redisplayLock.lock();
         frame.copyTo(currentFrame);

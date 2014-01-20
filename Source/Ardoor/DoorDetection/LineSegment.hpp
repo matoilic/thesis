@@ -19,11 +19,11 @@ public:
     LinePoint end;
     bool deleted;
     float error;
-    float horizontalAngle;
-    float verticalAngle;
+    bool horizontal;
+    bool vertical;
 
-    LineSegment() : deleted(false), horizontalAngle(0), verticalAngle(PI_HALF) { }
-    LineSegment(LinePoint s, LinePoint e) : start(s), end(e), deleted(false), horizontalAngle(0), verticalAngle(PI_HALF) { }
+    LineSegment() : deleted(false), horizontal(false), vertical(false) { }
+    LineSegment(LinePoint s, LinePoint e) : start(s), end(e), deleted(false), horizontal(false), vertical(false) { }
 
     SegmentDistance distanceTo(const LineSegment &s2) const;
     LinePoint intersectionPointWith(const LineSegment &s2) const;

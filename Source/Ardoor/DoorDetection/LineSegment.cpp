@@ -115,12 +115,12 @@ int LineSegment::dY() const
 
 bool LineSegment::isHorizontal() const
 {
-    return (abs(abs(gradient()) - horizontalAngle) <= MAX_GRADIENT);
+    return horizontal;
 }
 
 bool LineSegment::isVertical() const
 {
-    return (abs(abs(gradient()) - verticalAngle) <= MAX_GRADIENT);
+    return vertical;
 }
 
 double LineSegment::length() const
@@ -163,7 +163,7 @@ void LineSegment::joinWith(const LineSegment second)
     newEnd = (second.end.distanceFromOrigin() > end.distanceFromOrigin()) ? second.end : end;
     LineSegment tmp(newStart, newEnd);
 
-    double thisGradient = gradient(), secondGradient = second.gradient(), newGradient;
+    /*double thisGradient = gradient(), secondGradient = second.gradient(), newGradient;
     if(isHorizontal()) {
         if(abs(abs(thisGradient) - horizontalAngle) < abs(abs(secondGradient) - horizontalAngle)) {
             newGradient = thisGradient;
@@ -176,7 +176,8 @@ void LineSegment::joinWith(const LineSegment second)
         } else {
             newGradient = secondGradient;
         }
-    }
+    }*/
+    double newGradient = gradient();
 
     float newLength = tmp.length();
     newEnd.x = newStart.x + round(newLength * cos(newGradient));
