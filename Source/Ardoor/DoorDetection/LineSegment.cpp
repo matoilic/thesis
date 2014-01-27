@@ -133,8 +133,9 @@ double LineSegment::length() const
 
 void LineSegment::joinWith(const LineSegment second)
 {
+    //check if it makes sense to join the segments
     if(isHorizontal()) {
-        //assert(second.isHorizontal() == true);
+        assert(second.isHorizontal() == true);
 
         if(start.x < second.start.x && end.x > second.end.x) return;
 
@@ -145,7 +146,7 @@ void LineSegment::joinWith(const LineSegment second)
             return;
         }
     } else {
-        //assert(second.isVertical() == true);
+        assert(second.isVertical() == true);
 
         if(start.y < second.start.y && end.y > second.end.y) return;
 
@@ -160,31 +161,9 @@ void LineSegment::joinWith(const LineSegment second)
     LinePoint newStart, newEnd;
 
     newStart = (second.start.distanceFromOrigin() < start.distanceFromOrigin()) ? second.start : start;
-    newEnd = (second.end.distanceFromOrigin() > end.distanceFromOrigin()) ? second.end : end;
-    LineSegment tmp(newStart, newEnd);
-
-    /*double thisGradient = gradient(), secondGradient = second.gradient(), newGradient;
-    if(isHorizontal()) {
-        if(abs(abs(thisGradient) - horizontalAngle) < abs(abs(secondGradient) - horizontalAngle)) {
-            newGradient = thisGradient;
-        } else {
-            newGradient = secondGradient;
-        }
-    } else {
-        if(abs(abs(thisGradient) - verticalAngle) < abs(abs(secondGradient) - verticalAngle)) {
-            newGradient = thisGradient;
-        } else {
-            newGradient = secondGradient;
-        }
-    }*/
-    double newGradient = gradient();
-
-    float newLength = tmp.length();
-    newEnd.x = newStart.x + round(newLength * cos(newGradient));
-    newEnd.y = newStart.y + round(newLength * sin(newGradient));
+    newEnd = (second.end.distanceFromOrigin() > end.distanceFromOrigin()) ? second.end : end;    
 
     double thisWeight, secondWeight, thisLength = length(), secondLength = second.length();
-
     if(thisLength > secondLength) {
         secondWeight = secondLength / thisLength;
         thisWeight = 1 - secondWeight;
@@ -195,8 +174,10 @@ void LineSegment::joinWith(const LineSegment second)
 
     if(isHorizontal()) {
         newStart.y = round(thisWeight * start.y + secondWeight * second.start.y);
+        newEnd.y = round(thisWeight * end.y + secondWeight * second.end.y);
     } else {
         newStart.x = round(thisWeight * start.x + secondWeight * second.start.x);
+        newEnd.x = round(thisWeight * end.x + secondWeight * second.end.x);
     }
 
     start = newStart;
@@ -206,4 +187,26 @@ void LineSegment::joinWith(const LineSegment second)
 double LineSegment::round(double number)
 {
     return std::floor(number + 0.5);
+}
+
+void LineSegment::alignToVanishingPoint()
+{
+    LinePoint midPoint(start.x + dX() / 2, start.y + dY() / 2);
+    LineSegment aligmentAxis;
+
+    if(vanishingPoint.finite) {
+        aligmentAxis = LineSegment(midPoint, LinePoint(vanishingPoint.x, vanishingPoint.y));
+    } else {
+        if(isHorizontal()) {
+            aligmentAxis = LineSegment(midPoint, LinePoint(0, midPoint.y));
+        } else {
+            aligmentAxis = LineSegment(midPoint, LinePoint(midPoint.x, 0));
+        }
+    }
+
+    VanishingPoint vp(start.x, start.y, true);
+    start = vp.projectOn(aligmentAxis);
+
+    vp = VanishingPoint(end.x, end.y, true);
+    end = vp.projectOn(aligmentAxis);
 }

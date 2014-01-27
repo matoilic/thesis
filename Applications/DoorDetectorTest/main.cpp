@@ -2,6 +2,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <Ardoor/Context/ArdoorContext.hpp>
 #include <Ardoor/DoorDetection/DoorDetector.hpp>
 
 using namespace std;
@@ -15,7 +16,10 @@ void findCorners(const string &input)
     cv::cvtColor(img, gray, CV_RGB2GRAY);
 
     vector<cv::Point> corners;
-    DoorDetector detector(cv::Size(img.cols, img.rows));
+    ArdoorContext ardoorContext;
+    ardoorContext.loadSettings();
+    DoorDetector detector(cv::Size(img.cols, img.rows), &ardoorContext);
+
     if(detector.findDoorCorners(gray, corners)) {
         //detector.drawSegments(img, img, detector.horizontalSegments, CV_RGB(255, 0, 0));
         //detector.drawSegments(img, img, detector.verticalSegments, CV_RGB(0, 255, 0));
@@ -27,9 +31,11 @@ void findCorners(const string &input)
             cv::line(img, c.left.start, c.left.end, CV_RGB(255, 0, 255), 2);
         }
 
-        /*for(cv::Point &p: corners) {
+        cout << "D: " << LinePoint(corners[1]).distanceTo(LinePoint(corners[2])) << endl;
+
+        for(cv::Point &p: corners) {
             cv::circle(img, p, 5, CV_RGB(0, 225, 233), -5);
-        }*/
+        }
 
         /*cv::line(img, corners[0], corners[1], CV_RGB(0, 225, 233), 2);
         cv::line(img, corners[1], corners[2], CV_RGB(0, 225, 233), 2);
@@ -58,8 +64,8 @@ int main(int argc, char** argv)
 //    findCorners("../../Data/Images/Doors/Misc/Light_Minimal_a_jpg_1024x768_max_q85.jpg");
 //    findCorners("../../Data/Images/Doors/Misc/open_door1.jpg");
 //    findCorners("../../Data/Images/Doors/Misc/Christmas front-door-mollica.jpg");
-    findCorners("../../Data/Images/Doors/Misc/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
-//    findCorners("../../Data/Images/Doors/Canon EOS 500D/IMG_0979.JPG");
+//    findCorners("../../Data/Images/Doors/Misc/front-door-come-on-over-front-door-progress-ae-i.com.jpg");
+    findCorners("../../Data/Images/Doors/Canon EOS 500D/IMG_0982.JPG");
 //    findCorners("../../Data/Images/Doors/Misc/7.jpg");
 
     while(cv::waitKey() != 'q');

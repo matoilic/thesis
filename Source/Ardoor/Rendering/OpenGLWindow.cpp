@@ -84,6 +84,7 @@ void OpenGLWindow::renderNow()
     if (needsInitialize) {
         if (m_renderingContext) {
             m_renderingContext->initialize();
+            updateSize();
         }
     }
 

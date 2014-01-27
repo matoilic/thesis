@@ -1,0 +1,20 @@
+Projekt
+
+Ziel des Projektes war es, mit Hilfe des OpenCV-Frame-works eine Augmented Reality Anwendung zu entwickeln. Diese soll Türen automatisch erkennen und diese mit beliebigen Objekten dekorieren, z.B. einem Vordach. Dabei soll das eingeblendete Objekt perspektivisch korrekt dargestellt werden. Sprich, wenn man z.B. seitlich der Türe steht, dann soll man auch das Vordach von der Seite sehen. Auch, sollte das Projekt als Grundlage für weitere Arbeiten im Bereich der Augmented Reality dienen. Da das Anwendungsgebiet von Augented Reality sehr weit gestreut ist, soll die Anwendung so weit wie möglich plattformunabhängig sein, so das Teile später auch für die Entwicklung von Applikationen auf neuen Mobilgeräten verwendet werden können. Der Fokus des Projektes selbst lag in erster Linie bei Desktoprechnern.
+
+Augmented Reality
+
+Augmented Reality oder kurz AR ist eine computergestützte Erweiterung der Realitätswahrnehmung. Im Vergleich zur Virtual Reality wo der Anwender in eine komplett künstlich generierte Welt eintaucht, geht es bei AR primär darum zusätzliche Informationen anzuzeigen, welche sich bestmöglich in die Umgebung einpassen. AR kann alle menschlichen Sinne erweitern, jedoch beschränkt sich die heutige Technologie primär darauf Live-Bilder oder Videos mit Zusatzinformationen mittels Einblendung oder Überlagerung zu ergänzen.
+
+Technologien
+
+Das Projekt wurde in C++ realisiert. Zum einen um eine bestmögliche Performance zu garantieren, zum anderen weil C++ auf allen gängigen Plattformen zur Verfügung steht. OpenCV wird für die Bildverarbeitung eingesetzt und ist eine zentrale Komponente. OpenGL ES erlaubt es grafische Abläufe direkt auf der GPU auszuführen. Mithilfe von Qt wurde ein plattformunabhängiges User Interface gestaltet.
+
+
+Ergebnis
+
+Es entstand eine Applikation entwickelt welche sowohl unter Windows als auch Mac OS X lauffähig ist und es ermöglicht Türen in einem Live-Kamerabild zu erkennen und ein Objekt darüber zu projizieren. Die Koponenten sind modular aufgebaut und können für zukünftige AR-Projekte auf diversen Plattformen wiederverwendet weren.
+
+Ausblick
+
+Augmented Reality ist ein Anwendungsgebiet im bereich CPVR welches ein grosses Entwicklungspotential hat und in Zukunft eine zentrale Rolle in verschiendensten Gebieten von Marketing bis Medizin einnehmen wird. Dieses Projekt stellt eine solide Grundlage für weitere Forschungen dar.

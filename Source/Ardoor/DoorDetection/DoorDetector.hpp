@@ -10,14 +10,17 @@
 #include "Timer.hpp"
 #include "MSAC.hpp"
 
-#define MIN_SEGMENT_LENGTH 0.1 //in percent of the image diagonal
+#define MIN_SEGMENT_LENGTH 0.05 //in percent of the image diagonal
 #define MAX_SEGMENT_DISTANCE 0.05 //in percent of the image diagonal
 #define MAX_SEGMENT_SHIFT 8 //in px
 #define MAX_SEGMENT_GRADIENT_DIFFERENCE 0.08748 //tan(5°)
-#define SEGMENT_GROWTH 0.05 //in percent of the image diagonal
+#define SEGMENT_GROWTH 0.2 //in percent of the image diagonal
 #define MIN_DOOR_WIDTH 0.10 //in percent of the image diagonal
-#define MIN_DOOR_HEIGHT 0.49 //in percent of the image diagonal
-#define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a DIN door
+#define MIN_DOOR_HEIGHT 0.20 //in percent of the image diagonal
+#define MAX_DOOR_HEIGHT 0.40 //in percent of the image diagonal
+//#define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a common door
+#define DOOR_SIZE_RATIO 2.05 //squared height/width ratio of a common door
+#define MAX_DOOR_SIZE_RATIO 6.5 //squared height/width ratio of a common door
 #define MAX_HORIZONTAL_DIVERGENCE 0.839
 #define MAX_VERTICAL_DIVERGENCE 0.3491
 #define MIN_LENGTH_CATEGORIZATION 0.1 //in percent of the image diagonal
@@ -31,6 +34,7 @@ public:
     LineSegment right;
     LineSegment bottom;
     LineSegment left;
+    float ratio;
 };
 
 class ARD_EXPORT DoorDetector
@@ -42,6 +46,7 @@ class ARD_EXPORT DoorDetector
     Timer timer;
     int diagonalLength;
     cv::Matx33f intrinsics;
+    cv::Size inputSize;
 
     DoorDetector();
     void categorizeSegments(vector<LineSegment> &segments, vector<LineSegment> &horizontal, vector<LineSegment> &vertical);
@@ -55,11 +60,12 @@ class ARD_EXPORT DoorDetector
     float evaluateCandidate(const _DoorCandidate &candidate, LinePoint &topLeft, LinePoint &topRight, LinePoint &bottomRight, LinePoint &bottomLeft);
     bool isTopDoorSegment(LineSegment &left, LineSegment &right, LineSegment &top, int minDoorSize);
     bool isBottomDoorSegment(LineSegment &left, LineSegment &right, LineSegment &bottom, int minDoorSize);
+    bool getCornersFromEdges(const LineSegment &left, const LineSegment &top, const LineSegment &right, const LineSegment &bottom, LinePoint &tl, LinePoint &tr, LinePoint &br, LinePoint &bl);
 public:
     vector<LineSegment> horizontalSegments;
     vector<LineSegment> verticalSegments;
     vector<_DoorCandidate> candidates;
-    DoorDetector(cv::Size inputSize);
+    DoorDetector(cv::Size inputSize, ArdoorContext *context);
     ~DoorDetector();
     bool findDoorCorners(const cv::Mat &grayImg, vector<cv::Point> &corners);
     void drawSegments(const cv::Mat &src, cv::Mat &dest, vector<LineSegment> &segments, const cv::Scalar &color);

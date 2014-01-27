@@ -19,7 +19,7 @@ PoseEstimationResult DoorPoseEstimator::estimatePose(cv::Mat& image)
     cv::cvtColor(image, gray, CV_RGB2GRAY);
 
     std::vector<cv::Point> corners;
-    DoorDetector detector(cv::Size(image.cols, image.rows));
+    DoorDetector detector(cv::Size(image.cols, image.rows), getArdoorContext());
 
     result.isObjectPresent = detector.findDoorCorners(gray, corners);
     if (result.isObjectPresent) {

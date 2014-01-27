@@ -7,6 +7,7 @@
 
 #include "errorNIETO.hpp"
 #include "LineSegment.hpp"
+#include "VanishingPoint.hpp"
 
 #include <math.h>
 
@@ -68,7 +69,7 @@ public:
 
 	/** Main function which returns, if detected, several vanishing points and a vector of containers of line segments
 		corresponding to each Consensus Set.*/
-    void multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vector<std::vector<LineSegment>> &lineSegmentsClusters, std::vector<int> &numInliers, std::vector<cv::Mat> &vps, int numVps);
+    void multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vector<std::vector<LineSegment>> &lineSegmentsClusters, std::vector<int> &numInliers, std::vector<VanishingPoint> &vps, int numVps);
 		
 	/** Draws vanishing points and line segments according to the vanishing point they belong to*/
     void drawCS(cv::Mat &im, std::vector<std::vector<LineSegment>> &lineSegmentsClusters, std::vector<cv::Mat> &vps);

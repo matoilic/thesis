@@ -60,7 +60,8 @@ HEADERS += \
     Ardoor/DoorDetection/PHough.hpp \
     Ardoor/DoorDetection/Timer.hpp \
     Ardoor/DoorDetection/MSAC.hpp \
-    Ardoor/DoorDetection/errorNIETO.hpp
+    Ardoor/DoorDetection/errorNIETO.hpp \
+    Ardoor/DoorDetection/VanishingPoint.hpp
 
 SOURCES += \
     Ardoor/PoseEstimation/PoseEstimator.cpp \
@@ -92,7 +93,8 @@ SOURCES += \
     Ardoor/DoorDetection/PHough.cpp \
     Ardoor/DoorDetection/Timer.cpp \
     Ardoor/DoorDetection/MSAC.cpp \
-    Ardoor/DoorDetection/errorNIETO.cpp
+    Ardoor/DoorDetection/errorNIETO.cpp \
+    Ardoor/DoorDetection/VanishingPoint.cpp
 
 RESOURCES += \
     ../Data/Shader/shaders.qrc

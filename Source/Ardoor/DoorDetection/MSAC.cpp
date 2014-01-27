@@ -1,8 +1,10 @@
 #include "MSAC.hpp"
 #include "errorNIETO.hpp"
 #include "lmmin.h"
+#include "VanishingPoint.hpp"
 
 //#ifdef DEBUG_MAP	// if defined, a 2D map will be created (which slows down the process)
+#define toVp(v) VanishingPoint(v.at<float>(0,0), v.at<float>(1,0), (v.at<float>(2,0) != 0))
 
 using namespace std;
 using namespace cv;
@@ -17,7 +19,7 @@ MSAC::MSAC(void)
 	__li = Mat(3,1,CV_32F);
 	__c = Mat(3,1,CV_32F);	
 
-	__vp = cv::Mat(3,1,CV_32F);
+    __vp = cv::Mat::zeros(3,1,CV_32F);
 	__vpAux = cv::Mat(3,1,CV_32F);
 }
 
@@ -126,8 +128,9 @@ void MSAC::fillDataContainers(std::vector<LineSegment> &lineSegments)
 	__Lengths = __Lengths*((double)1/sum_lengths);
 }
 
-void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vector<std::vector<LineSegment>> &lineSegmentsClusters, std::vector<int> &numInliers, std::vector<cv::Mat> &vps, int numVps)
+void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vector<std::vector<LineSegment>> &lineSegmentsClusters, std::vector<int> &numInliers, std::vector<VanishingPoint> &vps, int numVps)
 {	
+    bool isFinite;
 	// Make a copy of lineSegments because it is modified in the code (it will be restored at the end of this function)
     std::vector<LineSegment> lineSegmentsCopy = lineSegments;
 
@@ -135,6 +138,8 @@ void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vec
 	int number_of_inliers = 0;
 	for(int vpNum=0; vpNum < numVps; vpNum++)
 	{
+        isFinite = false;
+
 		// Fill data structures
 		fillDataContainers(lineSegments);
 		int numLines = lineSegments.size();
@@ -207,7 +212,7 @@ void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vec
 				__J_best = J;
 				__CS_best = __CS_idx; 
 
-				__vp = __vpAux;			// Store into __vp (current best hypothesis): __vp is therefore calibrated								
+                __vp = __vpAux;			// Store into __vp (current best hypothesis): __vp is therefore calibrated
 										
 				if (N_I > __N_I_best)			
 					__update_T_iter = true;					
@@ -277,7 +282,7 @@ void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vec
 			if(__CS_best[i] == vpNum)
 			{
 				int a = i;
-				ind_CS.push_back(a);
+                ind_CS.push_back(a);
 				lineSegmentsCurrent.push_back(lineSegments[i]);
 			}
 		}
@@ -304,11 +309,12 @@ void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vec
 			if(__verbose)
 				printf("Cal.VP = (%.3f,%.3f,%.3f)\n", __vp.at<float>(0,0), __vp.at<float>(1,0), __vp.at<float>(2,0));
 			__vp = __K*__vp;
-			if(__vp.at<float>(2,0) != 0)
+            if(__vp.at<float>(2,0) != 0)
 			{
 				__vp.at<float>(0,0) /= __vp.at<float>(2,0);
 				__vp.at<float>(1,0) /= __vp.at<float>(2,0);
-				__vp.at<float>(2,0) = 1;					
+                __vp.at<float>(2,0) = 1;
+                isFinite = true;
 			}	
 			else
 			{
@@ -319,7 +325,11 @@ void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vec
 				printf("VP = (%.3f,%.3f,%.3f)\n", __vp.at<float>(0,0), __vp.at<float>(1,0), __vp.at<float>(2,0));			
 			
 			// Copy to output vector
-			vps.push_back(__vp);	
+            vps.push_back(VanishingPoint(
+                __vp.at<float>(0,0),
+                __vp.at<float>(1,0),
+                isFinite
+            ));
 		}
 		else if(fabs(__J_best - 1) < 0.000001)
 		{
@@ -331,11 +341,12 @@ void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vec
 								
 			// Uncalibrate
 			__vp = __K*__vp;
-			if(__vp.at<float>(2,0) != 0)
+            if(__vp.at<float>(2,0) != 0)
 			{
 				__vp.at<float>(0,0) /= __vp.at<float>(2,0);
 				__vp.at<float>(1,0) /= __vp.at<float>(2,0);
-				__vp.at<float>(2,0) = 1;				
+                __vp.at<float>(2,0) = 1;
+                isFinite = true;
 
 				if(__verbose)
 					printf("VP = (%.3f,%.3f,%.3f)\n", __vp.at<float>(0,0), __vp.at<float>(1,0), __vp.at<float>(2,0));			
@@ -346,7 +357,11 @@ void MSAC::multipleVPEstimation(std::vector<LineSegment> &lineSegments, std::vec
 				__vp = __K.inv()*__vp;					
 			}	
 			// Copy to output vector
-			vps.push_back(__vp);	
+            vps.push_back(VanishingPoint(
+                __vp.at<float>(0,0),
+                __vp.at<float>(1,0),
+                isFinite
+            ));
 		}		
 
 		// Fill lineSegmentsClusters containing the indexes of inliers for current vps

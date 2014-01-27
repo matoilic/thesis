@@ -10,11 +10,11 @@ SUBDIRS = \
     ChessboardApp \
     DoorApp \
     CameraCalibTest \
-    CaptureTest \
+    #CaptureTest \
     #CameraWindowTest \
     #GlfwTest \
     DoorDetectorTest \
     #DoorProjectionTest \
     SolvePnpTest \
     DoorRatioTest \
-    VideoCaptureTest
+    #VideoCaptureTest

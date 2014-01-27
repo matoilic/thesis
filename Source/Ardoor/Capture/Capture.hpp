@@ -9,7 +9,7 @@
 #include <Ardoor/Ardoor.hpp>
 #include <Ardoor/Capture/ImageHandler.hpp>
 
-#define CAPTURE_MAX_FRAME_WIDTH 640
+#define CAPTURE_MAX_FRAME_WIDTH 600
 
 class ARD_EXPORT Capture : private QObject
 {

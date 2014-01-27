@@ -4,11 +4,13 @@
 #include <Ardoor/Projection/ProjectionUtil.hpp>
 #include "DoorDetector.hpp"
 #include "SegmentDistance.hpp"
+#include "VanishingPoint.hpp"
 
 using namespace std;
 
-DoorDetector::DoorDetector(cv::Size inputSize)
+DoorDetector::DoorDetector(cv::Size inputSize, ArdoorContext *context)
 {
+    this->inputSize = inputSize;
     clahe = cv::createCLAHE();
     clahe->setClipLimit(5);
     clahe->setTilesGridSize(cv::Size(8, 8));
@@ -17,9 +19,9 @@ DoorDetector::DoorDetector(cv::Size inputSize)
     segmentDetector = new LSWMS(inputSize, 3, diagonalLength * MIN_SEGMENT_LENGTH, 10000);
 //    segmentDetector = new PHough(diagonalLength * MIN_SEGMENT_LENGTH);
     vanishingPointDetector = new MSAC();
-    vanishingPointDetector->init(MODE_NIETO, inputSize);
+    vanishingPointDetector->init(MODE_NIETO, inputSize, true);
 
-    //intrinsics = context.getCameraConfiguration().getIntrinsics();
+    intrinsics = context->getCameraConfiguration(inputSize.width, inputSize.height).getIntrinsics();
 }
 
 DoorDetector::~DoorDetector()
@@ -65,31 +67,58 @@ void DoorDetector::categorizeSegments(vector<LineSegment> &segments, vector<Line
         } else if(seg.isVertical()) {
             vertical.push_back(seg);
         }
-    }*/
+    }*/    
 
-    vector<cv::Mat> vps;
+    vector<VanishingPoint> vps;
     vector<int> numInliers;
     vector<vector<LineSegment>> lineSegmentsClusters;
+    VanishingPoint horizontalVp, verticalVp;
 
     timer.start();
     vanishingPointDetector->multipleVPEstimation(segments, lineSegmentsClusters, numInliers, vps, 2);
     timer.stop();
     timer.show("VP detection");
 
-    if(abs(vps[0].at<int>(0, 0)) > abs(vps[1].at<int>(0, 0))) {
+    cout << "VP" << endl;
+    cout << vps.size() << endl;
+    cout << vps[1].x << endl;
+
+    if(abs(vps[0].y) < abs(vps[1].y)) {
         horizontal = lineSegmentsClusters[0];
         vertical = lineSegmentsClusters[1];
+        horizontalVp = vps[0];
+        verticalVp = vps[1];
     } else {
         horizontal = lineSegmentsClusters[1];
         vertical = lineSegmentsClusters[0];
+        horizontalVp = vps[1];
+        verticalVp = vps[0];
     }
 
     for(vector<LineSegment>::iterator s = horizontal.begin(); s < horizontal.end(); s++) {
         s->horizontal = true;
+        s->vanishingPoint = horizontalVp;
+
+        if(s->dX() < 0) {
+            LinePoint start = s->start;
+            s->start = s->end;
+            s->end = start;
+        }
+
+        s->alignToVanishingPoint();
     }
 
     for(vector<LineSegment>::iterator s = vertical.begin(); s < vertical.end(); s++) {
         s->vertical = true;
+        s->vanishingPoint = verticalVp;
+
+        if(s->dY() < 0) {
+            LinePoint start = s->start;
+            s->start = s->end;
+            s->end = start;
+        }
+
+        s->alignToVanishingPoint();
     }
 }
 
@@ -129,6 +158,7 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
                     if(horizontal) {
                         if(dist.dy <= MAX_SEGMENT_SHIFT) {
                             left->joinWith(*right);
+                            left->alignToVanishingPoint();
                             leftGradient = left->gradient();
                             right->deleted = true;
                             foundMatching = true;
@@ -136,6 +166,7 @@ void DoorDetector::joinSegments(vector<LineSegment> &segments, const cv::Mat &im
                     } else {
                         if(dist.dx <= MAX_SEGMENT_SHIFT) {
                             left->joinWith(*right);
+                            left->alignToVanishingPoint();
                             leftGradient = left->gradient();
                             right->deleted = true;
                             foundMatching = true;
@@ -221,10 +252,8 @@ bool DoorDetector::isTopDoorSegment(LineSegment &left, LineSegment &right, LineS
     return (
         top.start.x <= left.start.x &&
         top.start.y >= left.start.y &&
-        top.start.y <= left.end.y - minDoorSize &&
         top.end.x >= right.start.x &&
-        top.end.y >= right.start.y &&
-        top.end.y <= right.end.y - minDoorSize
+        top.end.y >= right.start.y
     );
 }
 
@@ -233,10 +262,8 @@ bool DoorDetector::isBottomDoorSegment(LineSegment &left, LineSegment &right, Li
     return (
         bottom.start.x <= left.end.x &&
         bottom.start.y <= left.end.y &&
-        bottom.start.y >= left.start.y + minDoorSize &&
         bottom.end.x >= right.end.x &&
-        bottom.end.y <= right.end.y &&
-        bottom.end.y >= right.start.y + minDoorSize
+        bottom.end.y <= right.end.y
     );
 }
 
@@ -246,14 +273,17 @@ void DoorDetector::findDoorCandidates(vector<LineSegment> &horizontal, vector<Li
 
     int minDoorWidth = diagonalLength * MIN_DOOR_WIDTH;
     int minDoorHeight = diagonalLength * MIN_DOOR_HEIGHT;
+    int maxDoorHeight = diagonalLength * MAX_DOOR_HEIGHT;
+    float doorRatio;
+    int doorHeight;
+    LinePoint tl, tr, br, bl;
 
     for(vector<LineSegment>::iterator l = vertical.begin(); l < vertical.end(); l++) {
-        if(l->length() >= minDoorWidth) {
+        if(l->length() >= minDoorHeight) {
             candidate.left = *l;
 
             for(vector<LineSegment>::iterator r = l + 1; r < vertical.end(); r++) {
-                int width = l->distanceTo(*r).length;
-                if(r->length() >= minDoorWidth && width >= minDoorWidth) {
+                if(r->length() >= minDoorHeight) {
                     candidate.right = *r;
 
                     for(vector<LineSegment>::iterator t = horizontal.begin(); t < horizontal.end(); t++) {
@@ -262,11 +292,18 @@ void DoorDetector::findDoorCandidates(vector<LineSegment> &horizontal, vector<Li
 
                             for(vector<LineSegment>::iterator b = t + 1; b < horizontal.end(); b++) {
                                 if(isBottomDoorSegment(*l, *r, *b, minDoorWidth)) {
-                                    int height = t->distanceTo(*b).length;
+                                    if(getCornersFromEdges(*l, *t, *r, *b, tl, tr, br, bl)) {
+                                        doorHeight = max(tl.distanceTo(bl), tr.distanceTo(br));
 
-                                    if(height >= minDoorHeight) {
-                                        candidate.bottom = *b;
-                                        candidates.push_back(candidate);
+                                        if(doorHeight >= minDoorHeight && doorHeight < maxDoorHeight) {
+                                            doorRatio = 1.0f / ProjectionUtil::getRatio(intrinsics, tl, tr, br, bl);
+
+                                            if(doorRatio < MAX_DOOR_SIZE_RATIO) {
+                                                candidate.bottom = *b;
+                                                candidate.ratio = doorRatio;
+                                                candidates.push_back(candidate);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -280,16 +317,11 @@ void DoorDetector::findDoorCandidates(vector<LineSegment> &horizontal, vector<Li
 
 float DoorDetector::evaluateCandidate(const _DoorCandidate &candidate, LinePoint &topLeft, LinePoint &topRight, LinePoint &bottomRight, LinePoint &bottomLeft)
 {
-    topLeft = candidate.top.intersectionPointWith(candidate.left);
-    topRight = candidate.top.intersectionPointWith(candidate.right);
-    bottomRight = candidate.bottom.intersectionPointWith(candidate.right);
-    bottomLeft = candidate.bottom.intersectionPointWith(candidate.left);
+    getCornersFromEdges(candidate.left, candidate.top, candidate.right, candidate.bottom, topLeft, topRight, bottomRight, bottomLeft);
+//    int width = ((topRight.x - topLeft.x) * (topRight.x - topLeft.x)) + ((topRight.y - topLeft.y) * (topRight.y - topLeft.y));
+//    int height = ((bottomLeft.x - topLeft.x) * (bottomLeft.x - topLeft.x)) + ((bottomLeft.y - topLeft.y) * (bottomLeft.y - topLeft.y));
 
-
-    int width = ((topRight.x - topLeft.x) * (topRight.x - topLeft.x)) + ((topRight.y - topLeft.y) * (topRight.y - topLeft.y));
-    int height = ((bottomLeft.x - topLeft.x) * (bottomLeft.x - topLeft.x)) + ((bottomLeft.y - topLeft.y) * (bottomLeft.y - topLeft.y));
-
-    return abs((float)height / (float)width - DOOR_SIZE_RATIO);
+    return abs(candidate.ratio - DOOR_SIZE_RATIO);
 }
 
 void DoorDetector::findDoor(vector<LineSegment> &horizontal, vector<LineSegment> &vertical, vector<cv::Point> &corners)
@@ -316,7 +348,7 @@ void DoorDetector::findDoor(vector<LineSegment> &horizontal, vector<LineSegment>
 
     timer.start();
     float bestScore = 10000.0f; //lower score is better
-    for(_DoorCandidate candidate: candidates) {
+    for(_DoorCandidate &candidate: candidates) {
         LinePoint tl, tr, br, bl;
         float score = evaluateCandidate(candidate, tl, tr, br, bl);
         if(score < bestScore) {
@@ -352,4 +384,21 @@ bool DoorDetector::findDoorCorners(const cv::Mat &grayImg, vector<cv::Point> &co
     cv::imshow("grown segments", copy2);
 
     return corners.size() == 4;
+}
+
+bool DoorDetector::getCornersFromEdges(const LineSegment &left, const LineSegment &top, const LineSegment &right, const LineSegment &bottom, LinePoint &tl, LinePoint &tr, LinePoint &br, LinePoint &bl)
+{
+    tl = top.intersectionPointWith(left);
+    tr = top.intersectionPointWith(right);
+    br = bottom.intersectionPointWith(right);
+    bl = bottom.intersectionPointWith(left);
+
+    int mx = inputSize.width, my = inputSize.height;
+
+    return (
+        tl.x >= 0 && tl.x <= mx && tl.y >= 0 && tl.y <= my &&
+        tr.x >= 0 && tr.x <= mx && tr.y >= 0 && tr.y <= my &&
+        br.x >= 0 && br.x <= mx && br.y >= 0 && br.y <= my &&
+        bl.x >= 0 && bl.x <= mx && bl.y >= 0 && bl.y <= my
+    );
 }

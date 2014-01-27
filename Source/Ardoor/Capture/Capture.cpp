@@ -21,7 +21,7 @@ bool Capture::start(const std::string &inputFile)
     bool success = (!inputFile.empty()) ? capture.open(inputFile) : capture.open(0);
 
     if (success) {
-        capture.set(CV_CAP_PROP_CONVERT_RGB, 1);
+        //capture.set(CV_CAP_PROP_CONVERT_RGB, 1);
 
         //scale large inputs down, since we don't need highres images
         cv::Mat frame;

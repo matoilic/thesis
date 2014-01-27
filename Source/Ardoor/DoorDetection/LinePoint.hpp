@@ -8,7 +8,9 @@ class LinePoint : public cv::Point_<int>
 public:
     LinePoint() { }
     LinePoint(int x, int y) : cv::Point_<int>(x, y) { }
+    LinePoint(cv::Point &p) : cv::Point_<int>(p.x, p.y) { }
     double distanceFromOrigin() const;
+    double distanceTo(const LinePoint &p) const;
 
     inline LinePoint& operator=(const LinePoint &p)
     {
