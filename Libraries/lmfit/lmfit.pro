@@ -1,7 +1,7 @@
 include (../../QMake/Ardoor.pri)
 
 TEMPLATE = lib
-CONFIG += shared dll
+CONFIG += staticlib
 
 SOURCES += \
     lmmin.cpp \
