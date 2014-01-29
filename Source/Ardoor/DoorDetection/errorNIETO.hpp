@@ -1,6 +1,10 @@
 #ifndef __ERRORNIETO_H__
 #define __ERRORNIETO_H__
 
+/*
+ * By Marcos Nieto: http://marcosnietoblog.wordpress.com/2012/03/31/vanishing-point-detection-c-source-code
+ */
+
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <opencv/cxcore.h>

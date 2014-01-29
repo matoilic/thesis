@@ -49,25 +49,77 @@ class ARD_EXPORT DoorDetector
     cv::Size inputSize;
 
     DoorDetector();
+    /**
+     * Categorizes the given segments into horizontal and vertical by detecting the respective vanishing points.
+     * Segments that don't fall in any of the two categories are ignored.
+     */
     void categorizeSegments(vector<LineSegment> &segments, vector<LineSegment> &horizontal, vector<LineSegment> &vertical);
+    /**
+     * Enhances the given image to improve edgde detection results
+     */
     void enhanceEdges(cv::Mat &image);
+    /**
+     * Optimizes the given segments by merging similar and close segments
+     */
     void joinSegments(vector<LineSegment> &segments, const cv::Mat &img, bool horizontal);
+    /**
+     * Runs the segment detection and optimization process
+     */
     void runSegmentDetection(cv::Mat img, vector<LineSegment> &segments);
+    /**
+     * Searches for horizontal and vertical line segments wihint the given gray scale image
+     */
     void findSegments(cv::Mat &grayImg, vector<LineSegment> &horizontal, vector<LineSegment> &vertical);
+    /**
+     * Strechtes the given segment by length
+     */
     void growSegments(vector<LineSegment> &segments, int length);
+    /**
+     * Runs the door detection and evaluation process, writing the best match into corners (Top Left, Top Right, Bottom Right, Bottom Left)
+     */
     void findDoor(vector<LineSegment> &horizontal, vector<LineSegment> &vertical, vector<cv::Point> &corners);
+    /**
+     * Searches for possible doors that can be constructed using the given segments
+     */
     void findDoorCandidates(vector<LineSegment> &horizontal, vector<LineSegment> &vertical, vector<_DoorCandidate> &candidates);
+    /**
+     * Evaluates the given door candidate and returns it's corners
+     */
     float evaluateCandidate(const _DoorCandidate &candidate, LinePoint &topLeft, LinePoint &topRight, LinePoint &bottomRight, LinePoint &bottomLeft);
+    /**
+     * Evaluates if the given top segment is a possible door segment given the left and right edges and the expected door size
+     */
     bool isTopDoorSegment(LineSegment &left, LineSegment &right, LineSegment &top, int minDoorSize);
+    /**
+     * Evaluates if the given bottom segment is a possible door segment given the left and right edges and the expected door size
+     */
     bool isBottomDoorSegment(LineSegment &left, LineSegment &right, LineSegment &bottom, int minDoorSize);
+    /**
+     * Calculates the four intersection points of the four given edges. Returns true if successful, false otherwise
+     */
     bool getCornersFromEdges(const LineSegment &left, const LineSegment &top, const LineSegment &right, const LineSegment &bottom, LinePoint &tl, LinePoint &tr, LinePoint &br, LinePoint &bl);
 public:
+    /**
+     * These variables hold the results of the latest detection run for debugging purposes
+     */
     vector<LineSegment> horizontalSegments;
     vector<LineSegment> verticalSegments;
     vector<_DoorCandidate> candidates;
+
+    /**
+     * @param inputSize the size of the input image
+     * @param context the current application context
+     */
     DoorDetector(cv::Size inputSize, ArdoorContext *context);
-    ~DoorDetector();
+    virtual ~DoorDetector();
+    /**
+     * Runs the door detection on the given grayscale image and writes the corners of the match into corners.
+     * Return true if a door was found, false otherwise.
+     */
     bool findDoorCorners(const cv::Mat &grayImg, vector<cv::Point> &corners);
+    /**
+     * Helper function for debugging puposes to drae line segment on a image.
+     */
     void drawSegments(const cv::Mat &src, cv::Mat &dest, vector<LineSegment> &segments, const cv::Scalar &color);
 };
 

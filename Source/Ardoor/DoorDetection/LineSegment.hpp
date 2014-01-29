@@ -35,6 +35,9 @@ public:
     void joinWith(const LineSegment second);
     double length() const;
     void alignToVanishingPoint();
+    /**
+     * since MSVC 2012 doesn't have a round function in cmath, this one is used
+     */
     static double round(double number);
 };
 

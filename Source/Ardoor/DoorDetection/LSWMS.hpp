@@ -1,6 +1,10 @@
 #ifndef __LSWMS_H__
 #define __LSWMS_H__
 
+/*
+ * By Marcos Nieto: http://marcosnietoblog.wordpress.com/2013/12/25/faster-line-segment-detection-opencv-c-source-code
+ */
+
 enum {RET_OK, RET_ERROR};
 
 #include "opencv2/core/core.hpp"

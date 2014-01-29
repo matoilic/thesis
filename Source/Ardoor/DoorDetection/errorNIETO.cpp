@@ -1,5 +1,9 @@
 #include "errorNIETO.hpp"
 
+/*
+ * These are the error function used to rate the segments during vp detection
+ */
+
 using namespace std;
 using namespace cv;
 
