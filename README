@@ -9,4 +9,4 @@ Mac OS X:
 - Xcode 5.0 and you need to install the comand line tools
 - QT 5.1.1
 
-The application has been developed using the above tools. It should also work with newer versions of them, but this has not been tested thoroughly.
+The application has been developed using the above tools. It should also work with newer versions of them, but this has not been tested thoroughly. To compile the Documentation you will need XeLaTex and the KOMA package. The Avenir font is not bundles since it is not free.
