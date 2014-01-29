@@ -126,6 +126,16 @@ Dies ist nur ein Bild von zehn getesteten. Die Bilder welche während der Entwic
 \noindent
 Auch hier ist LSWMS Hough überlegen. Obwohl LSWMS für Echtzeitanwendungen konzipiert wurde, kann mit den gemessenen 64ms Verarbeitungszeit pro Frame kein flüssiges Videobild bei 28fps wiedergegeben werden.
 
+\section{Fluchtpunktbestimmung}
+Um die horizontalen und vertikalen Fluchtpunkte zu bestimmen, wird der von Marco Nietos entwickelte \cite{nieto-msac} auf MSAC (\textbf{M}-Estimator \textbf{Sa}mple and \textbf{C}onsensus) basierte Algorithmus eingesetzt. Die Implementation von Nietos weicht insofern vom standard MSAC ab, als das eine nicht-lineare Bewertungsfunktion eingesetzt wird und, dass zusätzlich ein Tracking der Fluchtpunkte vollzogen wird. Dies ermöglicht es, Vorraussagen zur Position der Fluchtpunkte zu treffen, basierend auf den Resultaten der vorherigen Video-Frames. Dies reduziert die Rechenzeit signifikant und ermöglicht den Einsatz von MSAC in Echtzeitanwendungen.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{images/msac} 
+\caption{Reduktion der benötigten Iterationsscritte mit Hilfe von Fluchpunkt-Tracking. Quelle: \cite{nieto-msac}}
+\label{fig:door-detection}
+\end{figure}
+
 \section{Implementation}
 
 \begin{figure}[!ht]
@@ -162,8 +172,8 @@ Wie bereits zu beginn des Kapitels erwähnt, besteht der Prozess der Türerkennu
 	\label{fig:door-detection}
 \end{figure}
 
-\subsection{Kategorisierung}
-Im nächsten Schritt werden die gefundenen Liniensegmente nach ihrer Ausrichtung kategorisiert (Abb. \ref{fig:segs-categorized}). Hierzu muss zuerst bestimmt weren, was horizontal und vertikal ist. Wird die Türe frontal aufgenommen, so sind  die gewohnten Werte $0$ für horizontal und $\frac{\pi}{2}$ für vertikal. Nimmt man die Türe seitlich auf, so wird vor allem die Horizontale verzerrt. Um nun zu bestimmen welcher Winkel der Ausgangspunkt für die Horizontale ist, werden bestimmte Annahmen getroffen. Horizontale Linien weichen auch bei einer starken seitlichen Aufnahme nie mehr als 50° (0.839rad) von der unverzerrten Horizontale ab. Für die Vertikale wurde ein Wert von 20° (0.3491rad) festgelegt. Diese Werte wurden aus Probeaufnahmen aus verschiedenen Winkeln ermittelt und sind in Source/Ardoor/DoorDetection/DoorDetector.hpp festgehalten. Da nur längere Segmente verlässliche Informationen bezüglich der Ausrichtung liefern, wird eine Mindestlänge von 10\% der Diagonalen vorrausgesetzt. Alle Längenangaben bei der Türerkennung sind anhand prozentualer Anteile gegenüber der Diagonalen festgelegt, da die Diagonale die längst-mögliche Strecke in jedem Bild ist. So sind die Vorraussetzungen für jede Bildgrösse die selben. Wurden die Grenzwerte ermittelt, werden die Segmente nun kategorisiert. Hier wird eine Abweichung von 15° (Source/Ardoor/DoorDetection/LineSegment.hpp) zur Vertikalen bzw. Horizontalen erlaubt, um Fehler bei der Liniensegment-Erkennung auszugleichen und um eine bessere Grundlage für den nächsten Verarbeitungsschritt zu schaffen.
+\subsection{Fluchtpunkt-Bestimmung / Kategorisierung}
+Im nächsten Schritt werden die Fluchtpunkte (horizontal und vertikal) bestimmt. Dies geschieht mit Hilfe des MSAC-Algorithmus. Während der Fluchpunktbestimmung werden die Segmente in Cluster zusammengefasst um die Position der Punkte zu ermitteln. Das Clustering ist gleichzeitig auch eine Kategorisierung, da ein Cluster alle horizontalen und der andere alle vertikalen Liniensegmente enthält. Dies spart einen zusätzlichen Verarbeitungsschritt und damit auch Rechenzeit.
 
 \subsection{Segment Joining}
 Da die gefundenen Kanten oft nicht aus durchgehenden Segmenten bestehen sondern aus mehreren kleinen (Abb. \ref{fig:segments-pre-join}), müssen in diesem Schritt Liniensegmente die nahe bei einander liegen und eine änhliche Ausrichtung haben verschmolzen werden. Dabei wird wie folgt vorgegangen. Als erstes wird die Distanz der Segmente berechnet. Dabei müssen mehrere Fälle unterschieden werden.
@@ -191,7 +201,14 @@ Eine Distanz von max. 8px hat sich als guter Wert erwiesen. Wurden zwei Segmente
 \label{fig:segment-joining-1}
 \end{figure}
 \noindent
-Ist dies nicht der Fall, so wird ermittelt, welches Segment die bessere Ausrichtung gegenüber der errechneten Horizontalen bzw. Vertikalen hat. Die bessere Ausrichtung wird beim Verbinden beibehalten. Anschliessend werden die Längen addiert und das neue Segment wird zwischen den zwei Ausgangssegmenten platziert (Abb. \ref{fig:segment-joining-2}).
+Ist dies nicht der Fall, so werden die zwei Segmente zum Fluchtpunkt hin ausgerichtet. Dies geschieht, indem die Endpunkte auf die Gerade abgebildet werden, welche den Fluchtpunkt und den Mittelpunkt des Segmentes verbindet. Die Abbildungen bilden dann die neuen Endpunkte (Abb. \ref{fig:segment-joining-3}). Anschliessend werden die Längen addiert und das neue Segment wird zwischen den zwei Ausgangssegmenten platziert (Abb. \ref{fig:segment-joining-2}).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{images/segment-joining-3} 
+\caption{Ausrichtung des Segmentes hin zum Fluchtpunkt}
+\label{fig:segment-joining-3}
+\end{figure}
 
 \begin{figure}[!ht]
 \centering
@@ -203,10 +220,10 @@ Ist dies nicht der Fall, so wird ermittelt, welches Segment die bessere Ausricht
 \subsection{Kandidatensuche}
 Nun gehr es darum Vierer-Paare von Liniensegmenten zu finden, welche eine Tür darstellen könnten (Abb. \ref{fig:seg-candidates}). Währen der Implementation der Suche hat sich ergeben, dass die Segmente welche die Tür umgeben sich nicht kreuzen. Aus diesem Grund werden die Linien vor der Suche noch um 5\% der Diagonalenlänge verlängert. Mit diesem Wert konnte in allen Tests sichergestellt werden, dass sich die Türsegmente überlappen. 
 \paragraph{}
-Nun wird nach der Tür gesucht. Hierfür werden als erstes die vertikalen Kanten evaluiert. Diese müssen einen gewissen Mindestabstand besitzen (15\% der Diagonallänge). Damit gehen wir davon aus, dass die Tür an sich im Bild eine gewisse Grösse hat. Dies lässt sich nicht vermeiden, um nicht fälschlicherweise Fenster als Türen zu erkennen. Anschliessen wird nach passenden horizontalen Segmenten gesucht. Diese müssen min. eine Türhöhe von 25\% bilden. Es werden nur die horizontalen Linien evaluiert, welche beide vertikalen Segmente überlappen.
+Nun wird nach der Tür gesucht. Hierfür werden als erstes die vertikalen Kanten evaluiert. Diese müssen einen gewissen Türhöhre bilden (25\% der Diagonallänge). Damit gehen wir davon aus, dass die Tür an sich im Bild eine gewisse Grösse hat. Dies lässt sich nicht vermeiden, um nicht fälschlicherweise Fenster als Türen zu erkennen. Anschliessen wird nach passenden horizontalen Segmenten gesucht. Diese müssen die vertikalen Kanten kreuzen.
 
 \subsection{Kandidatenevaluation}
-In diesem letzten Schritt werden die gefundenen Kandidaten bewertet. Dabei wird das Seitenverhältnis Höhe zu Breite von diesen ausgewertet. Es wurden verschidene Türtypen aufgenommen und im Internet gesucht um zu erruieren, was in etwa das Standardmass einer Durchschnitttür ist. Es sind zwar DIN-Normen vorhanden, diese weichen aber stark von den meisten Türen ab welche untersucht wurden. Die DIN-Norm für eine einflüglige Türe hat ein Seitenverhältnis von 7.2. Durch Auswertung von 30 Aufnahmen wurde aber ein Verhältnis von 4.91 errechnet. In den Tests hat sich dieses klar als besser herausgestellt in 100\% der Fälle. 
+In diesem letzten Schritt werden die gefundenen Kandidaten bewertet. Dabei wird das Seitenverhältnis Höhe zu Breite von diesen ausgewertet. Es wurden verschidene Türtypen aufgenommen und im Internet gesucht um zu erruieren, was in etwa das Standardmass einer Durchschnitttür ist. Es sind zwar DIN-Normen vorhanden, diese weichen aber stark von den meisten Türen ab welche untersucht wurden. Die DIN-Norm für eine einflüglige Türe hat ein Seitenverhältnis von 7.2. Durch Auswertung von 30 Aufnahmen wurde aber ein Verhältnis von 4.91 errechnet. In den Tests hat sich dieses klar als besser herausgestellt in 100\% der Fälle. Da die Proportionen perspektivisch Verzerrt sein können, wird das Seitenverhältnis der Kanten mit der unter Abschnitt \ref{sec:door-ratio-calculation} beschriebenen Methode berechnet.
 \paragraph{}
 Es wurden auch diverse andere mögliche Evaluationskriterien getestet, jedoch haben sich diese nicht bewährt. Ein Ansatz war, die farbliche Homogenität der Fläche der Kandidaten zu bewerten. Aufgrund von Schattenwurf, Fenstern und Mustern auf vielen Türen hat sich dies nicht bewährt. Ein anderer Ansatz war, den Türgriff zu suchen. Da die Vielfalt hier aber enorm gross ist und der Griff oft zu klein ist auf den Bildern um ihn zu Analysieren, wurde auch dieses Kriterium fallen gelassen. Generell ist es sehr schwierig bei Aussentüren einen gemeinsamen Nenner zu finden. Die Evaluation der Seitenverhältnisse allein liefert aber in vielen Fällen bereits gute Resultate.
 
@@ -226,11 +243,11 @@ Wie zu sehen ist, ist nur der Teil der Kantendetektion für die Gesamtperformanc
 \subsection{Verbesserungsmöglichkeit}
 Zwei essentielle Punkte können an der Türerkennung verbessert werden. CLAHE ist eine vergleichsweise rechenintensive Operation. Ohne diese nimmt der LSWMS im Schnitt nur 23ms in Anspruch. Jedoch sind die Suchresultate deutlich schlechter ohne diese Kontrastoptimierung. Hier muss nach einer Alternative gesucht werden.
 \paragraph{}
-Ein zweiter Schwanchpunkt ist die Ermittlung der effktiven Horizontalen und Vertikalen. Bei starken Seitenaufnahmen mit einem Winkel von <70° sind die Abweichungen zu gross (Abb. \ref{fig:door-joining-error}). Hier muss der Fluchtpunkt ermittelt werden um die Zuverlässigkeit zu verbessern. Da das Ziel war die Performance auf Echtzeiniveau zu bringen, wurde versucht auf die Berechnung der Fluchtpunkte zu verzichten. Jedoch hat sich zum Schluss ergeben, dass dies wohl unumgänglich ist. Zeitlich konnte dies aber nicht mehr realisiert werden.
+Ein zweiter Schwanchpunkt ist die Ermittlung der Grösse der Tür relativ zur Bildgrösse. Zur Zeit wurd nur die perspektivisch skalierte Höhe der Tür für die Evaluation beigezogen, was zu Fehlerkennungen führt (Abb. \ref{fig:false-door-detection}). Hier muss eine Möglichkeit gefunden werden die Proportionen der Türe zu entzerren, ohne eine rechenintensive Operation wie solvePnP zu verwenden. Ein möglicher Ansatz ist ein Perspective Unwarping zu implementieren.
 
 \begin{figure}	
-\subfloat[Kanten vor dem Joining]{\includegraphics[width=0.48\textwidth]{images/door-side-raw}}\qquad
-\subfloat[Kanten nach dem Joining]{\includegraphics[width=0.48\textwidth]{images/door-side-joined}}\qquad
-\caption{Abweichung bei der Bestimmung der Horizontalen. Die untere Türkante weicht nach dem Segment Joining klar von der effektiven Horizontalen ab.}%
-\label{fig:door-joining-error}
+\center
+\includegraphics[width=0.5\textwidth]{images/false-door-detection}
+\caption{Falscherkennung aufgrund der perspektivisch skalierten Proportionen}
+\label{fig:false-door-detection}
 \end{figure}
