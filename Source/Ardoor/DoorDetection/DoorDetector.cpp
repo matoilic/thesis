@@ -19,7 +19,7 @@ DoorDetector::DoorDetector(cv::Size inputSize, ArdoorContext *context)
     segmentDetector = new LSWMS(inputSize, 3, diagonalLength * MIN_SEGMENT_LENGTH, 10000);
 //    segmentDetector = new PHough(diagonalLength * MIN_SEGMENT_LENGTH);
     vanishingPointDetector = new MSAC();
-    vanishingPointDetector->init(MODE_NIETO, inputSize, true);
+    vanishingPointDetector->init(MODE_NIETO, inputSize, false);
 
     intrinsics = context->getCameraConfiguration(inputSize.width, inputSize.height).getIntrinsics();
 }
@@ -79,9 +79,11 @@ void DoorDetector::categorizeSegments(vector<LineSegment> &segments, vector<Line
     timer.stop();
     timer.show("VP detection");
 
-    cout << "VP" << endl;
+    /*cout << "VP" << endl;
     cout << vps.size() << endl;
-    cout << vps[1].x << endl;
+    cout << vps[1].x << endl;*/
+
+    if(vps.size() < 2) return;
 
     if(abs(vps[0].y) < abs(vps[1].y)) {
         horizontal = lineSegmentsClusters[0];
@@ -207,20 +209,20 @@ void DoorDetector::findSegments(cv::Mat &grayImg, vector<LineSegment> &horizonta
     enhanceEdges(grayImg);
     runSegmentDetection(grayImg, segments);
 
-    cv::Mat copy;
+    /*cv::Mat copy;
     cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
     drawSegments(copy, copy, segments, CV_RGB(255, 255, 0));
     cout << segments.size() << endl;
-    cv::imshow("raw segments", copy);
+    cv::imshow("raw segments", copy);*/
 
     timer.start();
     categorizeSegments(segments, horizontal, vertical);
     timer.stop();
     timer.show("categorizeSegments");
-    cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
+    /*cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
     drawSegments(copy, copy, horizontal, CV_RGB(255, 0, 0));
     drawSegments(copy, copy, vertical, CV_RGB(0, 255, 0));
-    cv::imshow("categorized segments", copy);
+    cv::imshow("categorized segments", copy);*/
 
     timer.start();
     joinSegments(horizontal, grayImg, true);
@@ -228,10 +230,10 @@ void DoorDetector::findSegments(cv::Mat &grayImg, vector<LineSegment> &horizonta
     timer.stop();
     timer.show("joinSegments");
 
-    cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
+    /*cv::cvtColor(grayImg, copy, CV_GRAY2RGB);
     drawSegments(copy, copy, horizontal, CV_RGB(255, 0, 0));
     drawSegments(copy, copy, vertical, CV_RGB(0, 255, 0));
-    cv::imshow("joined segments", copy);
+    cv::imshow("joined segments", copy);*/
 }
 
 void DoorDetector::growSegments(vector<LineSegment> &segments, int length)
@@ -377,11 +379,11 @@ bool DoorDetector::findDoorCorners(const cv::Mat &grayImg, vector<cv::Point> &co
     findSegments(copy, horizontalSegments, verticalSegments);
     findDoor(horizontalSegments, verticalSegments, corners);
 
-    cv::Mat copy2(grayImg);
+    /*cv::Mat copy2(grayImg);
     cv::cvtColor(grayImg, copy2, CV_GRAY2RGB);
     drawSegments(copy2, copy2, horizontalSegments, CV_RGB(255, 0, 0));
     drawSegments(copy2, copy2, verticalSegments, CV_RGB(0, 255, 0));
-    cv::imshow("grown segments", copy2);
+    cv::imshow("grown segments", copy2);*/
 
     return corners.size() == 4;
 }

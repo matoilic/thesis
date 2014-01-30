@@ -21,8 +21,8 @@ void Timer::stop()
 
 void Timer::show(std::string label)
 {
-    double elapsed = std::chrono::duration_cast<std::chrono::microseconds>(_end - _start).count();
-    cout << label << ": " << elapsed << "microseconds" << endl << flush;
+    //double elapsed = std::chrono::duration_cast<std::chrono::microseconds>(_end - _start).count();
+    //cout << label << ": " << elapsed << "microseconds" << endl << flush;
 }
 
 #endif

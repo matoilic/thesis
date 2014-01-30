@@ -18,8 +18,8 @@
 #define MIN_DOOR_WIDTH 0.10 //in percent of the image diagonal
 #define MIN_DOOR_HEIGHT 0.20 //in percent of the image diagonal
 #define MAX_DOOR_HEIGHT 0.40 //in percent of the image diagonal
-//#define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a common door
-#define DOOR_SIZE_RATIO 2.05 //squared height/width ratio of a common door
+#define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a common door
+//#define DOOR_SIZE_RATIO 1.59 //squared height/width ratio of a common door
 #define MAX_DOOR_SIZE_RATIO 6.5 //squared height/width ratio of a common door
 #define MAX_HORIZONTAL_DIVERGENCE 0.839
 #define MAX_VERTICAL_DIVERGENCE 0.3491
