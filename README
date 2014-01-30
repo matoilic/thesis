@@ -10,3 +10,9 @@ Mac OS X:
 - QT 5.1.1
 
 The application has been developed using the above tools. It should also work with newer versions of them, but this has not been tested thoroughly. To compile the Documentation you will need XeLaTex and the KOMA package. The Avenir font is not bundles since it is not free.
+
+
+USAGE
+-----------------------------
+
+First run CalibrationApp to calibrate your camera. Use the chessboard in the Data/images folder for this. After that you can run the ChessboardApp or the DoorApp to see how the AR projection works. You can find a sample door image in Data/images too. If you want to use a diferent chessboard you can run the SettingsApp to adjust the chessboard dimensions used within the application.
