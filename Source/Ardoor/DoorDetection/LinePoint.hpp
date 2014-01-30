@@ -1,9 +1,10 @@
 #ifndef LINEPOINT_H
 #define LINEPOINT_H
 
+#include <Ardoor/Ardoor.hpp>
 #include <opencv2/core/core.hpp>
 
-class LinePoint : public cv::Point_<int>
+class ARD_EXPORT LinePoint : public cv::Point_<int>
 {
 public:
     LinePoint() { }
