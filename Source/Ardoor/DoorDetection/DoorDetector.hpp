@@ -14,10 +14,10 @@
 #define MAX_SEGMENT_DISTANCE 0.05 //in percent of the image diagonal
 #define MAX_SEGMENT_SHIFT 8 //in px
 #define MAX_SEGMENT_GRADIENT_DIFFERENCE 0.08748 //tan(5°)
-#define SEGMENT_GROWTH 0.2 //in percent of the image diagonal
+#define SEGMENT_GROWTH 0.03 //in percent of the image diagonal
 #define MIN_DOOR_WIDTH 0.10 //in percent of the image diagonal
-#define MIN_DOOR_HEIGHT 0.20 //in percent of the image diagonal
-#define MAX_DOOR_HEIGHT 0.40 //in percent of the image diagonal
+#define MIN_DOOR_HEIGHT 0.10 //in percent of the image diagonal
+#define MAX_DOOR_HEIGHT 0.80 //in percent of the image diagonal
 #define DOOR_SIZE_RATIO 4.91202 //squared height/width ratio of a common door
 //#define DOOR_SIZE_RATIO 1.59 //squared height/width ratio of a common door
 #define MAX_DOOR_SIZE_RATIO 6.5 //squared height/width ratio of a common door
