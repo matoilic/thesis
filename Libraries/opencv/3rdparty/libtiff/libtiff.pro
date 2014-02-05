@@ -32,11 +32,7 @@ SOURCES += \
     tif_ojpeg.c \
     tif_next.c \
     tif_lzw.c \
-    tif_lzma.c \
     tif_luv.c \
-    tif_jpeg_12.c \
-    tif_jpeg.c \
-    tif_jbig.c \
     tif_getimage.c \
     tif_flush.c \
     tif_fax3sm.c \

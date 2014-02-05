@@ -89,7 +89,7 @@
 #define NEXT_SUPPORT 1
 
 /* Support Old JPEG compresson (read-only) */
-#undef OJPEG_SUPPORT
+#define OJPEG_SUPPORT
 
 /* Support Macintosh PackBits algorithm */
 #define PACKBITS_SUPPORT 1
